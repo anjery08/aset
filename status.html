@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="id" data-bs-theme="light" data-lte-color-mode="off">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Status Hitung Mundur Sewa | Aset Ma'had Aly Amtsilati</title>
+  <meta name="title" content="Status Hitung Mundur Sewa | Aset Ma'had Aly Amtsilati" />
+  <meta name="description" content="Pantau status hitung mundur durasi sewa alat multimedia Ma'had Aly Amtsilati secara real-time." />
+  <link rel="icon" type="image/png" href="img/logo-metahati.png" />
+
+  <!-- Open Graph / WhatsApp Preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Status Hitung Mundur Sewa - METAHATI" />
+  <meta property="og:description" content="Pantau sisa waktu sewa alat multimedia Ma'had Aly Amtsilati." />
+  <meta property="og:image" content="https://aset.mahadalyamtsilati.ac.id/img/logo-metahati.png" />
+  <meta property="og:site_name" content="METAHATI - Ma'had Aly Amtsilati" />
+
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+  
+  <!-- AdminLTE & Custom CSS -->
+  <link rel="stylesheet" href="./dist/css/adminlte.min.css" />
+  <link rel="stylesheet" href="./css/custom.css" />
+</head>
+<body class="ios-glass-theme">
+  <!-- Navbar iOS Frosted Glass -->
+  <nav class="navbar navbar-expand-lg navbar-ios-glass sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="1-katalog.html">
+        <img src="img/logo-metahati.png" alt="METAHATI - Ma'had Aly Amtsilati" class="logo-nav-img" />
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Content Container (iOS Glass Theme) -->
+  <main class="container py-4">
+
+    <div class="mb-4 text-center text-sm-start">
+      <h3 class="fw-bolder mb-1 text-dark">
+        <i class="bi bi-clock-history me-2" style="color: #0066ff;"></i>
+        Status & Hitung Mundur Sewa Alat
+      </h3>
+      <p class="text-secondary small mb-0">
+        Pantau sisa durasi pemakaian alat dan perkiraan denda keterlambatan secara real-time.
+      </p>
+    </div>
+
+    <!-- Card Sukses / Terima Kasih Setelah Pengembalian Diterima Admin -->
+    <div id="cardSelesaiApresiasi" class="card shadow-sm border-0 mb-4 card-ios-detail d-none" style="border: 2px solid #22c55e !important; background: linear-gradient(180deg, rgba(240, 253, 244, 0.95) 0%, rgba(255, 255, 255, 0.95) 100%);">
+      <div class="card-body text-center p-4 p-sm-5">
+        <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3 shadow" style="width: 76px; height: 76px; font-size: 2.4rem;">
+          <i class="bi bi-check-lg"></i>
+        </div>
+        <div>
+          <span class="badge bg-success-subtle text-success border border-success px-3 py-1 rounded-pill fw-bold mb-2 d-inline-block">
+            <i class="bi bi-patch-check-fill me-1"></i> ASET TELAH RESMI DITERIMA & SELESAI
+          </span>
+        </div>
+        <h4 class="fw-bolder text-dark mb-2">Jazakumullahu Khairan Katsiran</h4>
+        <p class="text-dark fs-6 mb-4 mx-auto" style="max-width: 650px; line-height: 1.65;">
+          Terima kasih kepada Saudara/i <strong id="selesaiNamaSantri">-</strong>. Unit multimedia <strong id="selesaiNamaBarang">-</strong> telah resmi dikembalikan dan diterima oleh pengurus inventaris <strong>METAHATI Ma'had Aly Amtsilati</strong> dalam kondisi baik dan lengkap.
+        </p>
+
+        <!-- Rincian Bukti Pelunasan & Keuangan -->
+        <div class="p-3 p-sm-4 rounded-3 mb-4 text-start bg-white border shadow-sm mx-auto" style="max-width: 620px; border-color: rgba(34, 197, 94, 0.3) !important;">
+          <div class="row g-2 mb-3 pb-3 border-bottom" style="border-color: #e2e8f0 !important;">
+            <div class="col-sm-6">
+              <small class="text-secondary d-block fw-bold mb-1">Nomor Transaksi / Invoice:</small>
+              <strong class="text-dark font-monospace fs-6" id="selesaiBookingId">-</strong>
+            </div>
+            <div class="col-sm-6">
+              <small class="text-secondary d-block fw-bold mb-1">Waktu Resmi Diterima:</small>
+              <strong class="text-success fs-6" id="selesaiWaktuKembali">-</strong>
+            </div>
+          </div>
+
+          <h6 class="text-dark fw-bold small text-uppercase mb-2" style="letter-spacing: 0.5px;">
+            <i class="bi bi-receipt-cutoff me-1 text-success"></i> Rincian Bukti Pelunasan Sewa
+          </h6>
+
+          <div class="d-flex justify-content-between py-2 border-bottom" style="font-size: 0.95rem; border-color: #f1f5f9 !important;">
+            <span class="text-secondary">Biaya Sewa Pokok:</span>
+            <strong class="text-dark" id="selesaiBiayaPokok">Rp 0</strong>
+          </div>
+          <div class="d-flex justify-content-between py-2 border-bottom" style="font-size: 0.95rem; border-color: #f1f5f9 !important;">
+            <span class="text-secondary">Denda Keterlambatan:</span>
+            <strong id="selesaiDenda" class="text-success">Rp 0 (Tepat Waktu)</strong>
+          </div>
+          <div class="d-flex justify-content-between py-2 mt-2 px-3 rounded-3" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.25);">
+            <span class="fw-bold text-dark">Total Biaya Pelunasan:</span>
+            <strong class="fs-6 fw-bolder text-success" id="selesaiTotalPelunasan">Rp 0</strong>
+          </div>
+          <!-- Foto Bukti Pengembalian jika ada -->
+          <div id="selesaiBuktiFotoWrap" class="mt-3 pt-3 border-top text-center d-none">
+            <small class="text-secondary fw-bold d-block mb-2"><i class="bi bi-camera-fill text-success me-1"></i> Foto Bukti Fisik Serah Terima Pengembalian:</small>
+            <img id="selesaiBuktiFotoImg" src="" alt="Bukti Pengembalian" class="img-fluid rounded border shadow-sm" style="max-height: 200px; object-fit: contain;" />
+          </div>
+        </div>
+
+        <!-- Tombol Aksi Persis Sesuai Desain (Buka/Cetak Invoice & Kembali ke Katalog) -->
+        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center pt-2">
+          <a href="#" id="btnKeInvoiceSelesai" class="btn btn-metahati py-2 px-4 shadow-sm fw-bold">
+            <i class="bi bi-file-earmark-pdf-fill me-1"></i> Buka / Cetak Invoice (PDF)
+          </a>
+          <a href="1-katalog.html" class="btn btn-back-ios py-2 px-4 fw-bold justify-content-center">
+            <i class="bi bi-house-door me-1"></i> Kembali ke Katalog
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Ditolak / Dibatalkan Admin -->
+    <div id="cardDitolakAdmin" class="card shadow-sm border-0 mb-4 card-ios-detail d-none" style="border: 2px solid #ef4444 !important; background: linear-gradient(180deg, rgba(254, 242, 242, 0.95) 0%, rgba(255, 255, 255, 0.95) 100%);">
+      <div class="card-body text-center p-4 p-sm-5">
+        <div class="rounded-circle bg-danger text-white d-inline-flex align-items-center justify-content-center mb-3 shadow" style="width: 76px; height: 76px; font-size: 2.4rem;">
+          <i class="bi bi-x-circle-fill"></i>
+        </div>
+        <div>
+          <span class="badge bg-danger-subtle text-danger border border-danger px-3 py-1 rounded-pill fw-bold mb-2 d-inline-block">
+            <i class="bi bi-shield-x me-1"></i> PERMOHONAN SEWA DIBATALKAN / DITOLAK
+          </span>
+        </div>
+        <h4 class="fw-bolder text-dark mb-2">Mohon Maaf, Pemesanan Tidak Dapat Diproses</h4>
+        <p class="text-dark fs-6 mb-3 mx-auto" style="max-width: 650px;">
+          Pemesanan untuk unit <strong id="tolakNamaBarang">-</strong> dengan nomor <strong id="tolakBookingId">-</strong> telah dibatalkan oleh pengurus inventaris.
+        </p>
+        <div class="p-3 rounded-3 bg-white border border-danger-subtle text-start mx-auto mb-4" style="max-width: 550px;">
+          <small class="text-secondary d-block fw-bold mb-1">Keterangan / Alasan Penolakan:</small>
+          <strong class="text-danger fs-6" id="tolakAlasanTeks">Unit sedang dalam pemeliharaan atau jadwal sewa berbenturan.</strong>
+        </div>
+        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+          <a href="1-katalog.html" class="btn btn-ios-primary py-2 px-4 fw-bold justify-content-center">
+            <i class="bi bi-grid me-1"></i> Pilih Alat / Jadwal Lain di Katalog
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Countdown Banner Card (iOS Glass Widget) -->
+    <div class="card shadow-sm border-0 mb-4 card-ios-detail" id="cardCountdownAktif">
+      <div class="card-body text-center p-3 p-sm-4">
+        
+        <!-- Banner Jika Status Masih Pending (Menunggu Konfirmasi) -->
+        <div id="bannerMenungguPending" class="alert alert-warning border border-warning-subtle text-dark small text-start p-3 mb-3 rounded-3 d-none" style="background: rgba(254, 243, 199, 0.95);">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-hourglass-split fs-4 text-warning flex-shrink-0"></i>
+            <div>
+              <strong class="d-block text-dark fs-6">Menunggu Konfirmasi & ACC Pengurus</strong>
+              <span>Format permohonan sewa telah terkirim ke sistem. <strong>Mohon jangan datang mengambil alat terlebih dahulu</strong> sampai status berubah menjadi <em>Disetujui</em>.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner Jika Status Sudah Disetujui (ACC) -->
+        <div id="bannerDisetujuiAktif" class="alert alert-success border border-success-subtle text-dark small text-start p-3 mb-3 rounded-3 d-none" style="background: rgba(236, 253, 245, 0.95);">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-patch-check-fill fs-3 text-success flex-shrink-0"></i>
+            <div>
+              <strong class="d-block text-success fs-6">Pengajuan Sewa Telah Disetujui (ACC)!</strong>
+              <span>Silakan datang ke kantor Ma'had Aly Amtsilati untuk serah terima alat pada jam pengambilan. Harap membawa <strong>KTS / KTP Asli</strong> sebagai jaminan.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 0.8px;">
+          <i class="bi bi-broadcast text-danger me-1"></i> Status Hitung Mundur Sewa Real-Time:
+        </div>
+        <div id="liveCountdownContainer" class="py-2">
+          <!-- Diisi otomatis oleh jalankanCountdown via JS -->
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Memuat...</span>
+          </div>
+        </div>
+
+        <!-- Banner Notifikasi Jika Waktu Habis / Terlambat -->
+        <div id="overdueAlertBanner" class="alert alert-danger d-none mt-3 text-start p-3 rounded-3 shadow-sm" role="alert" style="background: rgba(254, 242, 242, 0.95); border: 1.5px solid #f87171;">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-exclamation-octagon-fill fs-3 text-danger"></i>
+            <div>
+              <strong class="d-block text-danger fs-6">WAKTU SEWA TELAH BERAKHIR!</strong>
+              <span class="small text-dark">Segera kembalikan alat ke kantor pengurus METAHATI untuk menghentikan akumulasi denda berjalan.</span>
+            </div>
+          </div>
+          <div class="mt-2">
+            <a href="#" id="btnLaporPengembalianWa" target="_blank" class="btn btn-sm btn-danger fw-bold shadow-sm">
+              <i class="bi bi-whatsapp me-1"></i> Hubungi Admin untuk Pengembalian Alat
+            </a>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3 pt-3 border-top text-start" style="border-color: rgba(0, 102, 255, 0.1) !important;">
+          <div class="col-sm-6">
+            <div class="p-3 rounded-3 price-box-ios">
+              <small class="text-secondary d-block fw-bold mb-1">Waktu Mulai / Ambil:</small>
+              <strong class="text-dark fs-6" id="viewWaktuAmbil">-</strong>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="p-3 rounded-3 price-box-ios" style="border-color: rgba(214, 0, 153, 0.25) !important;">
+              <small class="text-secondary d-block fw-bold mb-1">Batas Waktu Pengembalian:</small>
+              <strong class="fs-6" style="color: #d60099 !important;" id="viewWaktuKembali">-</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tombol Aksi saat Countdown Berjalan -->
+        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center pt-3 mt-3 border-top" style="border-color: rgba(0, 102, 255, 0.1) !important;">
+          <a href="1-katalog.html" class="btn btn-back-ios py-2 px-4 fw-bold justify-content-center shadow-sm">
+            <i class="bi bi-house-door me-1"></i> Kembali ke Katalog
+          </a>
+        </div>
+        <div class="text-center mt-2">
+          <small class="text-secondary" style="font-size: 0.8rem;">
+            <i class="bi bi-info-circle me-1" style="color: #0066ff;"></i> Bukti pelunasan & invoice resmi diterbitkan otomatis setelah unit dikembalikan ke pengurus.
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rincian Data Booking (iOS Glass Card) -->
+    <div class="card shadow-sm border-0 mb-4 card-ios-detail">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bolder mb-0 text-dark">
+          <i class="bi bi-receipt me-2" style="color: #0066ff;"></i>Informasi Sewa Unit
+        </h5>
+        <span class="badge text-white px-3 py-2 rounded-pill fw-bold" style="background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%);" id="viewBookingId">INV-0000</span>
+      </div>
+      <div class="card-body p-3 p-sm-4">
+        <table class="table table-borderless align-middle mb-0" style="table-layout: fixed; width: 100%; word-break: break-word;">
+          <tbody>
+            <tr style="background-color: rgba(255, 255, 255, 0.7);">
+              <td class="text-secondary small fw-bold" style="width: 38%;">Barang yang Disewa</td>
+              <td class="fw-bolder text-dark fs-6" id="viewNamaBarang">-</td>
+            </tr>
+            <tr style="background-color: rgba(248, 250, 252, 0.85);">
+              <td class="text-secondary small fw-bold">Durasi / Paket</td>
+              <td><span class="badge text-white px-3 py-1 fw-bold" style="background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%);" id="viewPaket">-</span></td>
+            </tr>
+            <tr style="background-color: rgba(255, 255, 255, 0.7);">
+              <td class="text-secondary small fw-bold">Biaya Sewa Pokok</td>
+              <td class="fw-bold fs-6" style="color: #0066ff;" id="viewBiayaSewa">-</td>
+            </tr>
+            <tr style="background-color: rgba(248, 250, 252, 0.85); border-top: 1px solid rgba(0, 102, 255, 0.1);">
+              <td class="text-secondary small fw-bold">Penyewa</td>
+              <td class="fw-bold text-dark" id="viewNama">-</td>
+            </tr>
+            <tr style="background-color: rgba(255, 255, 255, 0.7);">
+              <td class="text-secondary small fw-bold">No HP / WhatsApp</td>
+              <td class="text-dark fw-medium" id="viewNoWa">-</td>
+            </tr>
+            <tr style="background-color: rgba(248, 250, 252, 0.85);">
+              <td class="text-secondary small fw-bold">Media / Komunitas</td>
+              <td class="text-dark fw-medium" id="viewKomunitas">-</td>
+            </tr>
+            <tr style="background-color: rgba(255, 255, 255, 0.7);">
+              <td class="text-secondary small fw-bold">Asrama / Departemen</td>
+              <td class="text-dark fw-medium" id="viewDepartemen">-</td>
+            </tr>
+            <tr style="background-color: rgba(248, 250, 252, 0.85);">
+              <td class="text-secondary small fw-bold">Alamat Lengkap</td>
+              <td class="small text-dark fw-medium" id="viewAlamat">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer METAHATI Bersih iOS Glass -->
+  <footer class="footer-simple navbar-ios-glass mt-5">
+    <div class="container text-center">
+      <h6 class="fw-bold mb-0 fs-6 text-dark">
+        <span class="gradient-text-metahati">METAHATI</span> &bull; Ma'had Aly Amtsilati
+      </h6>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+  <script src="./js/rental-logic.js?v=2.5"></script>
+  <script>
+    let activeBooking = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (typeof muatBookingDariQuery === "function") {
+        activeBooking = await muatBookingDariQuery();
+      } else {
+        const urlParams = new URLSearchParams(window.location.search);
+        const dataParam = urlParams.get("data");
+        if (dataParam) activeBooking = decodeBookingFromParam(dataParam);
+        if (!activeBooking) activeBooking = ambilDataBooking();
+      }
+
+      if (!activeBooking || !activeBooking.namaBarang) {
+        document.getElementById("liveCountdownContainer").innerHTML = `
+          <div class="alert alert-warning mb-0 text-dark fw-bold">
+            <i class="bi bi-exclamation-circle me-1"></i> Data sewa tidak ditemukan. Silakan buka dari tautan WhatsApp resmi atau buat permohonan baru dari katalog.
+          </div>
+        `;
+        return;
+      }
+
+      const bId = activeBooking.bookingId || "INV-AMTSILATI";
+
+      // Tampilkan Data
+      document.getElementById("viewBookingId").innerText = bId;
+      document.getElementById("viewNamaBarang").innerText = activeBooking.namaBarang;
+      document.getElementById("viewPaket").innerText = activeBooking.paketLabel || (activeBooking.paketJam + " Jam");
+      document.getElementById("viewBiayaSewa").innerText = formatRupiah(activeBooking.biayaSewa || 0);
+      let namaTampil = activeBooking.nama || "-";
+      if (namaTampil.includes('***')) {
+        const cur = typeof ambilDataBooking === "function" ? ambilDataBooking() : null;
+        if (cur && cur.nama && !cur.nama.includes('***')) {
+          namaTampil = cur.nama;
+          activeBooking.nama = cur.nama;
+        } else {
+          namaTampil = namaTampil.replace(/\*+/g, '').trim();
+        }
+      }
+      namaTampil = namaTampil.replace(/\*+/g, '').trim();
+      if (!namaTampil) namaTampil = "-";
+      document.getElementById("viewNama").innerText = namaTampil;
+      
+      // Masking Privasi Nomor WhatsApp
+      const rawWa = typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(activeBooking.noWa) : (activeBooking.noWa || "-");
+      const maskedWa = (rawWa.length > 7) ? (rawWa.slice(0, 4) + '****' + rawWa.slice(-3)) : rawWa;
+      document.getElementById("viewNoWa").innerText = maskedWa;
+
+      document.getElementById("viewKomunitas").innerText = activeBooking.komunitas || "-";
+      document.getElementById("viewDepartemen").innerText = activeBooking.departemen || "-";
+      let viewAmbilTeks = activeBooking.waktuAmbil;
+      if (!viewAmbilTeks && activeBooking.waktuAmbilRaw && typeof formatWaktuIndo === "function") {
+        viewAmbilTeks = formatWaktuIndo(activeBooking.waktuAmbilRaw) + " WIB";
+      }
+      document.getElementById("viewWaktuAmbil").innerText = viewAmbilTeks || "-";
+
+      let viewKembaliTeks = activeBooking.waktuSelesai;
+      if (!viewKembaliTeks && activeBooking.waktuSelesaiRaw && typeof formatWaktuIndo === "function") {
+        viewKembaliTeks = formatWaktuIndo(activeBooking.waktuSelesaiRaw) + " WIB";
+      }
+      document.getElementById("viewWaktuKembali").innerText = viewKembaliTeks || "-";
+
+      // Link ke invoice singkat
+      const invoiceUrl = `invoice.html?id=${encodeURIComponent(bId)}`;
+      const btnKeInvoice = document.getElementById("btnKeInvoice");
+      if (btnKeInvoice) btnKeInvoice.href = invoiceUrl;
+      const btnKeInvoiceSelesai = document.getElementById("btnKeInvoiceSelesai");
+      if (btnKeInvoiceSelesai) btnKeInvoiceSelesai.href = invoiceUrl;
+
+      // Perbarui Tampilan Status (Selesai vs Ditolak vs Pending vs Aktif Countdown)
+      perbaruiTampilanStatus(activeBooking);
+
+      // Monitor status overdue untuk memunculkan notifikasi & tombol WA pengembalian
+      setInterval(() => {
+        if (activeBooking && (activeBooking.status === "completed" || activeBooking.status === "rejected" || activeBooking.status === "cancelled")) return;
+        if (!activeBooking || !activeBooking.waktuSelesaiRaw) return;
+
+        const sTime = new Date(activeBooking.waktuSelesaiRaw).getTime();
+        const isOverdue = Date.now() > sTime;
+        const banner = document.getElementById("overdueAlertBanner");
+        if (banner) {
+          if (isOverdue) {
+            banner.classList.remove("d-none");
+            const btnLapor = document.getElementById("btnLaporPengembalianWa");
+            if (btnLapor && !btnLapor.href.includes("wa.me")) {
+              const noAdmin = dapatkanNomorWaAdmin(activeBooking);
+              const pesan = `Assalamu'alaikum Admin METAHATI, saya ${activeBooking.nama} hendak mengembalikan alat ${activeBooking.namaBarang} (${bId}). Mohon arahan serah terima unitnya. Terima kasih.`;
+              btnLapor.href = `https://wa.me/${noAdmin}?text=${encodeURIComponent(pesan)}`;
+            }
+          } else {
+            banner.classList.add("d-none");
+          }
+        }
+      }, 1000);
+
+      // Real-Time Polling Sinkronisasi Server (Deteksi jika Admin klik Terima, Tolak, atau Undo)
+      setInterval(async () => {
+        if (!bId || typeof ambilStatusBookingTerbaru !== "function") return;
+        try {
+          const latest = await ambilStatusBookingTerbaru(bId);
+          if (latest && latest.status && activeBooking && latest.status !== activeBooking.status) {
+            console.log(`[Status Sync] Status berubah dari ${activeBooking.status} -> ${latest.status}`);
+            const oldStatus = activeBooking.status;
+            activeBooking = { ...activeBooking, ...latest };
+            perbaruiTampilanStatus(activeBooking);
+
+            // Pop-up Notifikasi langsung saat pengajuan baru saja di-ACC oleh admin
+            if (oldStatus === 'pending' && (latest.status === 'active' || latest.status === 'booked')) {
+              alert("🎉 ALHAMDULILLAH! Pengajuan sewa Anda telah DISETUJUI (ACC) oleh pengurus!\n\nSilakan datang ke kantor Ma'had Aly Amtsilati untuk serah terima alat pada jam pengambilan. Harap membawa jaminan KTS / KTP Asli.");
+            }
+          }
+        } catch (e) {}
+      }, 3000);
+    });
+
+    let isCountdownSedangJalan = false;
+
+    function perbaruiTampilanStatus(booking) {
+      if (!booking) return;
+      const bId = booking.bookingId || "INV-AMTSILATI";
+      const invoiceUrl = `invoice.html?id=${encodeURIComponent(bId)}`;
+      const cardSelesai = document.getElementById("cardSelesaiApresiasi");
+      const cardCountdown = document.getElementById("cardCountdownAktif");
+      const cardDitolak = document.getElementById("cardDitolakAdmin");
+      const overdueBanner = document.getElementById("overdueAlertBanner");
+      const bannerPending = document.getElementById("bannerMenungguPending");
+      const bannerDisetujui = document.getElementById("bannerDisetujuiAktif");
+
+      // Pastikan tombol invoice selalu terpasang URL
+      const btnInv1 = document.getElementById("btnKeInvoice");
+      if (btnInv1) btnInv1.href = invoiceUrl;
+      const btnInv2 = document.getElementById("btnKeInvoiceSelesai");
+      if (btnInv2) btnInv2.href = invoiceUrl;
+
+      // Status 1: Ditolak / Dibatalkan oleh Admin
+      if (booking.status === "rejected" || booking.status === "cancelled") {
+        if (typeof hentikanCountdown === "function") hentikanCountdown();
+        isCountdownSedangJalan = false;
+        if (cardCountdown) cardCountdown.classList.add("d-none");
+        if (cardSelesai) cardSelesai.classList.add("d-none");
+        if (overdueBanner) overdueBanner.classList.add("d-none");
+
+        if (cardDitolak) {
+          cardDitolak.classList.remove("d-none");
+          document.getElementById("tolakNamaBarang").innerText = booking.namaBarang || "-";
+          document.getElementById("tolakBookingId").innerText = bId;
+          document.getElementById("tolakAlasanTeks").innerText = booking.alasanTolak || "Unit sedang dalam pemeliharaan atau jadwal sewa berbenturan.";
+        }
+
+        const viewBadgeId = document.getElementById("viewBookingId");
+        if (viewBadgeId) {
+          viewBadgeId.className = "badge bg-danger text-white px-3 py-2 rounded-pill fw-bold";
+          viewBadgeId.innerHTML = `<i class="bi bi-x-circle me-1"></i> ${bId} • DITOLAK`;
+        }
+        return;
+      } else {
+        if (cardDitolak) cardDitolak.classList.add("d-none");
+      }
+
+      if (booking.status === "completed") {
+        // Hentikan timer countdown
+        if (typeof hentikanCountdown === "function") hentikanCountdown();
+        isCountdownSedangJalan = false;
+
+        if (cardCountdown) cardCountdown.classList.add("d-none");
+        if (overdueBanner) overdueBanner.classList.add("d-none");
+
+        if (cardSelesai) {
+          cardSelesai.classList.remove("d-none");
+          const elNama = document.getElementById("selesaiNamaSantri");
+          const elBarang = document.getElementById("selesaiNamaBarang");
+          const elId = document.getElementById("selesaiBookingId");
+          const elWaktu = document.getElementById("selesaiWaktuKembali");
+
+          if (elNama) elNama.innerText = booking.nama || "-";
+          if (elBarang) elBarang.innerText = booking.namaBarang || "-";
+          if (elId) elId.innerText = bId;
+
+          let waktuKembaliTeks = "-";
+          if (booking.waktuDikembalikan) {
+            waktuKembaliTeks = formatWaktuIndo(booking.waktuDikembalikan);
+          } else if (booking.waktuSelesai) {
+            waktuKembaliTeks = booking.waktuSelesai;
+          }
+          if (elWaktu) elWaktu.innerText = waktuKembaliTeks;
+
+          const biayaPokok = parseInt(booking.biayaSewa || 0);
+          let denda = parseInt(booking.denda || booking.dendaKeterlambatan || 0);
+          let dendaHtml = '<span class="text-success fw-bold">Rp 0 (Tepat Waktu / Bebas Denda)</span>';
+
+          if (denda > 0) {
+            dendaHtml = `<span class="text-danger fw-bold">+ ${formatRupiah(denda)}</span>`;
+          }
+
+          const totalPelunasan = biayaPokok + denda;
+
+          const elPokok = document.getElementById("selesaiBiayaPokok");
+          const elDenda = document.getElementById("selesaiDenda");
+          const elTotal = document.getElementById("selesaiTotalPelunasan");
+
+          if (elPokok) {
+            elPokok.innerHTML = (booking.isDinas || biayaPokok === 0) ? '<span class="badge bg-primary text-white">Gratis (Dinas Pondok)</span>' : formatRupiah(biayaPokok);
+          }
+          if (elDenda) elDenda.innerHTML = dendaHtml;
+          if (elTotal) elTotal.innerText = formatRupiah(totalPelunasan);
+
+          // Tampilkan foto bukti pengembalian jika ada
+          const fotoWrap = document.getElementById("selesaiBuktiFotoWrap");
+          const fotoImg = document.getElementById("selesaiBuktiFotoImg");
+          if (fotoWrap && fotoImg) {
+            if (booking.buktiFoto) {
+              fotoImg.src = booking.buktiFoto;
+              fotoWrap.classList.remove("d-none");
+            } else {
+              fotoWrap.classList.add("d-none");
+            }
+          }
+        }
+
+        const viewBadgeId = document.getElementById("viewBookingId");
+        if (viewBadgeId) {
+          viewBadgeId.className = "badge bg-success text-white px-3 py-2 rounded-pill fw-bold";
+          viewBadgeId.innerHTML = `<i class="bi bi-check2-circle me-1"></i> ${bId} • LUNAS`;
+        }
+        return;
+      }
+
+      // Status "pending" atau "active" / "booked"
+      if (cardSelesai) cardSelesai.classList.add("d-none");
+      if (cardCountdown) cardCountdown.classList.remove("d-none");
+
+      if (booking.status === "pending") {
+        if (bannerPending) bannerPending.classList.remove("d-none");
+        if (bannerDisetujui) bannerDisetujui.classList.add("d-none");
+      } else {
+        if (bannerPending) bannerPending.classList.add("d-none");
+        if (bannerDisetujui) bannerDisetujui.classList.remove("d-none");
+      }
+
+      const viewBadgeId = document.getElementById("viewBookingId");
+      if (viewBadgeId) {
+        viewBadgeId.className = "badge text-white px-3 py-2 rounded-pill fw-bold";
+        if (booking.status === "pending") {
+          viewBadgeId.style.background = "#f59e0b";
+          viewBadgeId.innerHTML = `<i class="bi bi-hourglass-top me-1"></i> ${bId} • MENUNGGU ACC`;
+        } else {
+          viewBadgeId.style.background = "linear-gradient(135deg, #0055ff 0%, #7928ca 100%)";
+          viewBadgeId.innerHTML = `<i class="bi bi-check-circle me-1"></i> ${bId} • DISETUJUI`;
+        }
+      }
+
+      // Tampilkan tarif dinas di rincian jika dinas
+      const elTarif = document.getElementById("viewBiayaSewa");
+      if (elTarif && (booking.isDinas || parseInt(booking.biayaSewa || 0) === 0)) {
+        elTarif.innerHTML = '<span class="badge bg-primary text-white">Gratis (Dinas Resmi Pondok)</span>';
+      }
+
+      // Jalankan hitung mundur 3 bagian (Sebelum Ambil -> Sedang Sewa -> Waktu Habis)
+      const wSelesai = booking.waktuSelesaiRaw || booking.waktuSelesai;
+      const wAmbil = booking.waktuAmbilRaw || booking.waktuAmbil;
+      const durLabel = booking.paketLabel || (booking.paketJam ? (booking.paketJam + " Jam") : null);
+
+      if (typeof jalankanCountdown === "function") {
+        jalankanCountdown(wSelesai, "liveCountdownContainer", wAmbil, durLabel);
+      }
+    }
+  </script>
+</body>
+</html>
+

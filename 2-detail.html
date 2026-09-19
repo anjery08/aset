@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="id" data-bs-theme="light" data-lte-color-mode="off">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detail Unit & Paket | Aset Ma'had Aly Amtsilati</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+  
+  <!-- AdminLTE & Custom CSS -->
+  <link rel="stylesheet" href="./dist/css/adminlte.min.css" />
+  <link rel="stylesheet" href="./css/custom.css" />
+</head>
+<<body class="ios-glass-theme">
+  <!-- Navbar iOS Frosted Glass -->
+  <nav class="navbar navbar-expand-lg navbar-ios-glass sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="1-katalog.html">
+        <img src="img/logo-metahati.png" alt="METAHATI - Ma'had Aly Amtsilati" class="logo-nav-img" />
+      </a>
+      <div class="d-flex align-items-center">
+        <a href="1-katalog.html" class="btn-back-ios">
+          <i class="bi bi-arrow-left me-1"></i> Kembali ke Katalog
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="container py-4">
+    <!-- Step Progress Bar (iOS Glass Container) -->
+    <div class="ios-stepper-glass">
+      <div class="rental-steps mb-0">
+        <a href="1-katalog.html" class="rental-step-item completed">
+          <div class="step-circle"><i class="bi bi-check-lg"></i></div>
+          <span class="step-title">Pilih Alat</span>
+        </a>
+        <div class="rental-step-item active">
+          <div class="step-circle">2</div>
+          <span class="step-title">Detail</span>
+        </div>
+        <div class="rental-step-item">
+          <div class="step-circle">3</div>
+          <span class="step-title">Data Booking</span>
+        </div>
+        <div class="rental-step-item">
+          <div class="step-circle">4</div>
+          <span class="step-title">Kesepakatan</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Banner Syarat Utama (iOS Glass Callout) -->
+    <div class="callout-rules-ios mb-4">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-shield-exclamation fs-2 me-3" style="color: #d60099;"></i>
+        <div>
+          <strong class="text-dark">Syarat Peminjam:</strong> Khusus santri Darul Falah Amtsilati, wajib bisa mengoperasikan alat (bukan untuk belajar), dan wajib menyerahkan <strong>KTP / KTS / KTM Asli</strong> saat pengambilan alat.
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4" id="detailContainer">
+      <!-- Kolom Kiri: Detail Aset & Kelengkapan (iOS Glass Card) -->
+      <div class="col-lg-6">
+        <div class="card card-ios-detail shadow-sm h-100">
+          <div class="asset-img-container" style="height: 270px;">
+            <img id="itemImg" src="" alt="Foto Alat" class="asset-img" onerror="this.style.display='none'; document.getElementById('itemIconFallback').style.display='flex';" />
+            <div id="itemIconFallback" class="asset-icon-fallback" style="display: none;">
+              <i class="bi" id="itemIcon"></i>
+            </div>
+          </div>
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="badge badge-cyan badge-ios-glass px-3 py-1 rounded-pill" id="itemKategori">Kategori</span>
+              <span class="badge badge-available badge-ios-glass px-3 py-1 rounded-pill" id="itemStatus">Tersedia</span>
+            </div>
+            
+            <h3 class="fw-bolder text-dark mb-2" id="itemNama" style="letter-spacing: -0.4px;">Nama Alat</h3>
+            <div id="itemStokBox" class="p-2 px-3 rounded-3 mb-3 d-flex align-items-center justify-content-between small" style="background: rgba(240, 247, 255, 0.85); border: 1px solid rgba(0, 102, 255, 0.2);">
+              <div><i class="bi bi-boxes text-primary me-1"></i> Total Inventaris: <strong id="itemStokTeks">1 Unit Inventaris</strong></div>
+              <span class="badge bg-primary text-white rounded-pill px-2 py-1" id="itemStokBadge">1 Unit</span>
+            </div>
+
+            <!-- Kotak Status Jadwal Pemakaian Terjadwal -->
+            <div id="kotakJadwalAset" class="mb-3">
+              <!-- Rendered via JS -->
+            </div>
+
+            <p class="text-dark small mb-4" id="itemDeskripsi" style="line-height: 1.6; color: #1e293b !important; font-weight: 500;">Deskripsi</p>
+
+            <hr class="my-3" style="border-color: rgba(0, 102, 255, 0.1);" />
+
+            <h6 class="fw-bolder mb-3 text-uppercase small text-dark" style="letter-spacing: 0.3px;">
+              <i class="bi bi-box-seam me-1" style="color: #0066ff;"></i> Kelengkapan Unit yang Didapat:
+            </h6>
+            <div id="kelengkapanList" class="mb-4">
+              <!-- Rendered via JS -->
+            </div>
+
+            <div class="p-3 rounded-3 text-dark small border" style="background: rgba(248, 250, 252, 0.85); border-color: rgba(0, 102, 255, 0.15) !important;">
+              <i class="bi bi-info-circle-fill text-primary me-1"></i>
+              <strong>Catatan:</strong> Kerusakan maupun kehilangan alat selama masa sewa menjadi tanggung jawab penuh penyewa.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kolom Kanan: Pilihan Paket Durasi Sewa Dinamis (iOS Glass Card) -->
+      <div class="col-lg-6">
+        <div class="card card-ios-detail shadow-sm h-100 p-2">
+          <div class="card-header bg-transparent py-3 border-bottom-0">
+            <h5 class="fw-bolder mb-0 text-dark">
+              <i class="bi bi-stopwatch-fill me-2 text-primary"></i>Pilih Lama Sewa
+            </h5>
+          </div>
+          <div class="card-body p-3">
+            <p class="text-dark fw-medium small mb-3">
+              Pilih salah satu paket durasi yang sesuai dengan agenda santri:
+            </p>
+
+            <!-- Container Opsi Paket Dinamis -->
+            <div id="paketOpsiContainer" class="mb-4">
+              <!-- Rendered via JS -->
+            </div>
+
+            <!-- Ketentuan Pembayaran -->
+            <div class="callout-payment-ios mb-4">
+              <h6 class="fw-bolder text-dark mb-1">
+                <i class="bi bi-wallet2 me-1" style="color: #00d2d3;"></i> Pembayaran di Akhir
+              </h6>
+              <div class="text-dark small">
+                Biaya sewa pokok dan denda (bila ada keterlambatan lewat 15 menit) diselesaikan di akhir ketika pengembalian barang kepada admin.
+              </div>
+            </div>
+
+            <!-- Tombol Aksi iOS Royal Blue (Single Action Button) -->
+            <div class="d-grid gap-2">
+              <button type="button" class="btn btn-ios-primary btn-lg py-3 shadow-sm fw-bold" id="btnAjukanSewa">
+                Lanjut Isi Data Diri <i class="bi bi-arrow-right ms-1"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer METAHATI Bersih iOS Glass -->
+  <footer class="footer-simple navbar-ios-glass mt-5">
+    <div class="container text-center">
+      <h6 class="fw-bold mb-0 fs-6 text-dark">
+        <span class="gradient-text-metahati">METAHATI</span> &bull; Ma'had Aly Amtsilati
+      </h6>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+  <script src="./dist/js/adminlte.min.js"></script>
+  <script src="./js/rental-logic.js?v=2.5"></script>
+
+  <script>
+    let currentAsset = null;
+    let selectedPaket = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      let assetId = urlParams.get("id");
+
+      if (!assetId) {
+        const stored = ambilDataBooking();
+        if (stored && stored.asetId) {
+          assetId = stored.asetId;
+        } else {
+          assetId = KATALOG_ASET[0].id;
+        }
+      }
+
+      currentAsset = cariAset(assetId);
+      if (!currentAsset) {
+        alert("Aset tidak ditemukan. Kembali ke katalog.");
+        window.location.href = "1-katalog.html";
+        return;
+      }
+
+      document.getElementById("itemNama").innerText = currentAsset.nama;
+      document.getElementById("itemKategori").innerText = currentAsset.kategoriLabel;
+      document.getElementById("itemDeskripsi").innerText = currentAsset.deskripsi;
+      
+      const itemImg = document.getElementById("itemImg");
+      const iconFallback = document.getElementById("itemIconFallback");
+      if (currentAsset.gambar) {
+        itemImg.src = currentAsset.gambar;
+        itemImg.style.display = "block";
+        iconFallback.style.display = "none";
+      } else {
+        itemImg.style.display = "none";
+        iconFallback.style.display = "flex";
+      }
+      document.getElementById("itemIcon").className = `bi ${currentAsset.ikon}`;
+
+      const kelengkapanList = document.getElementById("kelengkapanList");
+      kelengkapanList.innerHTML = "";
+      currentAsset.kelengkapan.forEach(kel => {
+        const div = document.createElement("div");
+        div.className = "checklist-item-ios";
+        div.innerHTML = `<i class="bi bi-check-circle-fill me-2" style="color: #0066ff;"></i> <span class="text-dark fw-semibold">${kel}</span>`;
+        kelengkapanList.appendChild(div);
+      });
+
+      // Sinkronkan data riwayat booking dari server jika ada
+      if (typeof ambilRiwayatBookingAsync === "function") {
+        try {
+          await ambilRiwayatBookingAsync();
+        } catch (e) {}
+      }
+
+      const stokTotal = Math.max(1, parseInt(currentAsset.stokTotal || 1));
+      const statusBadge = document.getElementById("itemStatus");
+      if (statusBadge) {
+        statusBadge.className = `badge badge-available badge-ios-glass px-3 py-1 rounded-pill`;
+        statusBadge.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Siap Sewa`;
+      }
+
+      const itemStokTeks = document.getElementById("itemStokTeks");
+      const itemStokBadge = document.getElementById("itemStokBadge");
+      if (itemStokTeks) {
+        itemStokTeks.innerText = `${stokTotal} Unit Inventaris`;
+      }
+      if (itemStokBadge) {
+        itemStokBadge.className = `badge bg-primary text-white rounded-pill px-2 py-1`;
+        itemStokBadge.innerText = `${stokTotal} Unit`;
+      }
+
+      // Render Jadwal Pemakaian Aktif / Informatif
+      const allRiwayat = (typeof ambilRiwayatBooking === "function" ? ambilRiwayatBooking() : []);
+      const nowMs = Date.now();
+      const activeBookings = allRiwayat.filter(b => {
+        if (b.asetId !== currentAsset.id) return false;
+        if (b.status !== "active" && b.status !== "booked") return false;
+        const bEndRaw = b.waktuSelesaiRaw || b.waktuSelesai;
+        if (!bEndRaw) return true;
+        const bEnd = new Date(bEndRaw).getTime();
+        if (isNaN(bEnd)) return true;
+        return bEnd + (30 * 60 * 1000) >= nowMs;
+      });
+
+      const kotakJadwal = document.getElementById("kotakJadwalAset");
+      if (kotakJadwal) {
+        if (activeBookings.length > 0) {
+          let listHtml = "";
+          activeBookings.forEach(b => {
+            const bEndRaw = b.waktuSelesaiRaw || b.waktuSelesai;
+            const bEnd = new Date(bEndRaw).getTime();
+            const readyTime = !isNaN(bEnd)
+              ? new Date(bEnd + 30 * 60 * 1000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':') + ' WIB'
+              : 'Selesai';
+            listHtml += `
+              <li class="py-1 border-bottom border-danger-subtle d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+                <span><i class="bi bi-clock-fill text-danger me-1"></i> Terpakai: <strong>${b.waktuAmbil || '-'}</strong> s/d <strong>${b.waktuSelesai || '-'}</strong></span>
+                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill mt-1 mt-sm-0">Tersedia kembali: ${readyTime}</span>
+              </li>`;
+          });
+
+          kotakJadwal.innerHTML = `
+            <div class="p-3 rounded-3 border shadow-sm" style="background: rgba(254, 242, 242, 0.95); border-color: rgba(239, 68, 68, 0.3) !important;">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-calendar-check-fill text-danger fs-5"></i>
+                <strong class="text-danger small">Jadwal Pemakaian Terdata:</strong>
+              </div>
+              <p class="small text-dark mb-2">
+                Unit ini sudah memiliki jadwal sewa aktif. Anda tetap dapat memesan untuk jam sebelum atau sesudahnya (butuh jeda persiapan 30 menit):
+              </p>
+              <ul class="list-unstyled mb-2 small text-dark">
+                ${listHtml}
+              </ul>
+              <div class="small text-secondary">
+                <i class="bi bi-info-circle me-1 text-primary"></i> <em>Silakan pilih paket & atur jam yang tidak berbenturan pada laman data diri berikutnya.</em>
+              </div>
+            </div>`;
+        } else {
+          kotakJadwal.innerHTML = `
+            <div class="p-3 rounded-3 border" style="background: rgba(240, 253, 244, 0.95); border-color: rgba(34, 197, 94, 0.3) !important;">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <div>
+                  <strong class="text-success small d-block">Jadwal Kosong & Siap Dipesan:</strong>
+                  <span class="small text-dark">Belum ada booking aktif untuk alat ini. Anda dapat bebas menentukan jadwal sewa.</span>
+                </div>
+              </div>
+            </div>`;
+        }
+      }
+
+      // Tombol pemesanan selalu aktif untuk memproses jadwal sewa
+      const btnAjukan = document.getElementById("btnAjukanSewa");
+      if (btnAjukan) {
+        btnAjukan.disabled = false;
+        btnAjukan.innerHTML = `Lanjut Isi Data Diri <i class="bi bi-arrow-right ms-1"></i>`;
+        btnAjukan.classList.remove("opacity-75");
+      }
+
+      renderPaketOpsi();
+
+      document.getElementById("btnAjukanSewa").addEventListener("click", () => {
+        if (!selectedPaket) {
+          alert("Silakan pilih paket sewa terlebih dahulu.");
+          return;
+        }
+
+        simpanDataBooking({
+          asetId: currentAsset.id,
+          namaBarang: currentAsset.nama,
+          kategori: currentAsset.kategoriLabel || currentAsset.kategori,
+          kategoriKey: currentAsset.kategori,
+          adminPic: currentAsset.adminPic || (currentAsset.kategori === "kamera" || currentAsset.kategori === "video" ? "admin1" : "admin2"),
+          paketId: selectedPaket.id,
+          paketJam: selectedPaket.jam,
+          paketLabel: selectedPaket.label,
+          biayaSewa: selectedPaket.tarif
+        });
+
+        window.location.href = "3-datadiri.html";
+      });
+    });
+
+    function renderPaketOpsi() {
+      const container = document.getElementById("paketOpsiContainer");
+      container.innerHTML = "";
+
+      const stored = ambilDataBooking();
+      const defaultPaketId = (stored && stored.paketId) ? stored.paketId : currentAsset.paketOpsi[0].id;
+
+      currentAsset.paketOpsi.forEach((p, idx) => {
+        const isSelected = p.id === defaultPaketId || (!selectedPaket && idx === 0);
+        if (isSelected) {
+          selectedPaket = p;
+        }
+
+        const card = document.createElement("div");
+        card.className = `package-card-ios mb-3 ${isSelected ? 'selected' : ''}`;
+        card.id = `card-paket-${p.id}`;
+        card.onclick = () => pilihPaketOpsi(p);
+
+        card.innerHTML = `
+          <input type="radio" name="paketRadio" id="radio-paket-${p.id}" value="${p.id}" ${isSelected ? 'checked' : ''} />
+          <div class="d-flex align-items-center">
+            <div class="me-3">
+              <span class="badge package-hours-badge fs-5 p-2 rounded-3">${p.jam} Jam</span>
+            </div>
+            <div class="flex-grow-1 pe-4">
+              <h6 class="fw-bolder mb-1 text-dark" style="letter-spacing: -0.3px;">${p.label}</h6>
+              <div class="text-dark small d-block" style="color: #475569 !important;">${p.desc || ''}</div>
+              <span class="fw-bolder fs-6 mt-1 d-inline-block" style="color: #0066ff;">${formatRupiah(p.tarif)}</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function pilihPaketOpsi(paketObj) {
+      selectedPaket = paketObj;
+      document.querySelectorAll(".package-card-ios").forEach(c => c.classList.remove("selected"));
+      
+      const targetCard = document.getElementById(`card-paket-${paketObj.id}`);
+      if (targetCard) {
+        targetCard.classList.add("selected");
+        const radio = targetCard.querySelector("input[type='radio']");
+        if (radio) radio.checked = true;
+      }
+    }
+  </script>
+</body>
+</html>

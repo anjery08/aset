@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="id" data-bs-theme="light" data-lte-color-mode="off">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice Bukti Sewa Alat | Aset Ma'had Aly Amtsilati</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+  
+  <!-- AdminLTE & Custom CSS -->
+  <link rel="stylesheet" href="./dist/css/adminlte.min.css" />
+  <link rel="stylesheet" href="./css/custom.css" />
+
+  <style>
+    /* Styling khusus Invoice & Cetak PDF */
+    .invoice-card {
+      max-width: 820px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      padding: 2.25rem;
+      overflow: hidden;
+    }
+
+    .invoice-header-border {
+      border-bottom: 3px double #cbd5e1;
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .table-invoice th {
+      background-color: #f1f5f9 !important;
+      color: #0f172a !important;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border: 1px solid #cbd5e1 !important;
+    }
+
+    .table-invoice td {
+      border: 1px solid #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+
+    .table-info-invoice {
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .table-info-invoice td {
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      vertical-align: top;
+    }
+
+    /* Responsivitas Layar HP & Tablet */
+    @media (max-width: 767.98px) {
+      .invoice-card {
+        padding: 1.25rem 0.85rem !important;
+        border-radius: 0.75rem !important;
+        margin: 0 auto;
+      }
+      .invoice-header-border {
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+      }
+      .logo-inv-img {
+        max-height: 44px !important;
+      }
+      .table-invoice th, .table-invoice td {
+        font-size: 0.82rem;
+        padding: 0.4rem 0.5rem;
+      }
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0.8cm 1cm;
+      }
+      html, body {
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 9.5pt !important;
+        color: #000000 !important;
+      }
+      .no-print, .navbar, .footer-simple {
+        display: none !important;
+      }
+      .container {
+        padding: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+      }
+      .invoice-card {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .invoice-header-border {
+        padding-bottom: 6px !important;
+        margin-bottom: 10px !important;
+      }
+      .logo-inv-img {
+        max-height: 44px !important;
+      }
+      .row.g-3.mb-4 {
+        margin-bottom: 8px !important;
+      }
+      .col-print-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        width: 50% !important;
+        float: left !important;
+      }
+      .table-sm td, .table-sm th {
+        padding: 2px 4px !important;
+        font-size: 8pt !important;
+      }
+      .table-invoice th, .table-invoice td {
+        padding: 4px 6px !important;
+        font-size: 8.5pt !important;
+      }
+      .inv-rules-box {
+        padding: 6px 10px !important;
+        margin-bottom: 8px !important;
+        font-size: 7.8pt !important;
+        line-height: 1.35 !important;
+      }
+      .inv-ttd-row {
+        margin-top: 10px !important;
+        padding-top: 0 !important;
+      }
+      .inv-ttd-spacer {
+        height: 38px !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-white">
+
+  <!-- Navbar (Tidak dicetak di PDF) -->
+  <nav class="navbar navbar-expand-lg navbar-amtsilati sticky-top no-print mb-3">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="1-katalog.html">
+        <img src="img/logo-metahati.png" alt="METAHATI - Ma'had Aly Amtsilati" class="logo-nav-img" />
+      </a>
+    </div>
+  </nav>
+
+  <!-- Kontainer Invoice -->
+  <div class="container pb-5">
+    
+    <!-- Action Bar Di Atas Invoice (No Print) -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3 no-print" style="max-width: 820px; margin: 0 auto;">
+      <a href="1-katalog.html" class="text-secondary text-decoration-none small fw-bold">
+        <i class="bi bi-chevron-left me-1"></i> Kembali ke Beranda
+      </a>
+      <div class="d-flex flex-wrap gap-2">
+        <a href="#" id="btnKeStatus" class="btn btn-sm btn-outline-primary fw-bold flex-grow-1 flex-sm-grow-0">
+          <i class="bi bi-clock-history me-1"></i> Pantau Sisa Waktu
+        </a>
+        <button type="button" id="btnUnduhPdf" class="btn btn-sm btn-metahati fw-bold shadow-sm flex-grow-1 flex-sm-grow-0" onclick="unduhPdfLangsung()">
+          <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Unduh File PDF
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary fw-bold flex-grow-1 flex-sm-grow-0" onclick="window.print()" title="Cetak ke Printer">
+          <i class="bi bi-printer me-1"></i> Cetak
+        </button>
+      </div>
+    </div>
+
+    <!-- Halaman Dokumen Invoice -->
+    <div class="invoice-card bg-white text-dark">
+      
+      <!-- Kop Surat Resmi -->
+      <div class="row invoice-header-border align-items-center g-3">
+        <div class="col-12 col-sm-6 text-center text-sm-start">
+          <img src="img/logo-metahati.png" alt="METAHATI - Ma'had Aly Amtsilati" class="logo-inv-img img-fluid" style="max-height: 52px;" />
+        </div>
+        <div class="col-12 col-sm-6 text-center text-sm-end">
+          <h4 class="fw-bolder mb-1" style="color: #0066ff;">BUKTI SEWA ALAT</h4>
+          <span class="badge text-white px-3 py-1 fs-6 fw-bold mb-1 d-inline-block" style="background-color: #7928ca;" id="invNomor">
+            INV-0000
+          </span>
+          <div class="small text-secondary fw-semibold" id="invTanggalCetak">
+            Tanggal Cetak: -
+          </div>
+        </div>
+      </div>
+
+      <!-- Informasi Penyewa & Jadwal -->
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-print-6">
+          <div class="p-3 rounded bg-white border h-100" style="border: 1.5px solid rgba(0, 102, 255, 0.2) !important;">
+            <h6 class="fw-bold mb-2 text-dark border-bottom pb-1">
+              <i class="bi bi-person-fill me-1" style="color: #0066ff;"></i> Identitas Penyewa
+            </h6>
+            <table class="table table-sm table-borderless table-info-invoice mb-0 small">
+              <tr>
+                <td class="text-secondary fw-bold p-1" style="width: 38%;">Nama Lengkap</td>
+                <td class="fw-bolder text-dark p-1" id="invNama">-</td>
+              </tr>
+              <tr>
+                <td class="text-secondary fw-bold p-1">No HP / WA</td>
+                <td class="text-dark p-1 fw-bold" id="invNoWa">-</td>
+              </tr>
+              <tr>
+                <td class="text-secondary fw-bold p-1">Komunitas</td>
+                <td class="text-dark p-1" id="invKomunitas">-</td>
+              </tr>
+              <tr>
+                <td class="text-secondary fw-bold p-1">Asrama/Dept</td>
+                <td class="text-dark p-1" id="invDepartemen">-</td>
+              </tr>
+              <tr>
+                <td class="text-secondary fw-bold p-1">Alamat</td>
+                <td class="text-dark p-1" id="invAlamat">-</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-print-6">
+          <div class="p-3 rounded bg-white border h-100" style="border: 1.5px solid rgba(214, 0, 153, 0.2) !important;">
+            <h6 class="fw-bold mb-2 text-dark border-bottom pb-1">
+              <i class="bi bi-calendar-check me-1" style="color: #d60099;"></i> Jadwal Pengambilan & Pengembalian
+            </h6>
+            <table class="table table-sm table-borderless table-info-invoice mb-0 small">
+              <tr>
+                <td class="text-secondary fw-bold p-1" style="width: 38%;">Waktu Ambil</td>
+                <td class="fw-bold text-dark p-1" id="invWaktuAmbil">-</td>
+              </tr>
+              <tr>
+                <td class="text-secondary fw-bold p-1">Batas Kembali</td>
+                <td class="fw-bold p-1" style="color: #d60099 !important;" id="invWaktuKembali">-</td>
+              </tr>
+              <tr>
+                <td class="text-secondary fw-bold p-1">Toleransi</td>
+                <td class="text-success p-1 fw-bold">Maksimal 15 Menit</td>
+              </tr>
+              <tr>
+                <td class="text-secondary fw-bold p-1">Denda Lewat</td>
+                <td class="text-danger p-1 fw-bold">Rp 10.000 / Jam (Kelipatan)</td>
+              </tr>
+              <tr>
+                <td class="text-secondary fw-bold p-1">Syarat Jaminan</td>
+                <td class="text-primary p-1 fw-bold">KTP / KTS / KTM Asli</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabel Rincian Unit Sewa -->
+      <div class="table-responsive mb-4">
+        <table class="table table-bordered table-invoice align-middle mb-0" style="min-width: 480px;">
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 45px;">No</th>
+              <th>Deskripsi Barang & Kelengkapan</th>
+              <th class="text-center" style="width: 120px;">Paket</th>
+              <th class="text-end" style="width: 150px;">Biaya Pokok</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-center fw-bold">1</td>
+              <td>
+                <strong class="fs-6 text-dark d-block" id="invNamaBarang">-</strong>
+                <small class="text-secondary">Peralatan Multimedia resmi inventaris Ma'had Aly Amtsilati</small>
+              </td>
+              <td class="text-center">
+                <span class="badge text-white px-2 py-1 fw-bold" style="background-color: #0066ff;" id="invPaket">-</span>
+              </td>
+              <td class="text-end fw-bold fs-6 text-dark" id="invBiayaPokok">
+                Rp 0
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr style="background-color: #f8fafc;" id="rowBiayaPokok">
+              <th colspan="3" class="text-end fw-bold">Biaya Sewa Pokok:</th>
+              <th class="text-end fw-bold" id="invBiayaPokokFooter">Rp 0</th>
+            </tr>
+            <tr style="background-color: #fff1f2;" id="rowDenda" class="d-none">
+              <th colspan="3" class="text-end text-danger fw-bold">Denda Keterlambatan:</th>
+              <th class="text-end text-danger fw-bold" id="invDendaFooter">+ Rp 0</th>
+            </tr>
+            <tr style="background-color: #f0fdf4;" id="rowTotalBayar">
+              <th colspan="3" class="text-end fw-bolder fs-6" id="labelTotalBayar">TOTAL BIAYA SEWA:</th>
+              <th class="text-end fw-bolder fs-5 text-primary" id="invTotalBayar">Rp 0</th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Peraturan, Kesepakatan & Pernyataan Resmi -->
+      <div class="p-2 p-sm-3 rounded bg-white border mb-3 small text-secondary inv-rules-box" style="line-height: 1.45; border: 1.5px solid rgba(0, 102, 255, 0.2) !important;">
+        <strong class="text-dark d-block mb-1">
+          <i class="bi bi-shield-check me-1" style="color: #0066ff;"></i> Kesepakatan & Tanggung Jawab Penyewa:
+        </strong>
+        <p class="mb-1 text-dark fst-italic" style="font-size: 0.82rem;">
+          "Dengan mengirimkan format ini, saya menyatakan bertanggung jawab penuh atas keamanan alat, sanggup mengoperasikan alat dengan benar, dan bersedia membayar denda sesuai ketentuan jika terjadi keterlambatan atau kerusakan."
+        </p>
+        <div class="text-secondary" style="font-size: 0.76rem;">
+          &bull; Biaya sewa pokok diselesaikan saat pengembalian unit &bull; Toleransi kembali 15 menit, keterlambatan dikenakan denda Rp 10.000 / Jam (kelipatan) &bull; Jaminan KTP / KTS / KTM Asli.
+        </div>
+      </div>
+
+      <!-- Kolom Tanda Tangan -->
+      <div class="row text-center inv-ttd-row mt-3 pt-1">
+        <div class="col-6">
+          <small class="text-secondary d-block mb-2">Penyewa / Peminjam,</small>
+          <div class="inv-ttd-spacer" style="height: 38px;"></div>
+          <strong class="text-dark d-block border-top pt-1 mx-auto small text-truncate" style="max-width: 190px;" id="invTtdNama">
+            (...........................)
+          </strong>
+        </div>
+        <div class="col-6">
+          <small class="text-secondary d-block mb-2">Pengurus METAHATI,</small>
+          <div class="inv-ttd-spacer" style="height: 38px;"></div>
+          <strong class="text-dark d-block border-top pt-1 mx-auto small" style="max-width: 190px;">
+            ( METAHATI )
+          </strong>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer METAHATI Bersih (No Print) -->
+  <footer class="footer-simple mt-5 no-print">
+    <div class="container text-center">
+      <h6 class="fw-bold mb-0 fs-6 text-dark">
+        <span class="gradient-text-metahati">METAHATI</span> &bull; Ma'had Aly Amtsilati
+      </h6>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="./js/rental-logic.js?v=2.5"></script>
+  <script>
+    async function unduhPdfLangsung() {
+      const el = document.querySelector(".invoice-card");
+      if (!el) {
+        window.print();
+        return;
+      }
+      const bId = (document.getElementById("invNomor")?.innerText || "INV").split(" ")[0].trim();
+      const rawNama = (document.getElementById("invNama")?.innerText || "Santri").trim();
+      const namaBersih = rawNama.replace(/[^a-zA-Z0-9]/g, '_');
+      const namaFile = `Bukti-Sewa-${bId}-${namaBersih}.pdf`;
+
+      const btn = document.getElementById("btnUnduhPdf");
+      let originalHtml = "";
+      if (btn) {
+        originalHtml = btn.innerHTML;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status"></span> Membuat PDF...`;
+        btn.disabled = true;
+      }
+
+      const opt = {
+        margin: [6, 6, 6, 6],
+        filename: namaFile,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+      };
+
+      try {
+        if (typeof html2pdf !== "undefined") {
+          await html2pdf().set(opt).from(el).save();
+        } else {
+          window.print();
+        }
+      } catch (err) {
+        console.error("Gagal generate PDF via html2pdf, membuka dialog print:", err);
+        window.print();
+      } finally {
+        if (btn) {
+          btn.innerHTML = originalHtml;
+          btn.disabled = false;
+        }
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      let booking = null;
+      if (typeof muatBookingDariQuery === "function") {
+        booking = await muatBookingDariQuery();
+      } else {
+        const urlParams = new URLSearchParams(window.location.search);
+        const dataParam = urlParams.get("data");
+        if (dataParam) booking = decodeBookingFromParam(dataParam);
+        if (!booking) booking = ambilDataBooking();
+      }
+
+      if (!booking || !booking.namaBarang) {
+        alert("Data sewa tidak ditemukan. Silakan buka melalui tautan WhatsApp resmi atau buat permohonan baru.");
+        window.location.href = "1-katalog.html";
+        return;
+      }
+
+      const bId = booking.bookingId || "INV-AMTSILATI";
+
+      // PROTEKSI TRANSAKSI:
+      // Invoice resmi hanya diterbitkan setelah pengembalian unit selesai diverifikasi oleh pengurus
+      const isSelesai = booking.status === "completed";
+      const isAdmin = (typeof cekSudahLoginAdmin === "function") ? cekSudahLoginAdmin() : false;
+
+      if (!isSelesai && !isAdmin) {
+        alert("PEMBERITAHUAN:\n\nInvoice resmi / Bukti pelunasan hanya dapat diterbitkan setelah peralatan resmi dikembalikan dan transaksi diselesaikan oleh pengurus inventaris.\n\nAnda akan dialihkan ke halaman pemantauan status sewa.");
+        window.location.replace(`status.html?id=${encodeURIComponent(bId)}`);
+        return;
+      }
+
+      // Populate Data
+      document.getElementById("invNomor").innerText = bId;
+      document.getElementById("invTanggalCetak").innerText = "Tanggal Cetak: " + new Date().toLocaleDateString("id-ID", {
+        day: '2-digit', month: 'long', year: 'numeric'
+      });
+
+      if (!isSelesai && isAdmin) {
+        const badgeDraft = document.createElement("span");
+        badgeDraft.className = "badge bg-warning text-dark px-3 py-1 fw-bold ms-2";
+        badgeDraft.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> DRAFT (SEWA BELUM SELESAI)';
+        const elNomor = document.getElementById("invNomor");
+        if (elNomor && elNomor.parentElement) {
+          elNomor.parentElement.appendChild(badgeDraft);
+        }
+      }
+
+      let namaTampil = booking.nama || "-";
+      if (namaTampil.includes('***')) {
+        const cur = typeof ambilDataBooking === "function" ? ambilDataBooking() : null;
+        if (cur && cur.nama && !cur.nama.includes('***')) {
+          namaTampil = cur.nama;
+          booking.nama = cur.nama;
+        } else {
+          namaTampil = namaTampil.replace(/\*+/g, '').trim();
+        }
+      }
+      namaTampil = namaTampil.replace(/\*+/g, '').trim();
+      if (!namaTampil) namaTampil = "-";
+      document.getElementById("invNama").innerText = namaTampil;
+      document.getElementById("invTtdNama").innerText = `( ${namaTampil} )`;
+      document.getElementById("invNoWa").innerText = typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(booking.noWa) : (booking.noWa || "-");
+      document.getElementById("invKomunitas").innerText = booking.komunitas || "-";
+      document.getElementById("invDepartemen").innerText = booking.departemen || "-";
+      document.getElementById("invAlamat").innerText = booking.alamat || "-";
+
+      let waktuAmbilTeks = booking.waktuAmbil;
+      if (!waktuAmbilTeks && booking.waktuAmbilRaw && typeof formatWaktuIndo === "function") {
+        waktuAmbilTeks = formatWaktuIndo(booking.waktuAmbilRaw) + " WIB";
+      }
+      document.getElementById("invWaktuAmbil").innerText = waktuAmbilTeks || "-";
+
+      let waktuKembaliTeks = booking.waktuSelesai;
+      if (!waktuKembaliTeks && booking.waktuSelesaiRaw && typeof formatWaktuIndo === "function") {
+        waktuKembaliTeks = formatWaktuIndo(booking.waktuSelesaiRaw) + " WIB";
+      }
+      document.getElementById("invWaktuKembali").innerText = waktuKembaliTeks || "-";
+
+      document.getElementById("invNamaBarang").innerText = booking.namaBarang;
+      const paketLabel = booking.paketLabel || (booking.paketJam + " Jam");
+      document.getElementById("invPaket").innerText = paketLabel;
+      const biayaPokok = parseInt(booking.biayaSewa || 0);
+      let denda = 0;
+      
+      // Jika transaksi sudah selesai (completed) atau denda sudah ditetapkan secara eksplisit oleh admin:
+      // Selalu prioritaskan nilai denda final yang tercatat (bisa 0 jika dibebaskan denda / tepat waktu)
+      if (typeof booking.denda !== "undefined" && booking.denda !== null && !isNaN(parseInt(booking.denda))) {
+        denda = parseInt(booking.denda);
+      } else if (typeof booking.dendaKeterlambatan !== "undefined" && booking.dendaKeterlambatan !== null && !isNaN(parseInt(booking.dendaKeterlambatan))) {
+        denda = parseInt(booking.dendaKeterlambatan) + parseInt(booking.dendaKerusakan || 0);
+      } else if (booking.status !== "completed" && booking.waktuDikembalikan && booking.waktuSelesaiRaw && typeof hitungDenda === "function") {
+        const kalkulasi = hitungDenda(booking.waktuSelesaiRaw, booking.waktuDikembalikan);
+        if (kalkulasi && kalkulasi.totalDenda > 0) denda = kalkulasi.totalDenda;
+      }
+
+      const isDinasResmi = booking.isDinas === true || (biayaPokok === 0 && !!booking.biayaSewaAsli);
+      if (isDinasResmi) {
+        document.getElementById("invBiayaPokok").innerHTML = `<span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-6">Gratis (Dinas Resmi)</span>`;
+        document.getElementById("invBiayaPokokFooter").innerHTML = `<span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-6">Gratis (Dinas Resmi)</span>`;
+      } else {
+        document.getElementById("invBiayaPokok").innerText = formatRupiah(biayaPokok);
+        document.getElementById("invBiayaPokokFooter").innerText = formatRupiah(biayaPokok);
+      }
+
+      const rowDenda = document.getElementById("rowDenda");
+      const labelTotalBayar = document.getElementById("labelTotalBayar");
+      const totalBayarEl = document.getElementById("invTotalBayar");
+      const invDendaFooter = document.getElementById("invDendaFooter");
+
+      if (denda > 0) {
+        if (rowDenda) {
+          rowDenda.classList.remove("d-none");
+          rowDenda.style.backgroundColor = "#fff1f2";
+        }
+        if (invDendaFooter) {
+          invDendaFooter.innerText = `+ ${formatRupiah(denda)}`;
+          invDendaFooter.className = "text-end text-danger fw-bold";
+        }
+        if (labelTotalBayar) labelTotalBayar.innerText = "TOTAL BIAYA PELUNASAN (SEWA + DENDA):";
+        if (totalBayarEl) {
+          totalBayarEl.innerText = formatRupiah(biayaPokok + denda);
+          totalBayarEl.className = "text-end fw-bolder fs-5 text-danger";
+        }
+      } else {
+        if (booking.status === "completed") {
+          if (rowDenda) {
+            rowDenda.classList.remove("d-none");
+            rowDenda.style.backgroundColor = "#f0fdf4";
+          }
+          if (invDendaFooter) {
+            invDendaFooter.innerHTML = `<span class="text-success fw-bold">Rp 0 (Bebas Denda)</span>`;
+            invDendaFooter.className = "text-end text-success fw-bold";
+          }
+          if (labelTotalBayar) labelTotalBayar.innerText = "TOTAL BIAYA PELUNASAN (LUNAS):";
+          if (totalBayarEl) {
+            totalBayarEl.innerHTML = isDinasResmi ? `<span class="text-primary fw-bolder fs-5">Rp 0 (Dinas Resmi)</span>` : formatRupiah(biayaPokok);
+            totalBayarEl.className = "text-end fw-bolder fs-5 text-success";
+          }
+        } else {
+          if (rowDenda) rowDenda.classList.add("d-none");
+          if (labelTotalBayar) labelTotalBayar.innerText = "TOTAL BIAYA SEWA:";
+          if (totalBayarEl) {
+            totalBayarEl.innerHTML = isDinasResmi ? `<span class="text-primary fw-bolder fs-5">Rp 0 (Dinas Resmi)</span>` : formatRupiah(biayaPokok);
+            totalBayarEl.className = "text-end fw-bolder fs-5 text-primary";
+          }
+        }
+      }
+
+      if (booking.status === "completed") {
+        const badgeLunas = document.createElement("span");
+        badgeLunas.className = "badge bg-success text-white px-3 py-1 fw-bold ms-2";
+        badgeLunas.innerHTML = '<i class="bi bi-patch-check-fill me-1"></i> LUNAS / SELESAI';
+        const elNomor = document.getElementById("invNomor");
+        if (elNomor && elNomor.parentElement) {
+          elNomor.parentElement.appendChild(badgeLunas);
+        } else if (elNomor) {
+          elNomor.appendChild(badgeLunas);
+        }
+      }
+
+      // Tombol Pantau Countdown singkat
+      const btnKeStatus = document.getElementById("btnKeStatus");
+      if (btnKeStatus) {
+        btnKeStatus.href = `status.html?id=${encodeURIComponent(bId)}`;
+      }
+
+      // Jika URL memiliki parameter download=1 atau download=pdf, otomatis unduh file PDF hanya jika transaksi sudah selesai
+      const urlParams = new URLSearchParams(window.location.search);
+      if ((urlParams.get("download") === "1" || urlParams.get("download") === "pdf") && isSelesai) {
+        setTimeout(() => {
+          unduhPdfLangsung();
+        }, 800);
+      }
+    });
+  </script>
+</body>
+</html>
+

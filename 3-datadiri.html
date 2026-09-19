@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="id" data-bs-theme="light" data-lte-color-mode="off">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Booking & Penjadwalan | Aset Ma'had Aly Amtsilati</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+  
+  <!-- AdminLTE & Custom CSS -->
+  <link rel="stylesheet" href="./dist/css/adminlte.min.css" />
+  <link rel="stylesheet" href="./css/custom.css" />
+</head>
+<body class="ios-glass-theme">
+  <!-- Navbar iOS Frosted Glass -->
+  <nav class="navbar navbar-expand-lg navbar-ios-glass sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="1-katalog.html">
+        <img src="img/logo-metahati.png" alt="METAHATI - Ma'had Aly Amtsilati" class="logo-nav-img" />
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="container py-4">
+    <!-- Step Progress Bar (iOS Glass Container) -->
+    <div class="ios-stepper-glass">
+      <div class="rental-steps mb-0">
+        <a href="1-katalog.html" class="rental-step-item completed">
+          <div class="step-circle"><i class="bi bi-check-lg"></i></div>
+          <span class="step-title">Pilih Alat</span>
+        </a>
+        <a href="2-detail.html" class="rental-step-item completed">
+          <div class="step-circle"><i class="bi bi-check-lg"></i></div>
+          <span class="step-title">Detail</span>
+        </a>
+        <div class="rental-step-item active">
+          <div class="step-circle">3</div>
+          <span class="step-title">Data Booking</span>
+        </div>
+        <div class="rental-step-item">
+          <div class="step-circle">4</div>
+          <span class="step-title">Kesepakatan</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert / Notice (iOS Glass Callout) -->
+    <div class="callout-payment-ios d-flex align-items-center mb-4">
+      <i class="bi bi-pencil-square fs-2 me-3" style="color: #0066ff;"></i>
+      <div>
+        <strong class="text-dark d-block mb-1">Formulir Booking Sewa Alat Multimedia:</strong>
+        <span class="text-dark">Lengkapi identitas peminjam dengan benar. Batas waktu kembali akan terhitung secara otomatis saat Anda menentukan waktu ambil.</span>
+      </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      <div class="col-lg-10">
+        <div class="card card-ios-detail shadow-sm border-0 p-3">
+          <div class="card-header bg-transparent py-3 border-bottom-0">
+            <h5 class="fw-bolder mb-0 text-dark" style="letter-spacing: -0.3px;">
+              <i class="bi bi-person-lines-fill me-2" style="color: #0066ff;"></i>Formulir Sewa Alat
+            </h5>
+          </div>
+          <div class="card-body p-3">
+            <form id="formPeminjam" onsubmit="handleFormSubmit(event)">
+              
+              <!-- Bagian 1: Ringkasan Aset Terpilih (Read-Only) -->
+              <h6 class="text-dark fw-bold text-uppercase small mb-3" style="letter-spacing: 0.3px;">
+                <i class="bi bi-box-seam me-1" style="color: #0066ff;"></i> 1. Alat yang Dipilih
+              </h6>
+              
+              <div class="row g-3 p-3 mb-4 rounded-3 border" style="background: rgba(248, 250, 252, 0.85); border-color: rgba(0, 102, 255, 0.15) !important;">
+                <div class="col-md-5">
+                  <label class="form-label text-dark small fw-bold">Barang yang Disewa</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-camera" style="color: #0066ff;"></i></span>
+                    <input type="text" id="roNamaBarang" class="form-control bg-white fw-bold text-dark" readonly value="-" />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label text-dark small fw-bold">Lama Sewa / Paket</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-stopwatch" style="color: #0066ff;"></i></span>
+                    <input type="text" id="roPaketJam" class="form-control bg-white fw-bold" style="color: #0066ff;" readonly value="-" />
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label text-dark small fw-bold">Tarif Sewa Pokok</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-cash" style="color: #00d2d3;"></i></span>
+                    <input type="text" id="roBiayaSewa" class="form-control bg-white fw-bold text-success" readonly value="-" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bagian 2: Identitas Peminjam Sesuai Format Amtsilati -->
+              <h6 class="text-dark fw-bold text-uppercase small mb-3" style="letter-spacing: 0.3px;">
+                <i class="bi bi-person-vcard me-1" style="color: #7928ca;"></i> 2. Data Diri Peminjam
+              </h6>
+
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <label for="inputNama" class="form-label fw-bold text-dark">Nama Lengkap <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-person text-secondary"></i></span>
+                    <input type="text" class="form-control" id="inputNama" placeholder="Nama lengkap santri peminjam" required />
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="inputNoWa" class="form-label fw-bold text-dark">No HP / WhatsApp Aktif <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-whatsapp text-success"></i></span>
+                    <input type="tel" class="form-control" id="inputNoWa" placeholder="Contoh: 088123456789" required />
+                  </div>
+                  <div class="form-text text-dark">Pastikan nomor aktif untuk konfirmasi dengan pengurus.</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="inputKomunitas" class="form-label fw-bold text-dark">Asal Media / Komunitas <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-camera-reels text-secondary"></i></span>
+                    <input type="text" class="form-control" id="inputKomunitas" placeholder="Contoh: Media Pusat / Media Asrama" required />
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="inputDepartemen" class="form-label fw-bold text-dark">Asrama / Departemen <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-building text-secondary"></i></span>
+                    <input type="text" class="form-control" id="inputDepartemen" placeholder="Contoh: Illiyyin / Pusat" required />
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <label for="inputAlamat" class="form-label fw-bold text-dark">Alamat Penyewa <span class="text-danger">*</span></label>
+                  <textarea class="form-control" id="inputAlamat" rows="2" placeholder="Contoh: Jepara, Kudus, Pati, Semarang, atau kota/daerah asal penyewa..." required></textarea>
+                </div>
+
+                <div class="col-12">
+                  <label for="inputKeperluan" class="form-label fw-bold text-dark">
+                    Tujuan Penggunaan <span class="badge bg-secondary-subtle text-secondary py-0 px-2 fw-normal">Opsional</span>
+                  </label>
+                  <input type="text" class="form-control" id="inputKeperluan" placeholder="Contoh: Liputan Pengajian, Tugas Mandiri, Dokumentasi Acara, dll. (Boleh dikosongkan)" />
+                  <div class="form-text text-muted small">Tuliskan tujuan/keperluan sewa secara singkat (bebas ditulis sendiri, boleh dikosongkan).</div>
+                </div>
+              </div>
+
+              <!-- Bagian 3: Penjadwalan Waktu Sewa Sesuai Amtsilati -->
+              <h6 class="text-dark fw-bold text-uppercase small mb-3" style="letter-spacing: 0.3px;">
+                <i class="bi bi-clock-history me-1" style="color: #0066ff;"></i> 3. Jadwal Sewa (Waktu Ambil & Kembali)
+              </h6>
+
+              <div class="row g-3 mb-4 p-3 rounded-3 border shadow-sm" style="background: rgba(248, 250, 252, 0.85); border-color: rgba(0, 102, 255, 0.15) !important;">
+                <!-- Waktu Ambil -->
+                <div class="col-md-6">
+                  <label for="inputWaktuAmbil" class="form-label fw-bold text-dark">
+                    Waktu Ambil: (Tgl / Bulan / Jam) <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text text-white" style="background-color: #0066ff;"><i class="bi bi-calendar-event"></i></span>
+                    <input type="datetime-local" class="form-control form-control-lg fw-bold text-dark bg-white" id="inputWaktuAmbil" required />
+                  </div>
+                  <div class="form-text text-dark">Pilih rencana tanggal dan jam ambil barang.</div>
+                </div>
+
+                <!-- Waktu Kembali (Otomatis) -->
+                <div class="col-md-6">
+                  <label for="outputWaktuSelesai" class="form-label fw-bold text-dark">
+                    Waktu Kembali: (Tgl / Bulan / Jam) - Otomatis
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text text-white" style="background-color: #0066ff;"><i class="bi bi-calendar-check"></i></span>
+                    <input type="text" class="form-control form-control-lg bg-white fw-bold text-dark" id="outputWaktuSelesai" readonly placeholder="Otomatis terhitung dari paket" />
+                  </div>
+                  <div class="form-text text-dark">
+                    Dihitung otomatis: Jam Ambil + Durasi Paket Sewa
+                  </div>
+                </div>
+
+                <!-- Banner Real-Time Validasi Bentrok Jadwal -->
+                <div class="col-12 mt-2" id="containerStatusJadwal"></div>
+              </div>
+
+              <!-- Jaminan Kartu Pengingat (iOS Glass Callout) -->
+              <div class="p-3 mb-4 callout-rules-ios">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-card-heading fs-3 me-3" style="color: #d60099;"></i>
+                  <div class="small text-dark">
+                    <strong class="text-dark">Wajib Jaminan Identitas Asli:</strong> Saat serah terima fisik barang nanti, penyewa wajib menyerahkan <strong>KTP / KTS / KTM Asli</strong> kepada pengurus inventaris.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center pt-3 border-top" style="border-color: rgba(0, 102, 255, 0.12) !important;">
+                <a href="2-detail.html" class="btn-back-ios px-4 py-2">
+                  <i class="bi bi-chevron-left me-1"></i> Kembali Pilih Paket
+                </a>
+                <button type="submit" id="btnSubmitForm" class="btn btn-ios-primary btn-lg shadow-sm px-4 fw-bold">
+                  Lanjut ke Kesepakatan <i class="bi bi-arrow-right ms-1"></i>
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer METAHATI Bersih iOS Glass -->
+  <footer class="footer-simple navbar-ios-glass mt-5">
+    <div class="container text-center">
+      <h6 class="fw-bold mb-0 fs-6 text-dark">
+        <span class="gradient-text-metahati">METAHATI</span> &bull; Ma'had Aly Amtsilati
+      </h6>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+  <script src="./dist/js/adminlte.min.js"></script>
+  <script src="./js/rental-logic.js?v=2.5"></script>
+
+  <script>
+    let currentBooking = {};
+    let waktuSelesaiCalculated = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      currentBooking = (typeof ambilDataBooking === "function" ? ambilDataBooking() : null) || {};
+
+      // Cek apakah ada param ?id= di URL untuk pemulihan otomatis
+      const urlParams = new URLSearchParams(window.location.search);
+      const idParam = urlParams.get("id");
+      if (idParam && (!currentBooking || !currentBooking.asetId || currentBooking.asetId !== idParam)) {
+        if (typeof cariAset === "function") {
+          const item = cariAset(idParam);
+          if (item) {
+            const defPaket = (item.paketOpsi && item.paketOpsi.length > 0) ? item.paketOpsi[0] : { jam: 12, label: "12 Jam", tarif: 50000 };
+            currentBooking = {
+              ...currentBooking,
+              asetId: item.id,
+              namaBarang: item.nama,
+              kategori: item.kategoriLabel || item.kategori,
+              paketJam: defPaket.jam,
+              paketLabel: defPaket.label,
+              biayaSewa: defPaket.tarif
+            };
+            if (typeof simpanDataBooking === "function") simpanDataBooking(currentBooking);
+          }
+        }
+      } else if (currentBooking && currentBooking.asetId && !currentBooking.namaBarang) {
+        if (typeof cariAset === "function") {
+          const item = cariAset(currentBooking.asetId);
+          if (item) {
+            currentBooking.namaBarang = item.nama;
+            if (typeof simpanDataBooking === "function") simpanDataBooking(currentBooking);
+          }
+        }
+      }
+
+      if (!currentBooking || !currentBooking.namaBarang) {
+        alert("Silakan pilih unit alat yang ingin disewa terlebih dahulu dari katalog.");
+        window.location.href = "1-katalog.html";
+        return;
+      }
+
+      const inputNamaBarang = document.getElementById("roNamaBarang");
+      const inputPaketJam = document.getElementById("roPaketJam");
+      const inputBiayaSewa = document.getElementById("roBiayaSewa");
+
+      inputNamaBarang.value = currentBooking.namaBarang || "-";
+      inputPaketJam.value = currentBooking.paketLabel || (currentBooking.paketJam ? `${currentBooking.paketJam} Jam` : "-");
+      inputBiayaSewa.value = formatRupiah(currentBooking.biayaSewa || 0);
+
+      // Auto-fill dari profil penyewa tersimpan jika memesan barang kedua/ketiga
+      const profilTersimpan = typeof ambilProfilPenyewa === "function" ? ambilProfilPenyewa() : null;
+      if (profilTersimpan) {
+        if (!currentBooking.nama && profilTersimpan.nama) currentBooking.nama = profilTersimpan.nama;
+        if (!currentBooking.noWa && profilTersimpan.noWa) currentBooking.noWa = profilTersimpan.noWa;
+        if (!currentBooking.komunitas && profilTersimpan.komunitas) currentBooking.komunitas = profilTersimpan.komunitas;
+        if (!currentBooking.departemen && profilTersimpan.departemen) currentBooking.departemen = profilTersimpan.departemen;
+        if (!currentBooking.alamat && profilTersimpan.alamat) currentBooking.alamat = profilTersimpan.alamat;
+      }
+
+      if (currentBooking.nama) document.getElementById("inputNama").value = currentBooking.nama;
+      if (currentBooking.komunitas) document.getElementById("inputKomunitas").value = currentBooking.komunitas;
+      if (currentBooking.departemen) document.getElementById("inputDepartemen").value = currentBooking.departemen;
+      if (currentBooking.alamat) document.getElementById("inputAlamat").value = currentBooking.alamat;
+      if (currentBooking.noWa) document.getElementById("inputNoWa").value = currentBooking.noWa;
+
+      const inputWaktuAmbil = document.getElementById("inputWaktuAmbil");
+      const now = new Date();
+      try {
+        inputWaktuAmbil.min = toDatetimeLocalString(now);
+      } catch (e) {}
+
+      if (currentBooking.waktuAmbilRaw) {
+        inputWaktuAmbil.value = currentBooking.waktuAmbilRaw;
+      } else {
+        const sekarang = new Date();
+        sekarang.setHours(sekarang.getHours() + 1);
+        sekarang.setMinutes(0);
+        inputWaktuAmbil.value = toDatetimeLocalString(sekarang);
+      }
+
+      updateWaktuSelesai();
+
+      if (typeof ambilRiwayatBookingAsync === "function") {
+        try {
+          await ambilRiwayatBookingAsync();
+          validasiJadwalRealtime();
+        } catch (e) {}
+      }
+
+      inputWaktuAmbil.addEventListener("change", updateWaktuSelesai);
+      inputWaktuAmbil.addEventListener("input", updateWaktuSelesai);
+    });
+
+    let isJadwalTersedia = true;
+
+    function validasiJadwalRealtime() {
+      const container = document.getElementById("containerStatusJadwal");
+      const btnSubmit = document.getElementById("btnSubmitForm");
+      const inputWaktuAmbil = document.getElementById("inputWaktuAmbil");
+      const waktuAmbilVal = inputWaktuAmbil ? inputWaktuAmbil.value : "";
+
+      if (!container) return;
+      if (!waktuAmbilVal || !waktuSelesaiCalculated || !currentBooking.asetId) {
+        container.innerHTML = "";
+        isJadwalTersedia = true;
+        if (btnSubmit) btnSubmit.disabled = false;
+        return;
+      }
+
+      const hasil = typeof cekBentrokJadwalAset === "function"
+        ? cekBentrokJadwalAset(currentBooking.asetId, waktuAmbilVal, waktuSelesaiCalculated.toISOString())
+        : { available: true, bentrokCount: 0, sisaStok: 1, stokTotal: 1, jadwalBentrok: [] };
+
+      if (!hasil.available) {
+        isJadwalTersedia = false;
+        if (btnSubmit) {
+          btnSubmit.disabled = true;
+          btnSubmit.classList.add("opacity-50");
+        }
+
+        let detailBentrokHtml = "";
+        (hasil.jadwalBentrok || []).forEach(b => {
+          const infoReady = b.readyAfterStr ? ` &bull; <span class="text-danger fw-bold">Siap kembali setelah: ${b.readyAfterStr}</span>` : '';
+          detailBentrokHtml += `<li>Terpakai: <strong>${b.waktuAmbil}</strong> s/d <strong>${b.waktuSelesai}</strong>${infoReady}</li>`;
+        });
+
+        container.innerHTML = `
+          <div class="alert alert-danger mb-0 p-3 rounded-3 shadow-sm border-2 border-danger" role="alert" style="background: rgba(254, 242, 242, 0.98);">
+            <div class="d-flex align-items-start gap-2">
+              <i class="bi bi-exclamation-triangle-fill fs-4 text-danger flex-shrink-0 mt-1"></i>
+              <div>
+                <strong class="d-block text-danger fs-6">JADWAL SEWA BENTROK / UNIT SUDAH DIBOOKING!</strong>
+                <span class="small text-dark d-block mb-1">
+                  Seluruh unit fisik aset ini (<strong>${hasil.stokTotal} unit</strong>) telah dibooking oleh santri lain pada rentang jam tersebut:
+                </span>
+                <ul class="mb-2 ps-3 small text-dark">
+                  ${detailBentrokHtml}
+                </ul>
+                <div class="p-2 rounded bg-white border border-danger-subtle small fw-bold text-danger">
+                  <i class="bi bi-lightbulb me-1 text-warning"></i> Solusi: Silakan pilih jam sewa setelah jadwal di atas, atau pilih tanggal berikutnya.
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        isJadwalTersedia = true;
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.classList.remove("opacity-50");
+        }
+
+        const sisa = hasil.sisaStok;
+        const total = hasil.stokTotal;
+        container.innerHTML = `
+          <div class="alert alert-success mb-0 p-2 px-3 rounded-3 shadow-sm" role="alert" style="background: rgba(240, 253, 244, 0.98); border: 1.5px solid #22c55e;">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+              <div>
+                <strong class="text-success small d-block">JADWAL TERSEDIA & BEBAS BENTROK!</strong>
+                <span class="small text-dark">Unit siap Anda ambil dan gunakan pada jadwal ini (Tersedia ${sisa} dari ${total} unit fisik).</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function updateWaktuSelesai() {
+      const inputWaktuAmbil = document.getElementById("inputWaktuAmbil");
+      const outputEl = document.getElementById("outputWaktuSelesai");
+      const waktuAmbilVal = inputWaktuAmbil.value;
+
+      if (!waktuAmbilVal) {
+        outputEl.value = "Silakan tentukan waktu ambil";
+        waktuSelesaiCalculated = null;
+        validasiJadwalRealtime();
+        return;
+      }
+
+      // Proteksi waktu masa lalu (toleransi 3 menit)
+      const tglPilih = new Date(waktuAmbilVal).getTime();
+      const tglSekarang = new Date().getTime() - (3 * 60 * 1000);
+      if (tglPilih < tglSekarang) {
+        alert("Peringatan: Waktu ambil tidak boleh di masa lalu! Waktu otomatis disesuaikan ke waktu saat ini.");
+        const sekarang = new Date();
+        inputWaktuAmbil.value = toDatetimeLocalString(sekarang);
+        return updateWaktuSelesai();
+      }
+
+      const durasiJam = currentBooking.paketJam || 5;
+      const hasil = hitungWaktuSelesai(waktuAmbilVal, durasiJam);
+      if (hasil) {
+        waktuSelesaiCalculated = hasil;
+        outputEl.value = formatWaktuIndo(hasil);
+      } else {
+        outputEl.value = "Format waktu tidak valid";
+        waktuSelesaiCalculated = null;
+      }
+
+      validasiJadwalRealtime();
+    }
+
+    function handleFormSubmit(event) {
+      event.preventDefault();
+
+      const nama = document.getElementById("inputNama").value.trim();
+      const komunitas = document.getElementById("inputKomunitas").value.trim();
+      const departemen = document.getElementById("inputDepartemen").value.trim();
+      const alamat = document.getElementById("inputAlamat").value.trim();
+      const noWa = document.getElementById("inputNoWa").value.trim();
+      const waktuAmbilRaw = document.getElementById("inputWaktuAmbil").value;
+
+      if (!nama || !komunitas || !departemen || !alamat || !noWa || !waktuAmbilRaw) {
+        alert("Harap lengkapi semua kolom yang bertanda bintang (*).");
+        return;
+      }
+
+      // Validasi proteksi waktu masa lalu
+      const tglPilih = new Date(waktuAmbilRaw).getTime();
+      const tglSekarang = new Date().getTime() - (3 * 60 * 1000);
+      if (tglPilih < tglSekarang) {
+        alert("Waktu ambil tidak boleh di masa lalu! Silakan periksa kembali waktu ambil barang.");
+        return;
+      }
+
+      if (!waktuSelesaiCalculated) {
+        alert("Waktu selesai sewa belum terhitung secara valid.");
+        return;
+      }
+
+      if (!isJadwalTersedia) {
+        alert("Jadwal yang Anda pilih bentrok dengan penyewa lain. Silakan ubah jam sewa terlebih dahulu.");
+        return;
+      }
+
+      const rawDigits = noWa.replace(/[^0-9]/g, '');
+      const localWa = typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(noWa) : (rawDigits.startsWith("62") ? "0" + rawDigits.substring(2) : rawDigits);
+      if (localWa.length < 10) {
+        alert("Nomor WhatsApp tidak valid. Masukkan nomor HP aktif yang diawali 08 (contoh: 08812762520).");
+        return;
+      }
+
+      const elKeperluan = document.getElementById("inputKeperluan");
+      const rawKeperluan = elKeperluan ? elKeperluan.value.trim() : "";
+      const keperluanVal = rawKeperluan || "Kegiatan Santri / Umum";
+      const isDinasPengajuan = rawKeperluan.toLowerCase().includes("dinas") || rawKeperluan.toLowerCase().includes("pondok");
+
+      const dataToSave = {
+        ...currentBooking,
+        nama: nama,
+        komunitas: komunitas,
+        departemen: departemen,
+        alamat: alamat,
+        noWa: localWa,
+        keperluan: keperluanVal,
+        isDinasPengajuan: isDinasPengajuan,
+        isDinas: false, // Default sewa reguler berbayar sesuai tarif paket
+        waktuAmbilRaw: new Date(waktuAmbilRaw).toISOString(),
+        waktuAmbil: formatWaktuIndo(waktuAmbilRaw),
+        waktuSelesaiRaw: waktuSelesaiCalculated.toISOString(),
+        waktuSelesai: formatWaktuIndo(waktuSelesaiCalculated),
+        // Hapus bookingId lama agar setiap submit booking baru mendapat ID unik baru
+        // (mencegah booking ke-2 menimpa booking ke-1 yang sudah tersimpan)
+        bookingId: null,
+        id: null
+      };
+
+      simpanDataBooking(dataToSave);
+      if (typeof simpanProfilPenyewa === "function") {
+        simpanProfilPenyewa(dataToSave);
+      }
+
+      window.location.href = "4-persetujuan.html";
+    }
+  </script>
+</body>
+</html>

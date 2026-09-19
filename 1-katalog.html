@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="id" data-bs-theme="light" data-lte-color-mode="off">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aset Ma'had Aly Amtsilati | Sistem Sewa Alat Multimedia</title>
+  <meta name="title" content="Aset Ma'had Aly Amtsilati | Sistem Sewa Alat Multimedia" />
+  <meta name="description" content="Sistem Peminjaman & Sewa Alat Multimedia Ma'had Aly Amtsilati - Dikelola oleh METAHATI" />
+  <link rel="icon" type="image/png" href="img/logo-metahati.png" />
+
+  <!-- Open Graph / WhatsApp Preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://aset.mahadalyamtsilati.ac.id/1-katalog.html" />
+  <meta property="og:title" content="Aset Multimedia Ma'had Aly Amtsilati" />
+  <meta property="og:description" content="Sistem Peminjaman & Sewa Alat Multimedia Ma'had Aly Amtsilati - Dikelola oleh METAHATI" />
+  <meta property="og:image" content="https://aset.mahadalyamtsilati.ac.id/img/logo-metahati.png" />
+  <meta property="og:site_name" content="METAHATI - Ma'had Aly Amtsilati" />
+
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+  
+  <!-- AdminLTE & Custom CSS -->
+  <link rel="stylesheet" href="./dist/css/adminlte.min.css" />
+  <link rel="stylesheet" href="./css/custom.css" />
+</head>
+<body class="ios-glass-theme">
+  <!-- Navbar iOS Frosted Glass -->
+  <nav class="navbar navbar-expand-lg navbar-ios-glass sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="1-katalog.html">
+        <img src="img/logo-metahati.png" alt="METAHATI - Ma'had Aly Amtsilati" class="logo-nav-img" />
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3 py-1 shadow-sm d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#modalLacakBooking" style="background: rgba(0, 102, 255, 0.08); border-color: rgba(0, 102, 255, 0.3); color: #0056b3;">
+          <i class="bi bi-search"></i> <span>Lacak Booking</span>
+        </button>
+        <span class="badge badge-cyan badge-ios-glass px-3 py-2 rounded-pill small d-none d-sm-inline-block">
+          <i class="bi bi-person-check me-1"></i> Khusus Santri Darul Falah Amtsilati
+        </span>
+        <a href="admin-login.html" class="btn-admin-header">
+          <i class="bi bi-shield-lock me-1"></i> Admin
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="container py-4">
+    <!-- Step Progress Bar (iOS Glass Container) -->
+    <div class="ios-stepper-glass">
+      <div class="rental-steps mb-0">
+        <div class="rental-step-item active">
+          <div class="step-circle">1</div>
+          <span class="step-title">Pilih Alat</span>
+        </div>
+        <div class="rental-step-item">
+          <div class="step-circle">2</div>
+          <span class="step-title">Detail</span>
+        </div>
+        <div class="rental-step-item">
+          <div class="step-circle">3</div>
+          <span class="step-title">Data Booking</span>
+        </div>
+        <div class="rental-step-item">
+          <div class="step-circle">4</div>
+          <span class="step-title">Kesepakatan</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header Banner iOS Frosted Glass -->
+    <div class="hero-banner-ios mb-4">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h2 class="fw-bolder mb-0 text-dark" style="letter-spacing: -0.4px;">
+            Peminjaman dan Penyewaan Aset Ma'had Aly Amtsilati
+          </h2>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+          <div class="d-inline-flex flex-column align-items-lg-end gap-2">
+            <span class="badge badge-magenta badge-ios-glass px-3 py-2 rounded-3 shadow-sm fs-6">
+              <i class="bi bi-card-checklist me-1"></i> Jaminan KTP / KTS / KTM Asli
+            </span>
+            <span class="badge badge-cyan badge-ios-glass px-3 py-1 rounded-pill fw-bold small">
+              <i class="bi bi-clock-history me-1"></i> Toleransi 15 Menit • Denda Rp 10.000 / Jam
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Kategori Toolbar (iOS Glass Segmented Control) -->
+    <div class="ios-filter-glass mb-4">
+      <div class="d-flex flex-wrap gap-2 justify-content-center align-items-center" id="kategoriFilterGroup">
+        <!-- Diisi otomatis oleh renderFilterKategoriButtons() -->
+      </div>
+    </div>
+
+    <!-- Asset Cards Grid -->
+    <div class="row g-4" id="katalogGrid">
+      <!-- Generated via JS -->
+    </div>
+
+    <!-- Empty State Warning -->
+    <div id="emptyState" class="text-center py-5 d-none ios-filter-glass my-4">
+      <i class="bi bi-search text-primary display-4 mb-3 d-block"></i>
+      <h5 class="fw-bold text-dark">Tidak ada alat yang cocok dengan kategori ini.</h5>
+      <button class="btn btn-ios-primary mt-2 px-4 py-2" onclick="resetFilter()">Tampilkan Semua Alat</button>
+    </div>
+  </main>
+
+  <!-- Modal Lacak Booking Santri -->
+  <div class="modal fade" id="modalLacakBooking" tabindex="-1" aria-labelledby="modalLacakBookingLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 1.25rem; overflow: hidden; backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.96);">
+        <div class="modal-header border-bottom py-3 px-4" style="background: rgba(0, 102, 255, 0.05);">
+          <div>
+            <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2 mb-0" id="modalLacakBookingLabel">
+              <i class="bi bi-search text-primary"></i> Lacak Status Booking Saya
+            </h5>
+            <div class="small text-muted mt-1">Cari transaksi peminjaman berdasarkan Nomor WhatsApp atau Kode Booking</div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form id="formLacakBooking" onsubmit="event.preventDefault(); jalankanCariBooking();">
+            <div class="input-group mb-2">
+              <span class="input-group-text bg-white border-end-0" style="border-radius: 0.75rem 0 0 0.75rem; border-color: #cbd5e1;">
+                <i class="bi bi-search text-muted"></i>
+              </span>
+              <input type="text" id="inputCariBooking" class="form-control border-start-0 py-2" placeholder="Masukkan No. WA (0881...) atau Kode INV-..." style="border-radius: 0 0.75rem 0.75rem 0; font-size: 0.95rem; border-color: #cbd5e1;" autofocus>
+              <button type="submit" class="btn btn-primary px-4 fw-bold ms-2 rounded-3" style="background: #0066ff;">
+                Cari Booking
+              </button>
+            </div>
+          </form>
+
+          <div id="quickFillWaPenyewa" class="mb-3 d-none">
+            <span class="small text-muted me-2">Pernah menyewa dengan nomor ini:</span>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 small" id="btnQuickWa" onclick="isiCariWaOtomatis()">
+              <i class="bi bi-whatsapp text-success me-1"></i> <span id="labelQuickWa">0881...</span>
+            </button>
+          </div>
+
+          <!-- Area Hasil Pencarian (Hanya tampil saat dicari demi privasi) -->
+          <div id="hasilLacakContainer" class="mt-3">
+            <div class="text-center py-4 text-muted">
+              <i class="bi bi-shield-lock display-5 d-block text-secondary mb-2 opacity-50"></i>
+              <p class="small mb-0">Demi menjaga privasi data santri, silakan masukkan Nomor WhatsApp atau Kode Booking Anda untuk melihat status peminjaman.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer METAHATI Bersih iOS Glass -->
+  <footer class="footer-simple navbar-ios-glass mt-5">
+    <div class="container text-center">
+      <h6 class="fw-bold mb-0 fs-6 text-dark">
+        <span class="gradient-text-metahati">METAHATI</span> &bull; Ma'had Aly Amtsilati
+      </h6>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+  <script src="./dist/js/adminlte.min.js"></script>
+  <script src="./js/rental-logic.js?v=2.5"></script>
+
+  <script>
+    let filterKategori = "semua";
+    let filterKeyword = "";
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      renderFilterKategoriButtons();
+      renderKatalog();
+
+      if (typeof ambilRiwayatBookingAsync === "function") {
+        try {
+          await ambilRiwayatBookingAsync();
+          renderKatalog();
+        } catch (e) {}
+      }
+
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+          filterKeyword = e.target.value.toLowerCase().trim();
+          renderKatalog();
+        });
+      }
+
+      const btnResetSearch = document.getElementById("btnResetSearch");
+      if (btnResetSearch) {
+        btnResetSearch.addEventListener("click", () => {
+          if (searchInput) searchInput.value = "";
+          filterKeyword = "";
+          renderKatalog();
+        });
+      }
+    });
+
+    function renderFilterKategoriButtons() {
+      const container = document.getElementById("kategoriFilterGroup");
+      if (!container) return;
+
+      const cats = typeof ambilDaftarKategori === "function" ? ambilDaftarKategori() : [
+        { id: "kamera", label: "Kamera & Lensa" },
+        { id: "lighting", label: "Lighting & Flash" },
+        { id: "handycam", label: "Handycam & Video" }
+      ];
+
+      let html = `<button type="button" class="btn-filter-ios active" data-kategori="semua">Semua Unit</button>`;
+      cats.forEach(c => {
+        html += `<button type="button" class="btn-filter-ios" data-kategori="${c.id}">${c.label}</button>`;
+      });
+      container.innerHTML = html;
+
+      const filterBtns = container.querySelectorAll("button");
+      filterBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          filterBtns.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          filterKategori = btn.getAttribute("data-kategori");
+          renderKatalog();
+        });
+      });
+    }
+
+    function renderKatalog() {
+      const grid = document.getElementById("katalogGrid");
+      const emptyState = document.getElementById("emptyState");
+      if (!grid) return;
+      grid.innerHTML = "";
+
+      let items = [];
+      try {
+        if (typeof ambilSemuaKatalog === "function") {
+          items = ambilSemuaKatalog();
+        } else if (typeof KATALOG_DEFAULT !== "undefined") {
+          items = KATALOG_DEFAULT;
+        } else if (typeof KATALOG_ASET !== "undefined") {
+          items = KATALOG_ASET;
+        }
+      } catch (err) {
+        console.error("Error loading assets:", err);
+      }
+
+      if (!items || items.length === 0) {
+        if (typeof KATALOG_DEFAULT !== "undefined") items = KATALOG_DEFAULT;
+      }
+
+      const filtered = (items || []).filter(item => {
+        if (!item) return false;
+        if (item.status === "maintenance" || item.status === "inactive") return false;
+        const matchKategori = filterKategori === "semua" || item.kategori === filterKategori;
+        const itemNama = (item.nama || "").toLowerCase();
+        const itemDesc = (item.deskripsi || "").toLowerCase();
+        const itemKat = (item.kategoriLabel || item.kategori || "").toLowerCase();
+        const matchKeyword = !filterKeyword || 
+                             itemNama.includes(filterKeyword) || 
+                             itemDesc.includes(filterKeyword) || 
+                             itemKat.includes(filterKeyword);
+        return matchKategori && matchKeyword;
+      });
+
+      if (filtered.length === 0) {
+        if (emptyState) emptyState.classList.remove("d-none");
+        return;
+      }
+      if (emptyState) emptyState.classList.add("d-none");
+
+      filtered.forEach(item => {
+        const stokTotal = Math.max(1, parseInt(item.stokTotal || 1));
+
+        let paketListHtml = "";
+        (item.paketOpsi || []).forEach(p => {
+          paketListHtml += `
+            <div class="d-flex justify-content-between py-1 border-bottom" style="font-size: 0.92rem; border-color: rgba(0, 102, 255, 0.08) !important;">
+              <span class="text-dark fw-bold">${p.label || (p.jam + ' Jam')}</span>
+              <span class="fw-bolder" style="color: #0066ff;">${formatRupiah(p.tarif || 0)}</span>
+            </div>`;
+        });
+
+        const btnHtml = `
+          <a href="2-detail.html?id=${item.id}" class="btn btn-ios-primary w-100 py-2 fw-bold" onclick="pilihItem('${item.id}')">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Pilih Paket Sewa
+          </a>`;
+
+        const cardCol = document.createElement("div");
+        cardCol.className = "col-lg-4 col-md-6 col-sm-12";
+        cardCol.innerHTML = `
+          <div class="card h-100 asset-card-ios">
+            <div class="asset-img-container">
+              <img src="${item.gambar || ''}" alt="${item.nama}" class="asset-img" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';" />
+              <div class="asset-icon-fallback" style="display: ${item.gambar ? 'none' : 'flex'};">
+                <i class="bi ${item.ikon || 'bi-camera-fill'}"></i>
+              </div>
+              <span class="position-absolute top-0 start-0 m-3 badge badge-available badge-ios-glass px-3 py-2 rounded-pill shadow-sm">
+                <i class="bi bi-check-circle-fill me-1"></i> Tersedia (${stokTotal} Unit)
+              </span>
+              <span class="position-absolute top-0 end-0 m-3 badge badge-magenta badge-ios-glass px-2 py-1 rounded-2">
+                ${item.kategoriLabel || item.kategori || ''}
+              </span>
+            </div>
+            
+            <div class="card-body d-flex flex-column p-4">
+              <h5 class="fw-bolder text-dark mb-1" style="letter-spacing: -0.3px;">${item.nama}</h5>
+              <div class="small text-secondary mb-2 d-flex align-items-center gap-1">
+                <i class="bi bi-boxes" style="color: #0066ff;"></i> Inventaris: <strong>${stokTotal} Unit</strong>
+              </div>
+              <p class="text-dark small mb-3" style="line-height: 1.55; color: #1e293b !important; font-weight: 500;">${item.deskripsi || ''}</p>
+              
+              <div class="mb-4 price-box-ios">
+                <div class="text-uppercase small fw-bold text-dark mb-2" style="letter-spacing: 0.3px;"><i class="bi bi-tag-fill me-1" style="color: #0066ff;"></i> Pilihan Tarif Sewa:</div>
+                ${paketListHtml}
+              </div>
+
+              <div class="mt-auto">
+                ${btnHtml}
+              </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(cardCol);
+      });
+    }
+
+    function pilihItem(id) {
+      const item = cariAset(id);
+      if (item) {
+        simpanDataBooking({
+          asetId: item.id,
+          namaBarang: item.nama,
+          kategori: item.kategoriLabel
+        });
+      }
+    }
+
+    function resetFilter() {
+      const sInput = document.getElementById("searchInput");
+      if (sInput) sInput.value = "";
+      filterKeyword = "";
+      filterKategori = "semua";
+      document.querySelectorAll("#kategoriFilterGroup button").forEach(b => {
+        b.classList.remove("active");
+        if (b.getAttribute("data-kategori") === "semua") b.classList.add("active");
+      });
+      renderKatalog();
+    }
+
+    // ==========================================
+    // LOGIKA MODAL LACAK BOOKING SANTRI (PRIVASI TINGGI)
+    // ==========================================
+    document.addEventListener("DOMContentLoaded", () => {
+      const modalLacakEl = document.getElementById("modalLacakBooking");
+      if (modalLacakEl) {
+        modalLacakEl.addEventListener("show.bs.modal", () => {
+          const profil = (typeof ambilProfilPenyewa === "function") ? ambilProfilPenyewa() : null;
+          const quickArea = document.getElementById("quickFillWaPenyewa");
+          const quickLabel = document.getElementById("labelQuickWa");
+          const inputCari = document.getElementById("inputCariBooking");
+          
+          if (profil && profil.noWa) {
+            if (quickArea) quickArea.classList.remove("d-none");
+            if (quickLabel) quickLabel.textContent = profil.noWa;
+          }
+          if (inputCari) inputCari.value = "";
+          resetTampilanLacak();
+        });
+
+        modalLacakEl.addEventListener("shown.bs.modal", () => {
+          const inputCari = document.getElementById("inputCariBooking");
+          if (inputCari) inputCari.focus();
+        });
+
+        modalLacakEl.addEventListener("hidden.bs.modal", () => {
+          const inputCari = document.getElementById("inputCariBooking");
+          if (inputCari) inputCari.value = "";
+          resetTampilanLacak();
+        });
+      }
+    });
+
+    function isiCariWaOtomatis() {
+      const profil = (typeof ambilProfilPenyewa === "function") ? ambilProfilPenyewa() : null;
+      const inputCari = document.getElementById("inputCariBooking");
+      if (profil && profil.noWa && inputCari) {
+        inputCari.value = profil.noWa;
+        jalankanCariBooking();
+      }
+    }
+
+    function resetTampilanLacak() {
+      const container = document.getElementById("hasilLacakContainer");
+      if (!container) return;
+      container.innerHTML = `
+        <div class="text-center py-4 text-muted">
+          <i class="bi bi-shield-lock display-5 d-block text-secondary mb-2 opacity-50"></i>
+          <p class="small mb-0">Demi menjaga privasi data santri, silakan masukkan Nomor WhatsApp atau Kode Booking Anda untuk melihat status peminjaman.</p>
+        </div>`;
+    }
+
+    function jalankanCariBooking() {
+      const container = document.getElementById("hasilLacakContainer");
+      const input = document.getElementById("inputCariBooking");
+      if (!container || !input) return;
+
+      const keyword = input.value.trim();
+      if (!keyword) {
+        tampilkanRiwayatLokalPerangkat();
+        container.innerHTML = `
+          <div class="alert alert-warning border text-center py-3 rounded-3 my-2 small">
+            <i class="bi bi-exclamation-circle me-1"></i> Silakan ketik Nomor WhatsApp atau Kode Booking terlebih dahulu.
+          </div>`;
+        return;
+      }
+
+      const cleanKey = keyword.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const riwayat = (typeof ambilRiwayatBooking === "function") ? ambilRiwayatBooking() : [];
+
+      const hasil = riwayat.filter(b => {
+        const bId = (b.bookingId || b.id || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const bWa = (b.noWa || '').replace(/[^0-9]/g, '');
+        const bNama = (b.nama || '').toLowerCase();
+
+        if (bId && bId.includes(cleanKey)) return true;
+        if (bWa && cleanKey.length >= 4 && (bWa.includes(cleanKey) || cleanKey.includes(bWa))) return true;
+        if (cleanKey.length >= 3 && bNama.includes(keyword.toLowerCase())) return true;
+        return false;
+      });
+
+      if (hasil.length === 0) {
+        container.innerHTML = `
+          <div class="alert alert-light border text-center py-4 rounded-3 my-2">
+            <i class="bi bi-emoji-neutral display-6 d-block text-secondary mb-2"></i>
+            <h6 class="fw-bold text-dark mb-1">Booking Tidak Ditemukan</h6>
+            <p class="small text-muted mb-0">Tidak ada transaksi yang cocok dengan <strong>"${keyword}"</strong>.<br>Pastikan nomor WA atau kode invoice sudah sesuai saat mendaftar.</p>
+          </div>`;
+        return;
+      }
+
+      renderListHasilBooking(hasil, `Ditemukan ${hasil.length} Transaksi:`);
+    }
+
+    function renderListHasilBooking(list, judul) {
+      const container = document.getElementById("hasilLacakContainer");
+      if (!container) return;
+
+      let html = `<div class="small fw-bold text-secondary mb-2 text-uppercase" style="letter-spacing: 0.5px;">${judul}</div>`;
+      html += `<div class="d-flex flex-column gap-3">`;
+
+      list.forEach(b => {
+        const bId = b.bookingId || b.id || 'INV-0000';
+        const st = (b.status || 'booked').toLowerCase();
+
+        let badgeHtml = `<span class="badge bg-primary px-2 py-1"><i class="bi bi-check-circle me-1"></i> Disetujui / Aktif</span>`;
+        if (st === 'pending') {
+          badgeHtml = `<span class="badge bg-warning text-dark px-2 py-1"><i class="bi bi-hourglass-split me-1"></i> Menunggu ACC Admin</span>`;
+        } else if (st === 'completed') {
+          badgeHtml = `<span class="badge bg-success px-2 py-1"><i class="bi bi-check-all me-1"></i> Selesai Kembali</span>`;
+        } else if (st === 'rejected' || st === 'cancelled') {
+          badgeHtml = `<span class="badge bg-danger px-2 py-1"><i class="bi bi-x-circle me-1"></i> Ditolak Pengurus</span>`;
+        }
+
+        const namaBarang = b.namaBarang || b.namaUnit || 'Aset Multimedia';
+        const penyewa = b.nama || 'Santri';
+        const total = (typeof formatRupiah === "function") ? formatRupiah(b.totalBiaya || 0) : 'Rp ' + (b.totalBiaya || 0);
+
+        html += `
+          <div class="card border rounded-3 p-3 shadow-sm bg-white" style="border-color: #e2e8f0 !important;">
+            <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+              <div>
+                <span class="badge bg-light text-primary border fw-bold me-1">${bId}</span>
+                ${badgeHtml}
+              </div>
+              <span class="fw-bolder text-primary">${total}</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <i class="bi bi-camera-fill text-secondary fs-5"></i>
+              <div>
+                <div class="fw-bold text-dark">${namaBarang}</div>
+                <div class="small text-muted">Penyewa: ${penyewa} &bull; ${b.durasiJam || ''} Jam</div>
+              </div>
+            </div>
+            <div class="small text-muted mb-3 d-flex flex-wrap gap-3">
+              <span><i class="bi bi-calendar-event me-1"></i> Ambil: <strong>${b.waktuAmbil || '-'}</strong></span>
+              <span><i class="bi bi-clock-history me-1"></i> Kembali: <strong>${b.waktuSelesai || '-'}</strong></span>
+            </div>
+            <div class="d-flex gap-2">
+              <a href="status.html?id=${encodeURIComponent(bId)}" class="btn btn-sm btn-primary fw-bold flex-fill py-2" style="background: #0066ff;">
+                <i class="bi bi-clock-history me-1"></i> Pantau Status
+              </a>
+              <a href="invoice.html?id=${encodeURIComponent(bId)}" class="btn btn-sm btn-outline-secondary fw-bold px-3 py-2">
+                <i class="bi bi-receipt me-1"></i> Invoice
+              </a>
+            </div>
+          </div>`;
+      });
+
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

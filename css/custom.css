@@ -1,0 +1,1051 @@
+/**
+ * SISTEM RENTAL ASET MA'HAD ALY AMTSILATI
+ * File: css/custom.css
+ * Palet Warna Berdasarkan Logo Resmi METAHATI:
+ * - Cyan / Aqua: #00d2d3
+ * - Royal Blue: #0066ff
+ * - Deep Violet: #7928ca
+ * - Magenta / Pink: #d60099
+ * - Background: 100% PUTIH BERSIH (#ffffff) - Tanpa background hitam
+ * - Teks: HITAM PEKAT (#0f172a / #000000)
+ */
+
+:root {
+  --metahati-cyan: #00d2d3;
+  --metahati-blue: #0066ff;
+  --metahati-violet: #7928ca;
+  --metahati-magenta: #d60099;
+  --gradient-metahati: linear-gradient(135deg, #0066ff 0%, #7928ca 50%, #d60099 100%);
+  --gradient-cyan-blue: linear-gradient(135deg, #00d2d3 0%, #0066ff 100%);
+  --text-black: #0f172a;
+}
+
+/* ===================================================
+   BASE: LATAR PUTIH 100% & TEKS HITAM
+   =================================================== */
+html, body, :root, [data-bs-theme="dark"], [data-bs-theme="light"] {
+  color-scheme: light !important;
+  --bs-body-bg: #ffffff !important;
+  --bs-body-color: #0f172a !important;
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #0f172a !important;
+  font-weight: 800;
+}
+
+p, span, label, td, th, li, small {
+  color: #0f172a;
+}
+
+/* Memastikan tabel selalu berlatar putih/terang (tidak pernah hitam) */
+.table {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+.table td, .table th {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) td {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+.table-striped tbody tr:nth-of-type(even) td {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Gradasi Teks */
+.gradient-text-metahati {
+  background: var(--gradient-metahati);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  font-weight: 900;
+}
+
+/* ===================================================
+   NAVBAR DENGAN LOGO METAHATI
+   =================================================== */
+.navbar-amtsilati {
+  background-color: #eef4fb !important;
+  border-bottom: 2px solid #0066ff;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.navbar-amtsilati::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-metahati);
+}
+
+.footer-simple {
+  background-color: #eef4fb !important;
+  border-top: 2px solid #0066ff !important;
+  padding: 1.5rem 0 !important;
+}
+
+.logo-nav-img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* ===================================================
+   HERO / BANNER PUTIH
+   =================================================== */
+.hero-banner-metahati {
+  background-color: #ffffff !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 1.2rem;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 102, 255, 0.06);
+}
+
+.hero-banner-metahati::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: var(--gradient-metahati);
+}
+
+.hero-logo-img {
+  height: 70px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* ===================================================
+   STEP WIZARD
+   =================================================== */
+.rental-steps {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin-bottom: 2.2rem;
+  padding: 0.5rem 0;
+}
+
+.rental-steps::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: 10%;
+  right: 10%;
+  height: 4px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+.rental-step-item {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+}
+
+.rental-step-item .step-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 2.5px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: #334155;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
+}
+
+.rental-step-item.active .step-circle {
+  background: #0066ff !important;
+  border: none !important;
+  color: #ffffff !important;
+  transform: scale(1.12);
+  box-shadow: 0 6px 16px rgba(0, 102, 255, 0.35);
+}
+
+.rental-step-item.completed .step-circle {
+  background: #059669 !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+.rental-step-item .step-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.rental-step-item.active .step-title {
+  color: var(--metahati-blue) !important;
+  font-weight: 800;
+}
+
+/* ===================================================
+   KARTU ASET
+   =================================================== */
+.asset-card {
+  background-color: #ffffff !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 1.1rem !important;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.asset-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--metahati-blue) !important;
+  box-shadow: 0 14px 28px rgba(0, 102, 255, 0.12) !important;
+}
+
+.asset-img-container {
+  height: 190px;
+  width: 100%;
+  background: linear-gradient(135deg, #f0fdfa 0%, #eff6ff 100%);
+  border-bottom: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.asset-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.asset-icon-fallback {
+  font-size: 4.8rem;
+  background: var(--gradient-metahati);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Badges */
+.badge-cyan {
+  background-color: #ecfeff !important;
+  color: #0891b2 !important;
+  border: 1.5px solid #00d2d3;
+  font-weight: 700;
+}
+
+.badge-magenta {
+  background-color: #fdf2f8 !important;
+  color: #c026d3 !important;
+  border: 1.5px solid #d60099;
+  font-weight: 700;
+}
+
+.badge-available {
+  background-color: #ecfdf5 !important;
+  color: #059669 !important;
+  border: 1.5px solid #34d399;
+  font-weight: 700;
+}
+
+.badge-booked {
+  background-color: #fff1f2 !important;
+  color: #e11d48 !important;
+  border: 1.5px solid #fb7185;
+  font-weight: 700;
+}
+
+/* ===================================================
+   TOMBOL & INTERAKSI
+   =================================================== */
+.btn-metahati {
+  background: linear-gradient(135deg, #0066ff 0%, #7928ca 50%, #d60099 100%) !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-radius: 0.9rem;
+  padding: 0.75rem 1.25rem;
+  box-shadow: 0 6px 20px rgba(121, 40, 202, 0.28), 0 2px 6px rgba(0, 85, 255, 0.2);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-metahati:hover {
+  background: linear-gradient(135deg, #0055ff 0%, #7928ca 50%, #d60099 100%) !important;
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 10px 26px rgba(121, 40, 202, 0.4), 0 4px 12px rgba(0, 85, 255, 0.3);
+  color: #ffffff !important;
+}
+
+.btn-metahati:active {
+  transform: scale(0.97);
+}
+
+.btn-whatsapp-solid {
+  background: linear-gradient(135deg, #25D366 0%, #0d8b66 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 800 !important;
+  border-radius: 1rem !important;
+  padding: 0.85rem 1.4rem !important;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.32) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-whatsapp-solid:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2fe673 0%, #0f9b73 100%) !important;
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 12px 28px rgba(37, 211, 102, 0.45) !important;
+  color: #ffffff !important;
+}
+
+.btn-whatsapp-solid:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Tombol WA saat disabled (Berwarna abu-abu muda lembut, bukan hitam!) */
+.btn-whatsapp-solid:disabled {
+  background: #cbd5e1 !important;
+  color: #64748b !important;
+  cursor: not-allowed;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* ===================================================
+   PAKET DURASI SEWA
+   =================================================== */
+.package-card {
+  border: 2px solid #cbd5e1;
+  border-radius: 0.9rem;
+  padding: 1.2rem 1rem;
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.package-card:hover {
+  border-color: var(--metahati-cyan);
+  background-color: #f8fafc;
+}
+
+.package-card.selected {
+  border-color: var(--metahati-blue) !important;
+  background-color: #f0f7ff !important;
+  box-shadow: 0 6px 16px rgba(0, 102, 255, 0.15);
+}
+
+.package-hours-badge {
+  background: #0066ff !important;
+  color: #ffffff !important;
+  font-weight: 800;
+}
+
+/* ===================================================
+   CALLOUT BOX & PERATURAN (PUTIH/TERANG)
+   =================================================== */
+.callout-rules {
+  background-color: #fdf2f8 !important;
+  border-left: 6px solid #d60099 !important;
+  border-radius: 0.6rem;
+  padding: 1.25rem;
+  border-top: 1px solid #fbcfe8;
+  border-right: 1px solid #fbcfe8;
+  border-bottom: 1px solid #fbcfe8;
+  color: #0f172a !important;
+}
+
+.callout-payment {
+  background-color: #ecfeff !important;
+  border-left: 6px solid #00d2d3 !important;
+  border-radius: 0.6rem;
+  padding: 1rem;
+  border-top: 1px solid #cffafe;
+  border-right: 1px solid #cffafe;
+  border-bottom: 1px solid #cffafe;
+  color: #0f172a !important;
+}
+
+/* Card, Box, & Background Selalu Putih/Terang */
+.card, .card-body, .card-header, .modal-content, .modal-body {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Input Fields */
+.form-control, .form-select {
+  border: 2px solid #94a3b8 !important;
+  border-radius: 0.5rem;
+  color: #000000 !important;
+  font-weight: 600;
+  padding: 0.7rem 0.9rem;
+  background-color: #ffffff !important;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--metahati-blue) !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 102, 255, 0.18) !important;
+}
+
+.package-card input[type="radio"] {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+  accent-color: var(--metahati-blue);
+}
+
+/* Footer Elegan Bersih (Warna Lembut #eef4fb & Gradient Logo) */
+.footer-simple {
+  background-color: #eef4fb !important;
+  border-top: 2px solid #0066ff !important;
+  position: relative;
+  padding: 1.75rem 0;
+  text-align: center;
+}
+
+.footer-simple::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-metahati);
+}
+
+/* ===================================================
+   RESPONSIVE DESIGN (MOBILE OPTIMIZATIONS)
+   =================================================== */
+@media (max-width: 576px) {
+  .rental-steps {
+    padding: 0.5rem 0;
+  }
+  .rental-steps::before {
+    top: 24px;
+    height: 3px;
+  }
+  .rental-step-item .step-circle {
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+  }
+  .rental-step-item .step-title {
+    font-size: 0.72rem;
+    line-height: 1.1;
+  }
+  .brand-logo-glow {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+  }
+  .table-responsive {
+    font-size: 0.85rem;
+  }
+}
+
+/* ===================================================
+   ADMIN DASHBOARD SIDEBAR & APP MAIN (MURNI WARNA LOGO)
+   - Background: 100% PUTIH (#ffffff)
+   - Teks: HITAM PEKAT (#0f172a / #000000)
+   - Aksen: Cyan (#00d2d3), Blue (#0066ff), Violet (#7928ca), Magenta (#d60099)
+   =================================================== */
+.app-main {
+  background-color: #ffffff !important;
+  min-height: calc(100vh - 60px);
+}
+
+.app-sidebar {
+  background: linear-gradient(180deg, #08152e 0%, #0d224d 50%, #1e123d 100%) !important;
+  border-right: 1.5px solid rgba(0, 210, 211, 0.25) !important;
+}
+
+.sidebar-brand {
+  height: 64px;
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-header {
+  height: 60px;
+  background: linear-gradient(90deg, #08152e 0%, #0c2352 50%, #1a153a 100%) !important;
+  border-bottom: 2.5px solid #00d2d3 !important;
+}
+
+.sidebar-menu .nav-link {
+  color: rgba(255, 255, 255, 0.88) !important;
+  font-weight: 600;
+  border-radius: 0.65rem;
+  margin: 0.3rem 0.75rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  font-size: 0.92rem;
+}
+
+.sidebar-menu .nav-link p {
+  color: rgba(255, 255, 255, 0.88) !important;
+  margin: 0 !important;
+  font-weight: inherit !important;
+  display: inline-block;
+}
+
+.sidebar-menu .nav-link .nav-icon {
+  font-size: 1.15rem;
+  margin-right: 0.75rem;
+  color: #00d2d3 !important;
+  transition: color 0.2s ease;
+}
+
+.sidebar-menu .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+.sidebar-menu .nav-link:hover .nav-icon,
+.sidebar-menu .nav-link:hover p {
+  color: #ffffff !important;
+}
+
+/* Menu Aktif: Pill Putih Bersih dengan Teks/Ikon Royal Blue (Sesuai Gaya SiAKMILA) */
+.sidebar-menu .nav-link.active {
+  background-color: #ffffff !important;
+  color: #0c2352 !important;
+  font-weight: 800 !important;
+  border-radius: 0.65rem !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+}
+
+.sidebar-menu .nav-link.active .nav-icon,
+.sidebar-menu .nav-link.active p {
+  color: #0066ff !important;
+  font-weight: 800 !important;
+}
+
+/* ===================================================
+   LARGE RESPONSIVE COUNTDOWN TIMER (MURNI WARNA LOGO)
+   =================================================== */
+.countdown-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0;
+  width: 100%;
+}
+
+.countdown-badge-status {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 0.4rem 1.15rem;
+  border-radius: 50rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.countdown-digits-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.85rem 0 0.5rem 0;
+  width: 100%;
+  max-width: 520px;
+}
+
+.countdown-box {
+  flex: 1 1 0;
+  min-width: 76px;
+  max-width: 110px;
+  background: #ffffff !important;
+  border-radius: 0.95rem;
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.08);
+  transition: all 0.2s ease;
+}
+
+/* Sewa Berjalan: Aksen Biru Logo (#0066ff) */
+.countdown-box.status-warning {
+  border: 2.5px solid #0066ff !important;
+  background: #ffffff !important;
+}
+
+/* Sewa Terjadwal: Aksen Cyan Logo (#00d2d3) */
+.countdown-box.status-info {
+  border: 2.5px solid #00d2d3 !important;
+  background: #ffffff !important;
+}
+
+/* Waktu Habis / Overdue: Aksen Magenta Logo (#d60099) */
+.countdown-box.status-danger {
+  border: 2.5px solid #d60099 !important;
+  background: #ffffff !important;
+}
+
+.countdown-val {
+  font-size: 2.85rem;
+  font-weight: 900;
+  line-height: 1;
+  font-family: 'Source Sans 3', monospace, -apple-system, sans-serif;
+  letter-spacing: -1px;
+}
+
+.countdown-box.status-warning .countdown-val {
+  color: #0f172a;
+}
+
+.countdown-box.status-info .countdown-val {
+  color: #0066ff;
+}
+
+.countdown-box.status-danger .countdown-val {
+  color: #d60099;
+}
+
+.countdown-lbl {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #0f172a;
+  margin-top: 0.35rem;
+}
+
+.countdown-sep {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0066ff;
+  line-height: 1;
+  user-select: none;
+  margin-top: -12px;
+}
+
+/* Responsiveness Semua Layar (HP, Tablet, PC) */
+@media (max-width: 576px) {
+  .countdown-digits-wrapper {
+    gap: 0.3rem;
+    margin: 0.6rem 0 0.35rem 0;
+  }
+  .countdown-box {
+    min-width: 62px;
+    padding: 0.5rem 0.3rem;
+    border-radius: 0.75rem;
+  }
+  .countdown-val {
+    font-size: 1.85rem;
+  }
+  .countdown-lbl {
+    font-size: 0.62rem;
+    letter-spacing: 0.4px;
+    margin-top: 0.25rem;
+  }
+  .countdown-sep {
+    font-size: 1.35rem;
+    margin-top: -8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .countdown-digits-wrapper {
+    gap: 0.2rem;
+  }
+  .countdown-box {
+    min-width: 52px;
+    padding: 0.4rem 0.2rem;
+  }
+  .countdown-val {
+    font-size: 1.55rem;
+  }
+  .countdown-lbl {
+    font-size: 0.58rem;
+  }
+  .countdown-sep {
+    font-size: 1.1rem;
+    margin-top: -6px;
+  }
+}
+
+/* ===================================================
+   MODERN iOS GLASSMORPHISM SYSTEM (APPLE AESTHETICS)
+   =================================================== */
+body.ios-glass-theme {
+  background-color: #f6f9fc !important;
+  background-image: 
+    radial-gradient(circle at 8% 12%, rgba(0, 102, 255, 0.08) 0%, transparent 30%),
+    radial-gradient(circle at 92% 18%, rgba(0, 210, 211, 0.09) 0%, transparent 35%),
+    radial-gradient(circle at 45% 60%, rgba(214, 0, 153, 0.05) 0%, transparent 35%),
+    radial-gradient(circle at 85% 85%, rgba(0, 102, 255, 0.07) 0%, transparent 30%) !important;
+  background-attachment: fixed !important;
+  background-size: cover !important;
+  min-height: 100vh;
+}
+
+/* iOS Glass Navbar */
+.navbar-ios-glass {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 4px 20px rgba(0, 102, 255, 0.04) !important;
+}
+
+/* iOS Stepper Glass Container */
+.ios-stepper-glass {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 1.5rem;
+  padding: 0.9rem 1.6rem;
+  box-shadow: 0 10px 30px rgba(0, 102, 255, 0.04), inset 0 1px 1px #ffffff;
+  margin-bottom: 2rem;
+}
+
+/* iOS Hero Banner Glass */
+.hero-banner-ios {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  border-radius: 1.6rem !important;
+  padding: 2.2rem !important;
+  box-shadow: 0 14px 38px rgba(0, 102, 255, 0.05), inset 0 1px 2px #ffffff !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-banner-ios::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-metahati);
+}
+
+/* iOS Filter Segmented Control */
+.ios-filter-glass {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(18px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  border-radius: 1.3rem !important;
+  padding: 0.5rem 0.6rem !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03), inset 0 1px 1px #ffffff !important;
+}
+
+.btn-filter-ios {
+  border: none !important;
+  border-radius: 1rem !important;
+  padding: 0.55rem 1.25rem !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  color: #475569 !important;
+  background: transparent !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer;
+}
+
+.btn-filter-ios:hover {
+  color: #0066ff !important;
+  background: rgba(0, 102, 255, 0.07) !important;
+}
+
+.btn-filter-ios.active {
+  background: #ffffff !important;
+  color: #0066ff !important;
+  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.16), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  font-weight: 800 !important;
+  transform: scale(1.02);
+}
+
+/* iOS Glass Asset Card */
+.asset-card-ios {
+  background: rgba(255, 255, 255, 0.84) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  border-radius: 1.45rem !important;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02), inset 0 1px 1px #ffffff !important;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.asset-card-ios:hover {
+  transform: translateY(-8px) scale(1.015);
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(0, 102, 255, 0.35) !important;
+  box-shadow: 0 20px 45px rgba(0, 102, 255, 0.13), 0 4px 12px rgba(0, 0, 0, 0.03), inset 0 1px 1px #ffffff !important;
+}
+
+.asset-card-ios .asset-img-container {
+  height: 205px;
+  border-radius: 1.45rem 1.45rem 0 0;
+  border-bottom: 1px solid rgba(0, 102, 255, 0.08);
+}
+
+.badge-ios-glass {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06) !important;
+}
+
+.price-box-ios {
+  background: rgba(248, 250, 252, 0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(0, 102, 255, 0.12) !important;
+  border-radius: 1rem !important;
+  padding: 0.85rem 1rem !important;
+}
+
+/* iOS Button with Spring Feedback (Gradasi Diagonal 2 Warna 135deg: Royal Blue ke Deep Violet) */
+.btn-ios-primary {
+  background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%) !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-radius: 0.9rem !important;
+  padding: 0.75rem 1.25rem !important;
+  box-shadow: 0 6px 20px rgba(121, 40, 202, 0.28), 0 2px 6px rgba(0, 85, 255, 0.2) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-ios-primary:hover {
+  background: linear-gradient(135deg, #0066ff 0%, #8b2be2 100%) !important;
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 10px 26px rgba(121, 40, 202, 0.4), 0 4px 12px rgba(0, 85, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.btn-ios-primary:active {
+  transform: scale(0.97);
+}
+
+/* iOS Header Admin Button (Gradasi Diagonal 2 Warna 135deg, Bebas Border Hitam) */
+.btn-admin-header {
+  background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  border-radius: 50rem !important;
+  padding: 0.42rem 1.15rem !important;
+  border: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.22) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  line-height: 1.3 !important;
+}
+
+.btn-admin-header:hover {
+  background: linear-gradient(135deg, #0066ff 0%, #8b2be2 100%) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 6px 20px rgba(121, 40, 202, 0.38) !important;
+}
+
+.btn-admin-header:active, .btn-admin-header:focus {
+  transform: scale(0.97);
+  color: #ffffff !important;
+}
+
+/* iOS Back & Secondary Navigation Pill */
+.btn-back-ios {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1.5px solid rgba(0, 102, 255, 0.28) !important;
+  color: #0066ff !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  border-radius: 50rem !important;
+  padding: 0.42rem 1.1rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.06) !important;
+}
+
+.btn-back-ios:hover {
+  background: rgba(0, 102, 255, 0.08) !important;
+  border-color: #0066ff !important;
+  color: #0052cc !important;
+  transform: translateX(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.15) !important;
+}
+
+.btn-back-ios:active {
+  transform: scale(0.97);
+}
+
+/* iOS Detail & Package Glass Components */
+.card-ios-detail {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  border-radius: 1.5rem !important;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.05), inset 0 1px 1px #ffffff !important;
+}
+
+.card-ios-detail .card-header {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0, 102, 255, 0.08) !important;
+}
+
+.card-ios-detail .card-body {
+  background: transparent !important;
+}
+
+.package-card-ios {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border: 1.5px solid rgba(226, 232, 240, 0.8) !important;
+  border-radius: 1.15rem !important;
+  padding: 1.1rem 1.25rem !important;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative;
+}
+
+.package-card-ios:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 102, 255, 0.4) !important;
+  box-shadow: 0 8px 24px rgba(0, 102, 255, 0.08) !important;
+}
+
+.package-card-ios.selected {
+  background: rgba(240, 247, 255, 0.92) !important;
+  border-color: #0066ff !important;
+  box-shadow: 0 8px 24px rgba(0, 102, 255, 0.16), inset 0 0 0 1px #0066ff !important;
+  transform: scale(1.01);
+}
+
+.checklist-item-ios {
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(0, 102, 255, 0.08);
+  border-radius: 0.85rem;
+  padding: 0.65rem 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.checklist-item-ios:hover {
+  transform: translateX(4px);
+  background: #ffffff;
+}
+
+.callout-rules-ios {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(18px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  border-left: 5px solid #d60099 !important;
+  border-radius: 1.25rem !important;
+  padding: 1.25rem 1.5rem !important;
+  box-shadow: 0 8px 25px rgba(214, 0, 153, 0.06), inset 0 1px 1px #ffffff !important;
+}
+
+.callout-payment-ios {
+  background: rgba(240, 253, 250, 0.8) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border: 1px solid rgba(0, 210, 211, 0.25) !important;
+  border-radius: 1.15rem !important;
+  padding: 1.15rem 1.35rem !important;
+}
+
+/* iOS Agreement Clause & Checkbox */
+.clause-box-ios {
+  background: rgba(248, 250, 252, 0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(0, 102, 255, 0.14) !important;
+  border-radius: 1rem !important;
+  padding: 1.1rem 1.25rem !important;
+  font-style: italic;
+  line-height: 1.6;
+  color: #0f172a !important;
+}
+
+.form-check-ios {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1.5px solid rgba(0, 102, 255, 0.2) !important;
+  border-radius: 1rem !important;
+  padding: 1rem 1.25rem 1rem 3.2rem !important;
+  transition: all 0.25s ease !important;
+  position: relative !important;
+}
+
+.form-check-ios:hover {
+  border-color: #0066ff !important;
+  background: rgba(240, 247, 255, 0.9) !important;
+  box-shadow: 0 4px 16px rgba(0, 102, 255, 0.1) !important;
+}
+
+.form-check-ios .form-check-input {
+  position: absolute !important;
+  top: 1.15rem !important;
+  left: 1.15rem !important;
+  width: 1.35rem !important;
+  height: 1.35rem !important;
+  cursor: pointer !important;
+  accent-color: #0066ff !important;
+}
+
+.form-check-ios .form-check-label {
+  cursor: pointer !important;
+  margin-bottom: 0 !important;
+  line-height: 1.5 !important;
+}
+
+
