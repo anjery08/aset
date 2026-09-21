@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aset Ma'had Aly Amtsilati | Sistem Sewa Alat Multimedia</title>
-  <meta name="title" content="Aset Ma'had Aly Amtsilati | Sistem Sewa Alat Multimedia" />
-  <meta name="description" content="Sistem Peminjaman & Sewa Alat Multimedia Ma'had Aly Amtsilati - Dikelola oleh METAHATI" />
+  <title>Aset & Inventaris Ma'had Aly Amtsilati | Peminjaman & Sewa</title>
+  <meta name="title" content="Aset & Inventaris Ma'had Aly Amtsilati | Peminjaman & Sewa" />
+  <meta name="description" content="Sistem Peminjaman & Sewa Aset & Inventaris Ma'had Aly Amtsilati - Dikelola oleh METAHATI" />
   <link rel="icon" type="image/png" href="img/logo-metahati.png" />
 
   <!-- Open Graph / WhatsApp Preview -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aset.mahadalyamtsilati.ac.id/1-katalog.html" />
-  <meta property="og:title" content="Aset Multimedia Ma'had Aly Amtsilati" />
-  <meta property="og:description" content="Sistem Peminjaman & Sewa Alat Multimedia Ma'had Aly Amtsilati - Dikelola oleh METAHATI" />
+  <meta property="og:title" content="Aset & Inventaris Ma'had Aly Amtsilati" />
+  <meta property="og:description" content="Sistem Peminjaman & Sewa Aset & Inventaris Ma'had Aly Amtsilati - Dikelola oleh METAHATI" />
   <meta property="og:image" content="https://aset.mahadalyamtsilati.ac.id/img/logo-metahati.png" />
   <meta property="og:site_name" content="METAHATI - Ma'had Aly Amtsilati" />
 
@@ -69,6 +69,17 @@
       </div>
     </div>
 
+    <!-- Peringatan jika membuka lewat file:/// (Bukan Web Server Lokal) -->
+    <div id="fileProtocolAlert" class="alert alert-warning border border-warning-subtle shadow-sm rounded-4 mb-4 d-none" style="background: rgba(254, 243, 199, 0.95);">
+      <div class="d-flex align-items-start gap-3">
+        <i class="bi bi-exclamation-triangle-fill fs-3 text-warning flex-shrink-0 mt-1"></i>
+        <div class="small">
+          <strong class="d-block text-dark fs-6 mb-1">Mode Buka File Langsung (file://) Terdeteksi:</strong>
+          <span>Browser membuka halaman ini langsung dari file Explorer. Agar fitur <strong>WhatsApp Otomatis</strong> & database aktif sempurna di komputer sebelum dihosting, silakan buka via server lokal: <a href="http://localhost:8000/1-katalog.html" class="fw-bold text-primary text-decoration-underline">http://localhost:8000</a> (klik 2x file <code>jalankan-server-lokal.bat</code> di folder aset).</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Header Banner iOS Frosted Glass -->
     <div class="hero-banner-ios mb-4">
       <div class="row align-items-center">
@@ -97,8 +108,8 @@
       </div>
     </div>
 
-    <!-- Asset Cards Grid -->
-    <div class="row g-4" id="katalogGrid">
+    <!-- Asset Cards Grid (Responsif 2 Kolom Mobile) -->
+    <div class="row g-2 g-sm-3 g-md-4" id="katalogGrid">
       <!-- Generated via JS -->
     </div>
 
@@ -168,15 +179,29 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
   <script src="./dist/js/adminlte.min.js"></script>
-  <script src="./js/rental-logic.js?v=2.5"></script>
+  <script src="./js/rental-logic.js?v=3.0"></script>
 
   <script>
     let filterKategori = "semua";
     let filterKeyword = "";
 
     document.addEventListener("DOMContentLoaded", async () => {
+      if (window.location.protocol === 'file:') {
+        const fileAlert = document.getElementById("fileProtocolAlert");
+        if (fileAlert) fileAlert.classList.remove("d-none");
+      }
+
       renderFilterKategoriButtons();
       renderKatalog();
+
+      // Sinkronisasi data aset & kategori dari server database hosting
+      if (typeof sinkronisasiDataServerLatarBelakang === "function") {
+        try {
+          await sinkronisasiDataServerLatarBelakang();
+          renderFilterKategoriButtons();
+          renderKatalog();
+        } catch (e) {}
+      }
 
       if (typeof ambilRiwayatBookingAsync === "function") {
         try {
@@ -184,6 +209,12 @@
           renderKatalog();
         } catch (e) {}
       }
+
+      // Re-render otomatis jika sinkronisasi data server selesai di latar belakang
+      window.addEventListener("sinkronisasi-selesai", () => {
+        renderFilterKategoriButtons();
+        renderKatalog();
+      });
 
       const searchInput = document.getElementById("searchInput");
       if (searchInput) {
@@ -274,53 +305,40 @@
       if (emptyState) emptyState.classList.add("d-none");
 
       filtered.forEach(item => {
-        const stokTotal = Math.max(1, parseInt(item.stokTotal || 1));
-
-        let paketListHtml = "";
-        (item.paketOpsi || []).forEach(p => {
-          paketListHtml += `
-            <div class="d-flex justify-content-between py-1 border-bottom" style="font-size: 0.92rem; border-color: rgba(0, 102, 255, 0.08) !important;">
-              <span class="text-dark fw-bold">${p.label || (p.jam + ' Jam')}</span>
-              <span class="fw-bolder" style="color: #0066ff;">${formatRupiah(p.tarif || 0)}</span>
-            </div>`;
-        });
-
-        const btnHtml = `
-          <a href="2-detail.html?id=${item.id}" class="btn btn-ios-primary w-100 py-2 fw-bold" onclick="pilihItem('${item.id}')">
-            <i class="bi bi-box-arrow-in-right me-1"></i> Pilih Paket Sewa
-          </a>`;
+        // Hitung harga paket terendah untuk label 'Mulai dari Rp...'
+        let tarifMin = 0;
+        if (item.paketOpsi && item.paketOpsi.length > 0) {
+          const validTarifs = item.paketOpsi.map(p => Number(p.tarif) || 0).filter(t => t > 0);
+          tarifMin = validTarifs.length > 0 ? Math.min(...validTarifs) : (Number(item.tarif) || 0);
+        } else if (item.tarif) {
+          tarifMin = Number(item.tarif) || 0;
+        }
+        const hargaTeks = "Rp" + Number(tarifMin).toLocaleString("id-ID");
+        const fallbackIcon = item.ikon || ((item.kategori === 'sarana' || (item.kategoriLabel && item.kategoriLabel.toLowerCase().includes('sarana'))) ? 'bi-easel2' : ((item.kategori === 'audio') ? 'bi-soundwave' : 'bi-camera-fill'));
 
         const cardCol = document.createElement("div");
-        cardCol.className = "col-lg-4 col-md-6 col-sm-12";
+        cardCol.className = "col-6 col-md-4 col-lg-3";
         cardCol.innerHTML = `
           <div class="card h-100 asset-card-ios">
             <div class="asset-img-container">
-              <img src="${item.gambar || ''}" alt="${item.nama}" class="asset-img" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';" />
+              <img src="${item.gambar || ''}" alt="${escapeHtml(item.nama)}" class="asset-img" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';" />
               <div class="asset-icon-fallback" style="display: ${item.gambar ? 'none' : 'flex'};">
-                <i class="bi ${item.ikon || 'bi-camera-fill'}"></i>
+                <i class="bi ${fallbackIcon}"></i>
               </div>
-              <span class="position-absolute top-0 start-0 m-3 badge badge-available badge-ios-glass px-3 py-2 rounded-pill shadow-sm">
-                <i class="bi bi-check-circle-fill me-1"></i> Tersedia (${stokTotal} Unit)
-              </span>
-              <span class="position-absolute top-0 end-0 m-3 badge badge-magenta badge-ios-glass px-2 py-1 rounded-2">
-                ${item.kategoriLabel || item.kategori || ''}
-              </span>
             </div>
             
-            <div class="card-body d-flex flex-column p-4">
-              <h5 class="fw-bolder text-dark mb-1" style="letter-spacing: -0.3px;">${item.nama}</h5>
-              <div class="small text-secondary mb-2 d-flex align-items-center gap-1">
-                <i class="bi bi-boxes" style="color: #0066ff;"></i> Inventaris: <strong>${stokTotal} Unit</strong>
-              </div>
-              <p class="text-dark small mb-3" style="line-height: 1.55; color: #1e293b !important; font-weight: 500;">${item.deskripsi || ''}</p>
+            <div class="card-body asset-card-body d-flex flex-column">
+              <h6 class="asset-card-title fw-bold text-dark mb-1" title="${escapeHtml(item.nama)}">${escapeHtml(item.nama)}</h6>
               
-              <div class="mb-4 price-box-ios">
-                <div class="text-uppercase small fw-bold text-dark mb-2" style="letter-spacing: 0.3px;"><i class="bi bi-tag-fill me-1" style="color: #0066ff;"></i> Pilihan Tarif Sewa:</div>
-                ${paketListHtml}
+              <div class="asset-card-price mt-auto mb-2">
+                <span class="asset-price-label">Mulai dari</span>
+                <span class="asset-price-value">${hargaTeks}</span>
               </div>
 
-              <div class="mt-auto">
-                ${btnHtml}
+              <div>
+                <a href="2-detail.html?id=${item.id}" class="btn btn-ios-primary w-100 btn-asset-detail fw-bold" onclick="pilihItem('${item.id}')">
+                  Lihat Detail
+                </a>
               </div>
             </div>
           </div>
@@ -411,7 +429,6 @@
 
       const keyword = input.value.trim();
       if (!keyword) {
-        tampilkanRiwayatLokalPerangkat();
         container.innerHTML = `
           <div class="alert alert-warning border text-center py-3 rounded-3 my-2 small">
             <i class="bi bi-exclamation-circle me-1"></i> Silakan ketik Nomor WhatsApp atau Kode Booking terlebih dahulu.
@@ -466,7 +483,7 @@
           badgeHtml = `<span class="badge bg-danger px-2 py-1"><i class="bi bi-x-circle me-1"></i> Ditolak Pengurus</span>`;
         }
 
-        const namaBarang = b.namaBarang || b.namaUnit || 'Aset Multimedia';
+        const namaBarang = b.namaBarang || b.namaUnit || 'Aset / Sarana';
         const penyewa = b.nama || 'Santri';
         const total = (typeof formatRupiah === "function") ? formatRupiah(b.totalBiaya || 0) : 'Rp ' + (b.totalBiaya || 0);
 

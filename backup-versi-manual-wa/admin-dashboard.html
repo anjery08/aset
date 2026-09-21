@@ -1,0 +1,3489 @@
+<!doctype html>
+<html lang="id" data-bs-theme="light" data-lte-color-mode="off">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Admin | Aset Ma'had Aly Amtsilati</title>
+  <meta name="title" content="Dashboard Admin | Aset Ma'had Aly Amtsilati" />
+  <link rel="icon" type="image/png" href="img/logo-metahati.png" />
+
+  <!-- Security Guard: Cek Autentikasi Sesi Login Admin -->
+  <script>
+    if (sessionStorage.getItem("admin_auth") !== "true") {
+      window.location.replace("admin-login.html");
+    }
+  </script>
+
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+
+  <!-- AdminLTE & Custom CSS -->
+  <link rel="stylesheet" href="./dist/css/adminlte.min.css" />
+  <link rel="stylesheet" href="./css/custom.css" />
+
+  <style>
+    /* Header (Top Navbar) - Gradasi Deep Royal Navy ke Violet METAHATI dengan Garis Cyan */
+    .app-header {
+      background: linear-gradient(90deg, #08152e 0%, #0c2352 50%, #1a153a 100%) !important;
+      border-bottom: 2.5px solid #00d2d3 !important;
+    }
+    .btn-header-toggle {
+      color: #ffffff !important;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .btn-header-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.15) !important;
+      color: #ffffff !important;
+    }
+
+    /* Sidebar AdminLTE - Gradasi Deep Royal Navy ke Deep Violet (Teduh, Mewah & Kontras Tinggi) */
+    .app-sidebar {
+      background: linear-gradient(180deg, #08152e 0%, #0d224d 50%, #1e123d 100%) !important;
+      border-right: 1.5px solid rgba(0, 210, 211, 0.25) !important;
+    }
+    .sidebar-brand {
+      background: rgba(0, 0, 0, 0.2) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sidebar-menu .nav-link {
+      color: rgba(255, 255, 255, 0.88) !important;
+      font-weight: 600;
+      border-radius: 0.65rem;
+      margin: 0.3rem 0.75rem;
+      padding: 0.75rem 1rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      font-size: 0.92rem;
+    }
+    .sidebar-menu .nav-link p {
+      color: rgba(255, 255, 255, 0.88) !important;
+      margin: 0 !important;
+      font-weight: inherit !important;
+      display: inline-block;
+    }
+    .sidebar-menu .nav-link .nav-icon {
+      font-size: 1.15rem;
+      margin-right: 0.75rem;
+      color: #00d2d3 !important;
+      transition: color 0.2s ease;
+    }
+    .sidebar-menu .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.12) !important;
+      color: #ffffff !important;
+    }
+    .sidebar-menu .nav-link:hover .nav-icon,
+    .sidebar-menu .nav-link:hover p {
+      color: #ffffff !important;
+    }
+    /* Menu Aktif: Pill Putih Bersih dengan Teks/Ikon Royal Blue (Sesuai Referensi SiAKMILA) */
+    .sidebar-menu .nav-link.active {
+      background-color: #ffffff !important;
+      color: #0c2352 !important;
+      font-weight: 800 !important;
+      border-radius: 0.65rem !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+    }
+    .sidebar-menu .nav-link.active .nav-icon,
+    .sidebar-menu .nav-link.active p {
+      color: #0066ff !important;
+      font-weight: 800 !important;
+    }
+    .sidebar-bottom-info {
+      background-color: rgba(0, 0, 0, 0.2) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    .stat-box-clean {
+      border-radius: 0.85rem;
+      border: 1.5px solid rgba(0, 102, 255, 0.18);
+      background: #ffffff;
+      padding: 1.25rem;
+      box-shadow: 0 4px 12px rgba(0, 102, 255, 0.05);
+      transition: transform 0.2s ease;
+    }
+    .stat-box-clean:hover {
+      transform: translateY(-3px);
+    }
+    .table-clean th {
+      background-color: rgba(0, 102, 255, 0.05) !important;
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #0066ff;
+    }
+    .table-clean td {
+      vertical-align: middle;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .admin-view {
+      animation: fadeIn 0.25s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body class="layout-fixed sidebar-expand-lg bg-white" data-bs-theme="light" data-lte-color-mode="off">
+  <div class="app-wrapper">
+    
+    <!-- ==========================================
+         TOP NAVBAR (HEADER)
+         ========================================== -->
+    <nav class="app-header navbar navbar-expand shadow-sm" style="background: #0066ff !important; border-bottom: 2.5px solid #00d2d3 !important;">
+      <div class="container-fluid">
+        <!-- Toggle Sidebar & Title -->
+        <ul class="navbar-nav align-items-center">
+          <li class="nav-item">
+            <a class="nav-link text-white px-2 btn-header-toggle" data-lte-toggle="sidebar" href="#" role="button" title="Buka/Tutup Menu">
+              <i class="bi bi-list fs-4 text-white"></i>
+            </a>
+          </li>
+          <li class="nav-item d-none d-sm-block ps-2">
+            <span class="fw-bold fs-6 text-white">
+              Panel Admin &bull; METAHATI
+            </span>
+          </li>
+        </ul>
+
+        <!-- Right Navbar Links -->
+        <ul class="navbar-nav ms-auto align-items-center gap-2">
+          <!-- Indikator Notifikasi Ajuan Baru -->
+          <li class="nav-item">
+            <button type="button" class="btn btn-sm btn-warning text-dark fw-bold position-relative d-none shadow-sm" id="btnNotifPendingTop" onclick="switchView('dashboard'); window.scrollTo({top: 400, behavior: 'smooth'});">
+              <i class="bi bi-bell-fill me-1"></i> <span id="labelNotifPendingTop">0 Ajuan Baru</span>
+            </button>
+          </li>
+
+          <!-- Tombol Lihat Web Publik -->
+          <li class="nav-item">
+            <a href="1-katalog.html" target="_blank" class="btn btn-outline-light btn-sm fw-bold">
+              <i class="bi bi-box-arrow-up-right me-1"></i> Katalog Publik
+            </a>
+          </li>
+
+          <!-- User Dropdown Menu -->
+          <li class="nav-item dropdown user-menu">
+            <a href="#" class="nav-link dropdown-toggle text-white d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+              <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm overflow-hidden flex-shrink-0" style="width: 34px; height: 34px; background: rgba(255, 255, 255, 0.25);" id="navAdminAvatarWrap">
+                <img id="navAdminAvatarImg" src="" class="rounded-circle d-none" style="width: 100%; height: 100%; object-fit: cover;" alt="Foto Admin" />
+                <i class="bi bi-person-fill text-white" id="navAdminAvatarIcon"></i>
+              </div>
+              <span class="d-none d-md-inline fw-bold small text-white" id="navAdminName">Admin</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 bg-white" style="border-radius: 0.75rem;">
+              <li class="p-3 text-center border-bottom bg-white">
+                <div class="rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center text-white shadow-sm overflow-hidden" style="width: 56px; height: 56px; background: var(--gradient-metahati);">
+                  <img id="dropdownAdminAvatarImg" src="" class="rounded-circle d-none" style="width: 100%; height: 100%; object-fit: cover;" alt="Foto Admin" />
+                  <i class="bi bi-person-fill fs-3" id="dropdownAdminAvatarIcon"></i>
+                </div>
+                <strong class="d-block text-dark" id="dropdownAdminName">Admin Ma'had Aly Amtsilati</strong>
+                <small class="text-secondary">Ma'had Aly Amtsilati</small>
+              </li>
+              <li class="p-2">
+                <button type="button" class="btn btn-outline-danger btn-sm w-100 fw-bold" onclick="logoutAdmin()">
+                  <i class="bi bi-box-arrow-right me-1"></i> Keluar (Logout)
+                </button>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- ==========================================
+         SIDEBAR (MENU NAVIGASI SAMPING)
+         ========================================== -->
+    <aside class="app-sidebar shadow-sm">
+      <!-- Sidebar Brand (Logo Resmi METAHATI Menyatu Bersih Tanpa Kotak Putih) -->
+      <div class="sidebar-brand py-3">
+        <a href="#" onclick="switchView('dashboard'); return false;" class="d-flex align-items-center justify-content-center text-decoration-none w-100 px-3">
+          <img src="img/logo-metahati.png" alt="Logo METAHATI" style="height: 38px; max-width: 100%; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.35));" />
+        </a>
+      </div>
+
+      <!-- Sidebar Wrapper & Menu Navigasi -->
+      <div class="sidebar-wrapper">
+        <!-- Panel Info Admin di Sidebar -->
+        <div class="p-3 d-flex align-items-center gap-3" style="background: rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+          <div class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm overflow-hidden flex-shrink-0" style="width: 42px; height: 42px; background: #ffffff; border: 2px solid #00d2d3;">
+            <img id="sidebarAdminAvatarImg" src="" class="rounded-circle d-none" style="width: 100%; height: 100%; object-fit: cover;" alt="Foto Admin" />
+            <i class="bi bi-person-fill fs-4" style="color: #0066ff;" id="sidebarAdminAvatarIcon"></i>
+          </div>
+          <div class="overflow-hidden">
+            <strong class="d-block text-white text-truncate small" id="sidebarAdminName">Admin</strong>
+            <span class="badge rounded-pill fw-bold" style="background-color: #00d2d3; color: #08152e; font-size: 0.68rem;"><i class="bi bi-circle-fill me-1" style="font-size: 0.5rem; color: #0066ff;"></i>Aktif</span>
+          </div>
+        </div>
+
+        <nav class="mt-2">
+          <ul class="nav sidebar-menu flex-column" role="menu">
+            
+            <!-- 1. Menu Dashboard -->
+            <li class="nav-item">
+              <a href="#" class="nav-link active d-flex justify-content-between align-items-center" id="menu-dashboard" onclick="switchView('dashboard'); return false;">
+                <div class="d-flex align-items-center">
+                  <i class="nav-icon bi bi-speedometer2"></i>
+                  <p>Dashboard</p>
+                </div>
+                <span class="badge bg-danger rounded-pill d-none ms-auto" id="badgeNotifPendingSide">0</span>
+              </a>
+            </li>
+
+            <!-- 2. Menu Monitoring -->
+            <li class="nav-item">
+              <a href="#" class="nav-link" id="menu-monitoring" onclick="switchView('monitoring'); return false;">
+                <div class="d-flex align-items-center">
+                  <i class="nav-icon bi bi-clock-history"></i>
+                  <p>Monitoring</p>
+                </div>
+              </a>
+            </li>
+
+            <!-- 3. Menu Riwayat -->
+            <li class="nav-item">
+              <a href="#" class="nav-link" id="menu-riwayat" onclick="switchView('riwayat'); return false;">
+                <div class="d-flex align-items-center">
+                  <i class="nav-icon bi bi-receipt"></i>
+                  <p>Riwayat</p>
+                </div>
+              </a>
+            </li>
+
+            <!-- 4. Menu Aset -->
+            <li class="nav-item">
+              <a href="#" class="nav-link" id="menu-aset" onclick="switchView('aset'); return false;">
+                <div class="d-flex align-items-center">
+                  <i class="nav-icon bi bi-collection-play"></i>
+                  <p>Aset</p>
+                </div>
+              </a>
+            </li>
+
+            <!-- 5. Menu Pengaturan -->
+            <li class="nav-item">
+              <a href="#" class="nav-link" id="menu-pengaturan" onclick="switchView('pengaturan'); return false;">
+                <div class="d-flex align-items-center">
+                  <i class="nav-icon bi bi-gear"></i>
+                  <p>Pengaturan</p>
+                </div>
+              </a>
+            </li>
+
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Sidebar Bottom Info -->
+      <div class="p-3 text-center mt-auto sidebar-bottom-info">
+        <small class="fw-semibold d-block text-white-50 mb-1" style="font-size: 0.75rem;">
+          Sistem Sewa Aset &bull; v2.0
+        </small>
+        <span class="badge px-2 py-1 small rounded-pill fw-bold" style="background-color: #00d2d3; color: #0f172a;">
+          <i class="bi bi-shield-check me-1"></i> Admin Panel
+        </span>
+      </div>
+    </aside>
+
+    <!-- ==========================================
+         MAIN CONTENT AREA
+         ========================================== -->
+    <main class="app-main p-4 bg-white">
+      
+      <!-- =====================================================
+           VIEW 1: DASHBOARD (STATISTIK + TABEL PENYEWA)
+           ===================================================== -->
+      <section id="view-dashboard" class="admin-view">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h4 class="fw-bolder text-dark mb-1">Dashboard Admin</h4>
+            <p class="text-secondary small mb-0">Ringkasan inventaris dan pemantauan data penyewa yang sedang berjalan.</p>
+          </div>
+          <button type="button" class="btn btn-outline-primary btn-sm fw-bold" onclick="segarkanSemuaData()">
+            <i class="bi bi-arrow-clockwise me-1"></i> Segarkan Data
+          </button>
+        </div>
+
+        <!-- Banner Peringatan Ada Ajuan Baru yang Butuh ACC -->
+        <div id="bannerAjuanBaruDashboard" class="alert alert-warning border border-warning-subtle shadow-sm p-3 mb-4 rounded-3 d-none">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-bell-fill fs-3 text-warning"></i>
+              <div>
+                <strong class="d-block text-dark fs-6" id="teksJumlahAjuanBaru">Ada 1 Permohonan Sewa Baru Menunggu Konfirmasi!</strong>
+                <span class="small text-dark">Mohon tinjau pengajuan santri di bawah dan klik tombol <strong>ACC Sewa</strong> untuk menyetujui atau <strong>Tolak</strong>.</span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-dark fw-bold" onclick="document.getElementById('dashboardTabelPenyewaWrap').scrollIntoView({behavior: 'smooth'})">
+              Lihat Pengajuan <i class="bi bi-arrow-down ms-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Kartu Statistik -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-lg-3">
+            <div class="stat-box-clean">
+              <small class="text-secondary fw-bold">Total Aset</small>
+              <div class="d-flex align-items-center justify-content-between mt-2">
+                <h3 class="fw-bolder text-dark mb-0" id="statTotalAset">0</h3>
+                <i class="bi bi-box-seam fs-2" style="color: #0066ff;"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="stat-box-clean">
+              <small class="text-secondary fw-bold">Unit Tersedia</small>
+              <div class="d-flex align-items-center justify-content-between mt-2">
+                <h3 class="fw-bolder text-success mb-0" id="statAsetTersedia">0</h3>
+                <i class="bi bi-check-circle-fill fs-2 text-success"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="stat-box-clean">
+              <small class="text-secondary fw-bold">Sedang Disewa</small>
+              <div class="d-flex align-items-center justify-content-between mt-2">
+                <h3 class="fw-bolder mb-0" style="color: #d60099;" id="statAsetDisewa">0</h3>
+                <i class="bi bi-hourglass-split fs-2" style="color: #d60099;"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="stat-box-clean">
+              <small class="text-secondary fw-bold">Total Permohonan</small>
+              <div class="d-flex align-items-center justify-content-between mt-2">
+                <h3 class="fw-bolder text-dark mb-0" id="statTotalBooking">0</h3>
+                <i class="bi bi-receipt-cutoff fs-2 text-secondary"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabel Penyewa Terkini Langsung di Dashboard -->
+        <div class="card shadow-sm border-0 p-3 bg-white" id="dashboardTabelPenyewaWrap" style="border-radius: 1rem; border: 1px solid #e2e8f0 !important;">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+              <h5 class="fw-bolder text-dark mb-1">
+                <i class="bi bi-hourglass-split me-2" style="color: #0066ff;"></i>Daftar Ajuan Sewa Baru (Menunggu Konfirmasi)
+              </h5>
+              <small class="text-secondary">Permohonan sewa santri yang butuh tindakan segera: ACC atau Tolak.</small>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-primary fw-bold" onclick="switchView('monitoring')">
+              Buka Monitoring Sewa <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+          </div>
+
+          <!-- Tampilan Tabel untuk Layar Desktop / Laptop (d-none d-md-block) -->
+          <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover table-clean align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>No Invoice</th>
+                  <th>Penyewa & Kontak</th>
+                  <th>Unit yang Disewa</th>
+                  <th>Jadwal Pinjam & Kembali</th>
+                  <th>Biaya Sewa</th>
+                  <th class="text-end">Aksi Cepat</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardTabelPenyewaBody">
+                <!-- Diisi via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Tampilan Kartu Responsif Khusus HP (d-md-none) TANPA GESER KANAN-KIRI -->
+          <div class="d-md-none" id="dashboardMobileCardsContainer">
+            <!-- Diisi via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           VIEW 2: ASET (INVENTARIS + KATEGORI DINAMIS)
+           ===================================================== -->
+      <section id="view-aset" class="admin-view d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h4 class="fw-bolder text-dark mb-1">Manajemen Aset & Inventaris</h4>
+            <p class="text-secondary small mb-0">Kelola unit aset & inventaris, atur tarif paket, upload foto, dan kelola kategori.</p>
+          </div>
+          <button type="button" class="btn btn-primary fw-bold shadow-sm" onclick="bukaModalAsetBaru()">
+            <i class="bi bi-plus-lg me-1"></i> Tambah Aset Baru
+          </button>
+        </div>
+
+        <!-- Toolbar Pencarian & Filter Kategori Aset -->
+        <div class="card shadow-sm border-0 p-3 mb-3 bg-white" style="border-radius: 0.85rem; border: 1px solid #e2e8f0 !important;">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-6">
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search" style="color: #0066ff;"></i></span>
+                <input type="text" id="adminSearchAsetInput" class="form-control border-start-0" placeholder="Cari nama aset, kategori, atau kode..." oninput="renderTabelAsetAdmin()" />
+              </div>
+            </div>
+            <div class="col-md-6 text-md-end">
+              <span class="badge bg-white text-dark border px-3 py-2 fw-semibold">
+                <i class="bi bi-info-circle me-1"></i> Total <strong id="countAsetFiltered">0</strong> unit alat terdaftar
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabel Inventaris Aset -->
+        <div class="card shadow-sm border-0 p-3 bg-white" style="border-radius: 1rem; border: 1px solid #e2e8f0 !important;">
+          <!-- Tampilan Tabel Desktop (d-none d-md-block) -->
+          <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover table-clean align-middle mb-0">
+              <thead>
+                <tr>
+                  <th style="width: 75px;">Foto</th>
+                  <th>Nama Alat & Kode</th>
+                  <th>Kategori</th>
+                  <th>Kuantitas (Stok)</th>
+                  <th>Paket Durasi & Tarif</th>
+                  <th>Admin PIC</th>
+                  <th>Status</th>
+                  <th class="text-end" style="width: 140px;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="adminTabelAsetBody">
+                <!-- Diisi via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Tampilan Kartu Responsif Khusus HP (d-md-none) TANPA GESER KANAN-KIRI -->
+          <div class="d-md-none" id="asetMobileCardsContainer">
+            <!-- Diisi via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           VIEW 3: MONITORING (COUNTDOWN REAL-TIME & DENDA)
+           ===================================================== -->
+      <section id="view-monitoring" class="admin-view d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h4 class="fw-bolder text-dark mb-1">Monitoring Sewa Berjalan</h4>
+            <p class="text-secondary small mb-0">Pantau sisa durasi sewa, batas pengembalian, toleransi 15 menit, dan denda real-time.</p>
+          </div>
+          <button type="button" class="btn btn-outline-primary btn-sm fw-bold" onclick="renderMonitoringView()">
+            <i class="bi bi-arrow-clockwise me-1"></i> Refresh Timer
+          </button>
+        </div>
+
+        <div class="card shadow-sm border-0 p-3 bg-white mb-4" style="border-radius: 1rem; border: 1px solid #e2e8f0 !important;">
+          <div class="callout-rules mb-3 p-3">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-info-circle-fill text-primary fs-4 me-2"></i>
+              <div class="small">
+                <strong>Aturan Monitoring Waktu:</strong> Batas toleransi pengembalian adalah <strong>15 menit</strong>. Keterlambatan melebihi 15 menit dikenakan denda <strong>Rp 10.000 / Jam</strong> (kelipatan per jam berjalan).
+              </div>
+            </div>
+          </div>
+
+          <div id="monitoringContainer">
+            <!-- Diisi otomatis oleh renderMonitoringView() via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           VIEW 4: RIWAYAT (SEMUA BOOKING + PDF + HAPUS)
+           ===================================================== -->
+      <section id="view-riwayat" class="admin-view d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h4 class="fw-bolder text-dark mb-1">Riwayat Lengkap Booking</h4>
+            <p class="text-secondary small mb-0">Arsip data peminjaman sewa yang masuk secara otomatis dari server cPanel.</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-primary btn-sm fw-bold" onclick="renderTabelRiwayatAdmin()">
+              <i class="bi bi-arrow-clockwise me-1"></i> Segarkan
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm fw-bold" onclick="bersihkanSemuaRiwayat()">
+              <i class="bi bi-trash me-1"></i> Bersihkan Semua
+            </button>
+          </div>
+        </div>
+
+        <!-- Rekap Kas Keuangan Sewa -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="stat-box-clean p-3">
+              <small class="text-secondary fw-bold text-uppercase" style="letter-spacing: 0.5px;">Pemasukan Sewa Pokok</small>
+              <div class="d-flex align-items-center justify-content-between mt-2">
+                <h4 class="fw-bolder text-dark mb-0" id="rekapSewaPokok">Rp 0</h4>
+                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="background: rgba(0, 102, 255, 0.1); width: 42px; height: 42px;">
+                  <i class="bi bi-wallet2 fs-5" style="color: #0066ff;"></i>
+                </div>
+              </div>
+              <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">Akumulasi tarif sewa unit alat</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-box-clean p-3">
+              <small class="text-secondary fw-bold text-uppercase" style="letter-spacing: 0.5px;">Denda Keterlambatan</small>
+              <div class="d-flex align-items-center justify-content-between mt-2">
+                <h4 class="fw-bolder mb-0" style="color: #d60099;" id="rekapTotalDenda">Rp 0</h4>
+                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="background: rgba(214, 0, 153, 0.1); width: 42px; height: 42px;">
+                  <i class="bi bi-exclamation-octagon fs-5" style="color: #d60099;"></i>
+                </div>
+              </div>
+              <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">Denda keterlambatan sewa</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-box-clean p-3" style="border-left: 4px solid #10b981 !important;">
+              <small class="text-secondary fw-bold text-uppercase" style="letter-spacing: 0.5px;">Total Kas Masuk</small>
+              <div class="d-flex align-items-center justify-content-between mt-2">
+                <h4 class="fw-bolder text-success mb-0" id="rekapTotalKas">Rp 0</h4>
+                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="background: rgba(16, 185, 129, 0.1); width: 42px; height: 42px;">
+                  <i class="bi bi-cash-stack fs-5 text-success"></i>
+                </div>
+              </div>
+              <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">Sewa Pokok + Denda</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Tombol Ekspor Kas -->
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="small fw-bold text-secondary"><i class="bi bi-funnel me-1"></i>Filter:</span>
+            <select id="filterRiwayatStatus" class="form-select form-select-sm fw-bold text-dark bg-white" style="width: auto;" onchange="renderTabelRiwayatAdmin()">
+              <option value="completed" selected>Hanya Selesai (Dikembalikan)</option>
+              <option value="rejected">Ditolak / Dibatalkan</option>
+              <option value="semua">Semua Arsip Riwayat</option>
+              <option value="pending">Menunggu ACC</option>
+              <option value="active">Sedang Berjalan</option>
+            </select>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-metahati fw-bold shadow-sm" onclick="cetakLaporanKas()">
+              <i class="bi bi-printer me-1"></i> Cetak Laporan Kas (PDF)
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-success fw-bold" onclick="exportKasCsv()">
+              <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export Excel (CSV)
+            </button>
+          </div>
+        </div>
+
+        <div class="card shadow-sm border-0 p-3 bg-white" style="border-radius: 1rem; border: 1px solid #e2e8f0 !important;">
+          <!-- Tampilan Tabel Desktop (d-none d-md-block) -->
+          <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover table-clean align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>No Invoice</th>
+                  <th>Penyewa & Kontak</th>
+                  <th>Unit Sewa</th>
+                  <th>Jadwal Sewa</th>
+                  <th>Sewa Pokok</th>
+                  <th>Denda</th>
+                  <th>Total Bayar</th>
+                  <th class="text-end">Aksi Dokumen</th>
+                </tr>
+              </thead>
+              <tbody id="adminTabelRiwayatBody">
+                <!-- Diisi via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Tampilan Kartu Responsif Khusus HP (d-md-none) TANPA GESER KANAN-KIRI -->
+          <div class="d-md-none" id="riwayatMobileCardsContainer">
+            <!-- Diisi via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           VIEW 5: PENGATURAN (FLEKSIBEL: ADMIN 1 & ADMIN 2 + AKUN)
+           ===================================================== -->
+      <section id="view-pengaturan" class="admin-view d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h4 class="fw-bolder text-dark mb-1">Pengaturan Sistem</h4>
+            <p class="text-secondary small mb-0">Atur nomor WhatsApp Admin 1 & Admin 2 serta akun keamanan login Admin.</p>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <!-- Box WhatsApp Admin 1 & Admin 2 Fleksibel -->
+          <div class="col-lg-7">
+            <div class="card shadow-sm border-0 p-4 bg-white" style="border-radius: 1rem; border: 1px solid #e2e8f0 !important;">
+              <h5 class="fw-bolder text-dark mb-2">
+                <i class="bi bi-whatsapp me-2" style="color: #25d366;"></i>Nomor WhatsApp Admin
+              </h5>
+              <p class="text-secondary small mb-4">
+                Pemesanan alat oleh santri akan otomatis diarahkan ke nomor WhatsApp <strong>Admin 1</strong> atau <strong>Admin 2</strong> sesuai PIC yang Anda tentukan pada masing-masing aset.
+              </p>
+
+              <form onsubmit="simpanPengaturanWaAdmin(event)">
+                <!-- Admin 1 -->
+                <div class="mb-3 p-3 rounded bg-white border" style="border: 1.5px solid rgba(0, 102, 255, 0.2) !important;">
+                  <label class="form-label fw-bold text-dark d-flex align-items-center">
+                    <span class="badge text-white me-2 px-2 py-1" style="background-color: #0066ff;">Admin 1</span>
+                    Nomor WhatsApp Admin 1:
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-white fw-bold"><i class="bi bi-whatsapp" style="color: #0066ff;"></i></span>
+                    <input type="text" id="settingWaAdmin1" class="form-control fw-bold bg-white" placeholder="628xxxxxxxxxx" required />
+                  </div>
+                  <small class="text-muted" style="font-size: 0.78rem;">Contoh: 628812762520 (Gunakan kode negara 62 tanpa spasi atau tanda +)</small>
+                </div>
+
+                <!-- Admin 2 -->
+                <div class="mb-4 p-3 rounded bg-white border" style="border: 1.5px solid rgba(214, 0, 153, 0.2) !important;">
+                  <label class="form-label fw-bold text-dark d-flex align-items-center">
+                    <span class="badge text-white me-2 px-2 py-1" style="background-color: #d60099;">Admin 2</span>
+                    Nomor WhatsApp Admin 2:
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-white fw-bold"><i class="bi bi-whatsapp" style="color: #d60099;"></i></span>
+                    <input type="text" id="settingWaAdmin2" class="form-control fw-bold bg-white" placeholder="628xxxxxxxxxx" required />
+                  </div>
+                  <small class="text-muted" style="font-size: 0.78rem;">Contoh: 628812762520</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
+                  <i class="bi bi-check2-circle me-1"></i> Simpan Nomor WhatsApp
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Box Akun & Foto Profil Admin -->
+          <div class="col-lg-5">
+            <div class="card shadow-sm border-0 p-4 bg-white" style="border-radius: 1rem; border: 1px solid #e2e8f0 !important;">
+              <h5 class="fw-bolder text-dark mb-2">
+                <i class="bi bi-person-badge me-2" style="color: #7928ca;"></i>Akun & Foto Profil Admin
+              </h5>
+              <p class="text-secondary small mb-3">
+                Atur foto profil, username, dan password untuk akun Admin.
+              </p>
+
+              <!-- Upload Foto Profil Admin -->
+              <div class="p-3 mb-3 rounded-3 bg-light border text-center">
+                <div class="position-relative d-inline-block mb-2">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm overflow-hidden mx-auto" style="width: 80px; height: 80px; background: var(--gradient-metahati); border: 3px solid #ffffff;">
+                    <img id="previewAdminAvatar" src="" class="rounded-circle d-none" style="width: 100%; height: 100%; object-fit: cover;" alt="Foto Profil Admin" />
+                    <i class="bi bi-person-fill fs-1" id="iconAdminAvatarFallback"></i>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center gap-2">
+                  <label class="btn btn-sm btn-outline-primary fw-bold mb-0" style="cursor: pointer;">
+                    <i class="bi bi-camera me-1"></i> Upload Foto Profil
+                    <input type="file" id="inputFotoProfilAdmin" accept="image/*" class="d-none" onchange="handleUploadFotoProfilAdmin(event)" />
+                  </label>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="resetFotoProfilAdmin()" title="Kembali ke avatar bawaan">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+                <small class="text-muted d-block mt-1" style="font-size: 0.72rem;">Format: JPG / PNG / WebP (Maks 3 MB)</small>
+              </div>
+
+              <form onsubmit="simpanAkunAdmin(event)">
+                <div class="mb-3">
+                  <label class="form-label fw-bold small text-dark">Username Admin:</label>
+                  <input type="text" id="settingUsername" class="form-control" required />
+                </div>
+                <div class="mb-4">
+                  <label class="form-label fw-bold small text-dark">Password Baru:</label>
+                  <div class="input-group">
+                    <input type="password" id="settingPassword" class="form-control" required />
+                    <button class="btn btn-outline-secondary" type="button" onclick="toggleLihatPasswordSetting()">
+                      <i class="bi bi-eye" id="iconTogglePassSetting"></i>
+                    </button>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-metahati fw-bold px-4 py-2 w-100">
+                  <i class="bi bi-check2-circle me-1"></i> Simpan Profil Admin
+                </button>
+              </form>
+            <!-- Box Integrasi WhatsApp Gateway Otomatis (WA Multi Session) -->
+          <div class="col-12">
+            <div class="card shadow-sm border-0 p-4 bg-white" style="border-radius: 1rem; border: 2px solid #25D366 !important;">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+                <div>
+                  <h5 class="fw-bolder text-dark mb-1 d-flex align-items-center gap-2 flex-wrap">
+                    <i class="bi bi-whatsapp text-success fs-4"></i>
+                    Integrasi WhatsApp Otomatis (WA Multi Session)
+                    <span class="badge bg-success-subtle text-success border border-success px-2 py-1 rounded-pill small">
+                      <i class="bi bi-patch-check-fill me-1"></i> Sesi: Admin Ma'had Aly Amtsilati
+                    </span>
+                  </h5>
+                  <p class="text-secondary small mb-0">
+                    Notifikasi konfirmasi booking santri, persetujuan (ACC), penolakan, dan tanda terima pengembalian akan terkirim secara otomatis via nomor <strong>Admin Ma'had Aly Amtsilati</strong> (<span id="txtDisplayAdminPhone">6287748921490</span>).
+                  </p>
+                </div>
+                <div>
+                  <button type="button" class="btn btn-outline-success fw-bold px-3 py-2 shadow-sm" id="btnTestWaGw" onclick="lakukanTestKirimWaGateway()">
+                    <i class="bi bi-send-check me-1"></i> Test Kirim WA Sekarang
+                  </button>
+                </div>
+              </div>
+
+              <form onsubmit="simpanPengaturanWaGateway(event)">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold text-dark small mb-1">Base URL Gateway API:</label>
+                    <input type="text" id="gwApiUrl" class="form-control font-monospace small" value="https://wa-multi-session.amtsilatipusat.com/api/v1" required />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold text-dark small mb-1">API Key Gateway:</label>
+                    <div class="input-group">
+                      <input type="password" id="gwApiKey" class="form-control font-monospace small" value="1fcea2a9-6c3d-4158-8280-76ccdb9d9f66" required />
+                      <button class="btn btn-outline-secondary" type="button" onclick="toggleLihatApiKey()">
+                        <i class="bi bi-eye" id="iconToggleApiKey"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="col-md-5">
+                    <label class="form-label fw-bold text-dark small mb-1">Session ID (Admin Ma'had Aly Amtsilati):</label>
+                    <input type="text" id="gwSessionId" class="form-control font-monospace small" value="0ab9413c-aab1-4705-bd92-3e4b0a8c5426" required />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-bold text-dark small mb-1">Nama Sesi:</label>
+                    <input type="text" id="gwSessionName" class="form-control small" value="Admin Ma'had Aly Amtsilati" readonly />
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label fw-bold text-dark small mb-1">Nomor Pengirim / Admin:</label>
+                    <input type="text" id="gwPhoneAdmin" class="form-control font-monospace small" value="6287748921490" required />
+                  </div>
+                </div>
+
+                <div class="mt-3 p-3 rounded-3 bg-light border d-flex flex-wrap gap-4 align-items-center">
+                  <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="gwEnabled" checked>
+                    <label class="form-check-label fw-bold small text-dark" for="gwEnabled">Aktifkan Notifikasi WhatsApp Otomatis</label>
+                  </div>
+                  <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="gwNotifyAdmin" checked>
+                    <label class="form-check-label small text-secondary" for="gwNotifyAdmin">Notif booking baru ke Admin</label>
+                  </div>
+                  <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="gwNotifySantri" checked>
+                    <label class="form-check-label small text-secondary" for="gwNotifySantri">Notif update status & invoice ke Santri</label>
+                  </div>
+                </div>
+
+                <div class="mt-3">
+                  <button type="submit" class="btn btn-success fw-bold px-4 py-2 shadow-sm">
+                    <i class="bi bi-check2-circle me-1"></i> Simpan Pengaturan WA Gateway
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Box Backup & Restore Data Lengkap (Proteksi Data Hosting) -->
+          <div class="col-12">
+            <div class="card shadow-sm border-0 p-4 bg-white" style="border-radius: 1rem; border: 1.5px solid #22c55e !important;">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <div>
+                  <h5 class="fw-bolder text-dark mb-1">
+                    <i class="bi bi-database-check me-2 text-success"></i>Cadangan & Pemulihan Data (Backup & Restore)
+                  </h5>
+                  <p class="text-secondary small mb-0">
+                    Unduh seluruh database (riwayat sewa penyewa, katalog aset multimedia, dan pengaturan sistem) ke laptop sebagai arsip cadangan mandiri.
+                  </p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-success fw-bold px-3 py-2 shadow-sm" onclick="unduhBackupDatabaseLengkap()">
+                    <i class="bi bi-download me-1"></i> Download Backup Data (JSON)
+                  </button>
+                  <label class="btn btn-outline-primary fw-bold px-3 py-2 mb-0" style="cursor: pointer;">
+                    <i class="bi bi-upload me-1"></i> Pulihkan Data (Restore JSON)
+                    <input type="file" id="inputRestoreBackup" accept=".json" class="d-none" onchange="prosesRestoreDatabase(event)" />
+                  </label>
+                </div>
+              </div>
+              <div class="p-3 rounded-3 bg-light border small text-dark">
+                <i class="bi bi-shield-check text-success me-1 fs-6"></i> <strong>Jaminan Keamanan Data Hosting:</strong> File ZIP rilis sistem telah diatur untuk <strong>TIDAK PERNAH</strong> menimpa database penyewa maupun aset yang sudah aktif di cPanel hosting saat Anda mengunggah pembaruan kode.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer AdminLTE -->
+    <footer class="app-footer text-center py-3 border-top" style="background-color: #eef4fb !important; border-top: 2px solid rgba(0, 102, 255, 0.25) !important;">
+      <div class="small text-secondary">
+        &copy; 2026 <strong class="text-dark">METAHATI</strong> &bull; Ma'had Aly Amtsilati. Hak Cipta Dilindungi.
+      </div>
+    </footer>
+  </div>
+
+  <!-- =====================================================
+       MODAL TAMBAH / EDIT ASET (DENGAN KATEGORI DINAMIS)
+       ===================================================== -->
+  <div class="modal fade" id="modalAset" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow bg-white" style="border-radius: 1rem;">
+        <div class="modal-header text-white" style="background: var(--gradient-metahati);">
+          <h5 class="modal-title fw-bold" id="modalAsetTitle">Tambah Aset Baru</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form onsubmit="simpanFormAset(event)">
+          <div class="modal-body p-4 bg-white text-dark">
+            <input type="hidden" id="formAsetId" value="" />
+
+            <div class="row g-3">
+              <!-- Nama Alat -->
+              <div class="col-md-7">
+                <label class="form-label fw-bold text-dark small">Nama Alat / Unit: <span class="text-danger">*</span></label>
+                <input type="text" id="formNama" class="form-control" placeholder="Contoh: Kamera Sony Alpha A7 III" required />
+              </div>
+
+              <!-- Pilihan Admin PIC (Fleksibel: Admin 1 / Admin 2) -->
+              <div class="col-md-5">
+                <label class="form-label fw-bold text-dark small">PIC Admin (Tujuan WA Booking): <span class="text-danger">*</span></label>
+                <select id="formAdminPic" class="form-select fw-bold text-dark" required>
+                  <option value="admin1">Admin 1</option>
+                  <option value="admin2">Admin 2</option>
+                </select>
+              </div>
+
+              <!-- Kategori Dinamis -->
+              <div class="col-md-7">
+                <label class="form-label fw-bold text-dark small">Kategori Alat: <span class="text-danger">*</span></label>
+                <select id="formKategoriSelect" class="form-select fw-bold text-dark" onchange="cekPilihanKategoriBaru(this.value)">
+                  <!-- Diisi via JS oleh muatPilihanKategoriModal() -->
+                </select>
+                <!-- Input Kategori Baru (Muncul jika pilih '+ Tambah Kategori Baru') -->
+                <div id="wrapperKategoriBaru" class="mt-2 d-none">
+                  <div class="input-group">
+                    <span class="input-group-text bg-white fw-bold small text-primary">+ Kategori:</span>
+                    <input type="text" id="formKategoriBaruInput" class="form-control" placeholder="Ketik nama kategori baru (contoh: Drone & Gimbal)" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Kuantitas & Status Ketersediaan -->
+              <div class="col-md-2">
+                <label class="form-label fw-bold text-dark small">Kuantitas: <span class="text-danger">*</span></label>
+                <input type="number" id="formStokTotal" class="form-control fw-bold text-dark" min="1" value="1" title="Jumlah total unit fisik alat yang dimiliki" required />
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label fw-bold text-dark small">Status Master: <span class="text-danger">*</span></label>
+                <select id="formStatus" class="form-select fw-bold text-dark">
+                  <option value="available">Aktif (Tampil di Katalog)</option>
+                  <option value="maintenance">Nonaktif / Servis (Disembunyikan)</option>
+                </select>
+              </div>
+
+              <!-- Upload Foto dengan Canvas Compression -->
+              <div class="col-12">
+                <label class="form-label fw-bold text-dark small">Foto Alat:</label>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="border rounded p-1 bg-white d-flex align-items-center justify-content-center" style="width: 90px; height: 90px; overflow: hidden;">
+                    <img id="formImgPreview" src="img/canon-rp.jpg" alt="Preview" style="max-width: 100%; max-height: 100%; object-fit: cover;" />
+                  </div>
+                  <div class="flex-grow-1">
+                    <input type="file" id="formFileInput" class="form-control form-control-sm mb-1" accept="image/*" onchange="handleImageUpload(event)" />
+                    <small class="text-muted d-block" style="font-size: 0.76rem;">
+                      Format foto JPG/PNG. Foto otomatis dikompresi cerdas agar loading katalog sangat cepat.
+                    </small>
+                    <input type="hidden" id="formGambarBase64" value="" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Deskripsi Alat -->
+              <div class="col-12">
+                <label class="form-label fw-bold text-dark small">Deskripsi Singkat:</label>
+                <textarea id="formDeskripsi" class="form-control" rows="2" placeholder="Deskripsi fitur unggulan unit alat..."></textarea>
+              </div>
+
+              <!-- Kelengkapan Unit -->
+              <div class="col-12">
+                <label class="form-label fw-bold text-dark small">Kelengkapan Unit (Tulis satu item per baris):</label>
+                <textarea id="formKelengkapan" class="form-control" rows="3" placeholder="1x Unit Body&#10;1x Lensa&#10;1x Baterai & Charger&#10;1x Tas"></textarea>
+              </div>
+
+              <!-- Paket Sewa & Tarif -->
+              <div class="col-12">
+                <label class="form-label fw-bold text-dark small">Paket Durasi & Tarif Sewa Pokok:</label>
+                <div id="formPaketContainer" class="d-flex flex-column gap-2">
+                  <!-- Diisi dinamis -->
+                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm mt-2 fw-bold" onclick="tambahBarisPaket()">
+                  <i class="bi bi-plus-circle me-1"></i> Tambah Opsi Paket Durasi
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer bg-white border-top">
+            <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-primary fw-bold px-4">
+              <i class="bi bi-check-lg me-1"></i> Simpan Aset
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Terima Pengembalian Alat (Tanpa Confirm Berantai) -->
+  <!-- Modal ACC / Setujui Permohonan Sewa -->
+  <div class="modal fade" id="modalAccBooking" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
+        <div class="modal-header text-white" style="background: linear-gradient(135deg, #0055ff 0%, #00a8ff 100%);">
+          <h5 class="modal-title fw-bold">
+            <i class="bi bi-patch-check-fill me-2"></i> Konfirmasi & ACC Pengajuan Sewa
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <input type="hidden" id="modalAccId" />
+          <input type="hidden" id="modalAccWa" />
+          
+          <div class="p-3 rounded-3 bg-light border mb-3">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-secondary small fw-bold">ID Booking:</span>
+              <span class="badge font-monospace text-white" style="background-color: #7928ca;" id="modalAccBadgeId">-</span>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-secondary small fw-bold">Penyewa:</span>
+              <strong class="text-dark" id="modalAccNama">-</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-secondary small fw-bold">Unit Alat:</span>
+              <strong class="text-dark" id="modalAccAset">-</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-secondary small fw-bold">Jadwal Pinjam:</span>
+              <span class="text-primary fw-bold" id="modalAccJadwal">-</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-secondary small fw-bold">Durasi / Paket:</span>
+              <span class="badge bg-secondary" id="modalAccPaket">-</span>
+            </div>
+          </div>
+
+          <!-- Opsi Bebas Biaya (Dinas Pondok) -->
+          <div class="p-3 rounded-3 border mb-3" style="background: rgba(240, 247, 255, 0.85); border-color: rgba(0, 102, 255, 0.2) !important;">
+            <div class="form-check form-switch mb-2">
+              <input class="form-check-input" type="checkbox" role="switch" id="checkAccDinasPondok" onchange="handleToggleAccDinas(this.checked)">
+              <label class="form-check-label fw-bold text-dark" for="checkAccDinasPondok">
+                <i class="bi bi-gift-fill text-primary me-1"></i> Bebaskan Biaya (Pinjam Dinas Pondok / Rp 0)
+              </label>
+            </div>
+            <small class="text-muted d-block ms-4">
+              Centang opsi ini jika alat dipinjam untuk kegiatan kedinasan/liputan resmi pondok Ma'had Aly. Biaya sewa akan dicatat <strong>Rp 0</strong> di pembukuan kas agar tidak ada uang fiktif.
+            </small>
+          </div>
+
+          <!-- Opsi Penyesuaian Jam Ambil Mulai Sekarang (Handover Riil) -->
+          <div class="p-3 rounded-3 border mb-3" style="background: rgba(254, 249, 195, 0.55); border-color: rgba(234, 179, 8, 0.35) !important;">
+            <div class="form-check form-switch mb-1">
+              <input class="form-check-input" type="checkbox" role="switch" id="checkAccMulaiSekarang">
+              <label class="form-check-label fw-bold text-dark" for="checkAccMulaiSekarang">
+                <i class="bi bi-stopwatch text-warning me-1"></i> Sesuaikan Jam Ambil Mulai Sekarang (Handover Riil)
+              </label>
+            </div>
+            <small class="text-muted d-block ms-4">
+              Centang jika santri baru datang mengambil unit fisik sekarang dan durasi sewa dihitung mulai menit ini agar penyewa tidak rugi waktu.
+            </small>
+          </div>
+
+          <!-- Catatan Jaminan Identitas Fisik -->
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-secondary mb-1">
+              <i class="bi bi-card-heading text-primary me-1"></i> Jaminan Identitas Fisik yang Dititipkan:
+            </label>
+            <input type="text" class="form-control form-control-sm" id="modalAccJaminanFisik" placeholder="Contoh: KTS No. 2024098 / KTP Asli / Kartu Mahasantri">
+            <small class="text-muted">Sebagai bukti titipan fisik saat serah terima barang di posko inventaris.</small>
+          </div>
+
+          <!-- Rincian Biaya Sewa yang Disepakati -->
+          <div class="p-3 rounded-3 bg-white border border-primary-subtle mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="text-secondary small fw-bold">Tarif Sewa Asli:</span>
+              <span class="text-muted" id="modalAccTarifAsli">Rp 0</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+              <span class="fw-bold text-dark fs-6">Biaya yang Ditetapkan:</span>
+              <span class="fw-bolder fs-5 text-primary" id="modalAccBiayaFinal">Rp 0</span>
+            </div>
+          </div>
+
+          <div class="alert alert-info p-2 px-3 rounded-3 small mb-0">
+            <i class="bi bi-info-circle-fill me-1"></i> Setelah di-ACC, status akan menjadi <strong>Disetujui</strong> dan santri dapat mengambil alat fisik di kantor Ma'had Aly Amtsilati.
+          </div>
+        </div>
+        <div class="modal-footer bg-white border-top">
+          <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal" onclick="batalAccBooking()">Batal</button>
+          <button type="button" class="btn btn-primary fw-bold px-4 shadow-sm" onclick="eksekusiKonfirmasiAccBooking()">
+            <i class="bi bi-check2-circle me-1"></i> Setujui (ACC Sewa)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Terima Pengembalian -->
+  <div class="modal fade" id="modalTerimaPengembalian" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
+        <div class="modal-header text-white" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+          <h5 class="modal-title fw-bold">
+            <i class="bi bi-check2-circle me-2"></i> Konfirmasi Terima Pengembalian
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <input type="hidden" id="modalTerimaId" />
+          <div class="p-3 rounded-3 bg-light border mb-3">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-secondary small fw-bold">Nomor Invoice:</span>
+              <span class="badge font-monospace text-white" style="background-color: #7928ca;" id="modalTerimaBadgeId">-</span>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-secondary small fw-bold">Penyewa:</span>
+              <strong class="text-dark" id="modalTerimaNama">-</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-secondary small fw-bold">Alat Multimedia:</span>
+              <strong class="text-dark" id="modalTerimaAset">-</strong>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-secondary small fw-bold">Batas Waktu Kembali:</span>
+              <span class="text-danger fw-bold" id="modalTerimaBatas">-</span>
+            </div>
+          </div>
+
+          <!-- Section Denda Keterlambatan -->
+          <div class="p-3 rounded-3 border mb-3" style="background: rgba(254, 252, 232, 0.7); border-color: rgba(245, 158, 11, 0.3) !important;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="fw-bold text-dark small mb-0">
+                <i class="bi bi-clock-history text-warning me-1"></i> Denda Keterlambatan:
+              </label>
+              <button type="button" class="btn btn-xs btn-outline-success rounded-pill fw-bold py-1 px-2 small" onclick="setDendaTelatNol()" title="Klik jika santri sebenarnya sudah serahkan tepat waktu tapi admin baru sempat buka web">
+                <i class="bi bi-check-lg me-1"></i> Tepat Waktu (Rp 0)
+              </button>
+            </div>
+            <div class="small text-muted mb-2" id="modalTerimaInfoKeterlambatan">
+              Status jadwal: Memeriksa...
+            </div>
+            <div class="input-group">
+              <span class="input-group-text bg-white fw-bold text-secondary">Rp</span>
+              <input type="number" class="form-control fw-bold text-danger fs-6 bg-white" id="modalTerimaInputDendaTelat" value="0" min="0" step="5000" oninput="updateTotalBayarModalTerima()" />
+            </div>
+            <small class="text-muted d-block mt-1">
+              *Admin bebas mengedit nominal di atas jika santri sebenarnya tepat waktu atau ada toleransi.*
+            </small>
+          </div>
+
+          <!-- Section Kondisi Fisik Alat & Denda Rusak -->
+          <div class="p-3 rounded-3 border mb-3 bg-white">
+            <label class="fw-bold text-dark small d-block mb-2">
+              <i class="bi bi-shield-check text-success me-1"></i> Kondisi Fisik Alat saat Kembali:
+            </label>
+            <div class="d-flex gap-3 mb-2">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="kondisiFisikTerima" id="kondisiNormal" value="normal" checked onchange="toggleKondisiRusak(false)">
+                <label class="form-check-label fw-bold text-success" for="kondisiNormal">
+                  <i class="bi bi-check-circle"></i> Normal & Lengkap
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="kondisiFisikTerima" id="kondisiRusak" value="rusak" onchange="toggleKondisiRusak(true)">
+                <label class="form-check-label fw-bold text-danger" for="kondisiRusak">
+                  <i class="bi bi-exclamation-triangle"></i> Ada Kerusakan / Hilang
+                </label>
+              </div>
+            </div>
+
+            <!-- Box Tambahan Jika Rusak -->
+            <div id="boxDendaKerusakan" class="d-none pt-2 border-top mt-2">
+              <label class="form-label small fw-bold text-danger mb-1">Biaya Ganti Rugi Kerusakan (Rp):</label>
+              <div class="input-group mb-2">
+                <span class="input-group-text bg-white fw-bold text-secondary">Rp</span>
+                <input type="number" class="form-control fw-bold text-danger" id="modalTerimaInputDendaRusak" value="0" min="0" step="10000" oninput="updateTotalBayarModalTerima()" />
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="checkNonaktifkanServis" checked>
+                <label class="form-check-label small fw-bold text-dark" for="checkNonaktifkanServis">
+                  Otomatis nonaktifkan unit ini dari katalog (Masuk masa perbaikan/servis)
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section Foto Bukti Fisik Pengembalian (100% Opsional) -->
+          <div class="p-3 rounded-3 border mb-3 bg-white" style="border-style: dashed !important; border-color: rgba(0, 102, 255, 0.3) !important;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="fw-bold text-dark small mb-0">
+                <i class="bi bi-camera-fill text-primary me-1"></i> Foto Bukti Pengembalian <span class="badge bg-secondary-subtle text-secondary py-0 px-2 fw-normal">Opsional</span>
+              </label>
+              <button type="button" class="btn btn-link text-danger p-0 small text-decoration-none d-none" id="btnHapusFotoBukti" onclick="hapusFotoBuktiTerima()">
+                <i class="bi bi-trash"></i> Hapus Foto
+              </button>
+            </div>
+            
+            <input type="file" id="modalTerimaInputFoto" accept="image/*" capture="environment" class="form-control form-control-sm mb-2" onchange="handlePilihFotoBukti(this)" />
+            
+            <div id="previewFotoBuktiContainer" class="d-none text-center p-2 rounded bg-light border">
+              <img id="previewFotoBuktiImg" src="" alt="Pratinjau Bukti" class="img-fluid rounded" style="max-height: 160px; object-fit: contain;" />
+              <div class="small text-muted mt-1"><i class="bi bi-check-circle-fill text-success"></i> Foto bukti siap disimpan</div>
+            </div>
+          </div>
+
+          <!-- Ringkasan Biaya Final -->
+          <div class="p-3 rounded-3 bg-white border border-success-subtle mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="text-secondary small fw-bold">Sewa Pokok:</span>
+              <strong class="text-dark" id="modalTerimaSewaPokok">Rp 0</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="text-secondary small fw-bold">Denda Keterlambatan:</span>
+              <strong class="text-danger" id="modalTerimaDendaAktif">Rp 0</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-1 d-none" id="rowDendaRusakFinal">
+              <span class="text-secondary small fw-bold">Denda Kerusakan:</span>
+              <strong class="text-danger" id="modalTerimaDendaRusakAktif">Rp 0</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+              <span class="fw-bold text-dark fs-6">Total Pelunasan:</span>
+              <span class="fw-bolder text-success fs-5" id="modalTerimaTotalPelunasan">Rp 0</span>
+            </div>
+          </div>
+
+          <div class="small text-muted mb-0">
+            <i class="bi bi-info-circle me-1"></i> Setelah diselesaikan, transaksi akan ditutup dan riwayat tersimpan permanen.
+          </div>
+        </div>
+        <div class="modal-footer bg-white border-top">
+          <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-success fw-bold px-4 shadow-sm" id="btnSimpanPengembalian" onclick="eksekusiKonfirmasiTerimaAlat()">
+            <i class="bi bi-check-lg me-1"></i> Selesaikan Pengembalian
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tolak / Batalkan Permohonan Sewa -->
+  <div class="modal fade" id="modalTolakBooking" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
+        <div class="modal-header text-white" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);">
+          <h5 class="modal-title fw-bold">
+            <i class="bi bi-x-circle me-2"></i> Tolak / Batalkan Permohonan Sewa
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <input type="hidden" id="modalTolakId" />
+          <input type="hidden" id="modalTolakWa" />
+          <div class="p-3 rounded-3 bg-light border mb-3">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-secondary small fw-bold">ID Booking:</span>
+              <span class="badge bg-secondary font-monospace" id="modalTolakBadgeId">-</span>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-secondary small fw-bold">Penyewa:</span>
+              <strong class="text-dark" id="modalTolakNama">-</strong>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-secondary small fw-bold">Alat:</span>
+              <strong class="text-dark" id="modalTolakAset">-</strong>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold text-dark small">Pilih Alasan Penolakan / Pembatalan:</label>
+            <select id="modalTolakOpsiAlasan" class="form-select mb-2" onchange="handlePilihAlasanTolak(this.value)">
+              <option value="Unit alat sedang dalam pemeliharaan / perbaikan rutin">Unit alat sedang dalam pemeliharaan / perbaikan rutin</option>
+              <option value="Jadwal bertabrakan dengan agenda resmi pondok / Ma'had">Jadwal bertabrakan dengan agenda resmi pondok / Ma'had</option>
+              <option value="Santri konfirmasi membatalkan pemesanan">Santri konfirmasi membatalkan pemesanan</option>
+              <option value="Penyewa tidak hadir mengambil alat (No-Show / Batal Otomatis)">Penyewa tidak hadir mengambil alat (No-Show / Batal Otomatis)</option>
+              <option value="Penyewa tidak memenuhi ketentuan / syarat peminjaman">Penyewa tidak memenuhi ketentuan / syarat peminjaman</option>
+              <option value="__LAINNYA__">Alasan Lainnya (Tulis Manual)...</option>
+            </select>
+            <textarea id="modalTolakKeteranganManual" class="form-control d-none" rows="2" placeholder="Tuliskan alasan penolakan untuk santri..."></textarea>
+          </div>
+
+          <div class="alert alert-danger p-2 px-3 rounded-3 small mb-0">
+            <i class="bi bi-exclamation-triangle-fill me-1"></i> Setelah ditolak, slot jadwal alat ini <strong>langsung bebas kembali</strong> untuk disewa santri lain.
+          </div>
+        </div>
+        <div class="modal-footer bg-white border-top">
+          <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">Tutup</button>
+          <button type="button" class="btn btn-danger fw-bold px-4" onclick="eksekusiKonfirmasiTolakBooking()">
+            <i class="bi bi-x-circle me-1"></i> Tolak & Bebaskan Jadwal
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+  <script src="./dist/js/adminlte.min.js"></script>
+  <script src="./js/rental-logic.js?v=2.5"></script>
+
+  <script>
+    let modalAsetInstance = null;
+    let daftarRiwayatAktif = [];
+
+    // Inisialisasi Aplikasi Admin
+    document.addEventListener("DOMContentLoaded", () => {
+      // Cek Autentikasi Admin
+      if (sessionStorage.getItem("admin_auth") !== "true") {
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      modalAsetInstance = new bootstrap.Modal(document.getElementById("modalAset"));
+      
+      const adminUser = sessionStorage.getItem("admin_user") || "Admin Ma'had Aly Amtsilati";
+      document.getElementById("navAdminName").innerText = adminUser;
+      const sidebarName = document.getElementById("sidebarAdminName");
+      if (sidebarName) sidebarName.innerText = adminUser;
+      const dropdownName = document.getElementById("dropdownAdminName");
+      if (dropdownName) dropdownName.innerText = adminUser;
+
+      // Muat Foto Profil Admin
+      muatFotoProfilAdminSaatIni();
+
+      // Muat Data Awal
+      muatPengaturanForm();
+      segarkanSemuaData();
+
+      // Auto sinkronisasi background berkala tiap 20 detik
+      setInterval(() => {
+        segarkanDataLatarBelakang();
+      }, 20000);
+    });
+
+    // Navigasi Tampilan Antar Menu (SPA Switcher)
+    function switchView(viewName) {
+      document.querySelectorAll(".admin-view").forEach(v => v.classList.add("d-none"));
+      document.querySelectorAll(".sidebar-menu .nav-link").forEach(l => l.classList.remove("active"));
+
+      const targetView = document.getElementById("view-" + viewName);
+      const targetMenu = document.getElementById("menu-" + viewName);
+
+      if (targetView) targetView.classList.remove("d-none");
+      if (targetMenu) targetMenu.classList.add("active");
+
+      if (viewName === "dashboard") renderDashboardView();
+      if (viewName === "aset") renderTabelAsetAdmin();
+      if (viewName === "monitoring") renderMonitoringView();
+      if (viewName === "riwayat") renderTabelRiwayatAdmin();
+      if (viewName === "pengaturan") muatPengaturanForm();
+    }
+
+    function logoutAdmin() {
+      if (!confirm("Apakah Anda yakin ingin keluar dari panel admin?")) return;
+      sessionStorage.removeItem("admin_auth");
+      sessionStorage.removeItem("admin_user");
+      window.location.href = "admin-login.html";
+    }
+
+    // ========================================================
+    // SINKRONISASI & AMBIL DATA SERVER
+    // ========================================================
+    async function segarkanSemuaData() {
+      try {
+        if (typeof ambilRiwayatBookingAsync === "function") {
+          daftarRiwayatAktif = await ambilRiwayatBookingAsync();
+        } else {
+          daftarRiwayatAktif = ambilRiwayatBooking();
+        }
+      } catch (e) {
+        daftarRiwayatAktif = ambilRiwayatBooking();
+      }
+
+      if (Array.isArray(daftarRiwayatAktif)) {
+        daftarRiwayatAktif.forEach(b => {
+          if (b && b.nama && b.nama.includes('***')) {
+            b.nama = b.nama.replace(/\*+/g, '').trim();
+          }
+        });
+      }
+
+      renderDashboardView();
+      renderTabelAsetAdmin();
+      renderMonitoringView();
+      renderTabelRiwayatAdmin();
+    }
+
+    async function segarkanDataLatarBelakang() {
+      try {
+        if (typeof ambilRiwayatBookingAsync === "function") {
+          const fresh = await ambilRiwayatBookingAsync();
+          if (Array.isArray(fresh)) {
+            daftarRiwayatAktif = fresh;
+            daftarRiwayatAktif.forEach(b => {
+              if (b && b.nama && b.nama.includes('***')) {
+                b.nama = b.nama.replace(/\*+/g, '').trim();
+              }
+            });
+            const activeView = document.querySelector(".admin-view:not(.d-none)");
+            if (activeView) {
+              if (activeView.id === "view-dashboard") renderDashboardView();
+              if (activeView.id === "view-monitoring") renderMonitoringView();
+              if (activeView.id === "view-riwayat") renderTabelRiwayatAdmin();
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
+    // ========================================================
+    // 1. DASHBOARD VIEW (STATISTIK + TABEL PENYEWA)
+    // ========================================================
+    function renderDashboardView() {
+      const semuaAset = ambilSemuaKatalog();
+      let totalAset = semuaAset.reduce((acc, a) => acc + (parseInt(a.stokTotal) || 1), 0);
+      let tersedia = semuaAset.reduce((acc, a) => {
+        const sisa = typeof hitungSisaStokAset === "function" ? hitungSisaStokAset(a.id) : (a.status === "available" ? (parseInt(a.stokTotal) || 1) : 0);
+        return acc + sisa;
+      }, 0);
+      let disewa = Math.max(0, totalAset - tersedia);
+      let totalBooking = daftarRiwayatAktif.length;
+
+      document.getElementById("statTotalAset").innerText = totalAset;
+      document.getElementById("statAsetTersedia").innerText = tersedia;
+      document.getElementById("statAsetDisewa").innerText = disewa;
+      document.getElementById("statTotalBooking").innerText = totalBooking;
+
+      // Hitung ajuan baru yang menunggu konfirmasi (pending)
+      const listPending = daftarRiwayatAktif.filter(b => b.status === "pending");
+      const pendingCount = listPending.length;
+
+      const topBadgeBtn = document.getElementById("btnNotifPendingTop");
+      const topBadgeLabel = document.getElementById("labelNotifPendingTop");
+      const sideBadge = document.getElementById("badgeNotifPendingSide");
+      const bannerDashboard = document.getElementById("bannerAjuanBaruDashboard");
+      const teksAjuanBaru = document.getElementById("teksJumlahAjuanBaru");
+
+      if (pendingCount > 0) {
+        if (topBadgeBtn) topBadgeBtn.classList.remove("d-none");
+        if (topBadgeLabel) topBadgeLabel.innerText = `${pendingCount} Ajuan Baru`;
+        if (sideBadge) {
+          sideBadge.classList.remove("d-none");
+          sideBadge.innerText = pendingCount;
+        }
+        if (bannerDashboard) {
+          bannerDashboard.classList.remove("d-none");
+          if (teksAjuanBaru) teksAjuanBaru.innerText = `Ada ${pendingCount} Permohonan Sewa Baru Menunggu Konfirmasi!`;
+        }
+      } else {
+        if (topBadgeBtn) topBadgeBtn.classList.add("d-none");
+        if (sideBadge) sideBadge.classList.add("d-none");
+        if (bannerDashboard) bannerDashboard.classList.add("d-none");
+      }
+
+      const tbody = document.getElementById("dashboardTabelPenyewaBody");
+      const mobileContainer = document.getElementById("dashboardMobileCardsContainer");
+      if (tbody) tbody.innerHTML = "";
+      if (mobileContainer) mobileContainer.innerHTML = "";
+
+      // Khusus ajuan sewa baru yang butuh konfirmasi (pending)
+      const list = daftarRiwayatAktif.filter(b => b.status === "pending");
+
+      if (list.length === 0) {
+        if (tbody) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center text-secondary py-5">
+                <i class="bi bi-patch-check-fill fs-2 d-block mb-2 text-success"></i>
+                <h6 class="fw-bold text-dark mb-1">Semua Ajuan Sewa Telah Diproses</h6>
+                <small class="text-muted">Saat ini belum ada permohonan sewa baru yang menunggu konfirmasi.</small>
+              </td>
+            </tr>`;
+        }
+        if (mobileContainer) {
+          mobileContainer.innerHTML = `
+            <div class="p-4 text-center rounded border bg-light text-muted small my-2">
+              <i class="bi bi-patch-check-fill fs-2 d-block mb-2 text-success"></i>
+              <strong class="text-dark d-block mb-1">Semua Ajuan Sewa Telah Diproses</strong>
+              Saat ini belum ada permohonan sewa baru yang menunggu konfirmasi.
+            </div>`;
+        }
+        return;
+      }
+
+      list.forEach((b, idx) => {
+        if (b.nama && b.nama.includes('***')) {
+          b.nama = b.nama.replace(/\*+/g, '').trim();
+        }
+        const bId = b.bookingId || ('INV-' + String(idx + 1).padStart(4, '0'));
+        if (!b.bookingId) b.bookingId = bId;
+
+        const biayaSewa = hitungTarifRiilBooking(b);
+        const safeNama = typeof escapeHtml === "function" ? escapeHtml(b.nama || '-') : (b.nama || '-');
+        const safeBarang = typeof escapeHtml === "function" ? escapeHtml(b.namaBarang || '-') : (b.namaBarang || '-');
+        const safeNoWa = typeof escapeHtml === "function" ? escapeHtml(b.noWa || '-') : (b.noWa || '-');
+        const safePaket = typeof escapeHtml === "function" ? escapeHtml(b.paketLabel || (b.paketJam + ' Jam')) : (b.paketLabel || (b.paketJam + ' Jam'));
+        const safeKomunitas = typeof escapeHtml === "function" ? escapeHtml(b.komunitas || '-') : (b.komunitas || '-');
+
+        const noTujuan = typeof formatNomorWa === "function" ? formatNomorWa(b.noWa) : (b.noWa || '').replace(/[^0-9]/g, '');
+        const pesanWa = encodeURIComponent(`Assalamu'alaikum wr. wb. Saudara/i *${b.nama}*,\n\nAdmin Multimedia Ma'had Aly terkait pengajuan peminjaman aset *${b.namaBarang}* (${bId}).\nJadwal pengambilan: *${b.waktuAmbil || '-'}*.\n\nApakah data sewa sudah sesuai? Terima kasih.`);
+
+        let biayaBadge = `<span class="fw-bold text-primary">${formatRupiah(biayaSewa)}</span>`;
+        if (b.isDinas === true) {
+          biayaBadge = `<span class="badge bg-primary-subtle text-primary border border-primary-subtle">Gratis (Dinas)</span>`;
+        }
+
+        // 1. Render Baris Desktop (Tabel)
+        if (tbody) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td><span class="badge text-white font-monospace" style="background-color: #7928ca;">${bId}</span></td>
+            <td>
+              <strong class="text-dark d-block">${safeNama}</strong>
+              <small class="text-secondary">${typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(b.noWa) : safeNoWa} &bull; ${safeKomunitas}</small>
+            </td>
+            <td>
+              <strong class="text-dark d-block">${safeBarang}</strong>
+              <span class="badge bg-white text-dark border">${safePaket}</span>
+            </td>
+            <td>
+              <small class="d-block text-secondary">Pinjam: <strong>${b.waktuAmbil || '-'}</strong></small>
+              <small class="d-block text-danger">Kembali: <strong>${b.waktuSelesai || '-'}</strong></small>
+            </td>
+            <td>${biayaBadge}</td>
+            <td class="text-end text-nowrap">
+              <button type="button" class="btn btn-sm btn-primary fw-bold py-1 px-2 me-1 shadow-sm" onclick="bukaModalAccBooking('${bId}')" title="Tinjau & Setujui Pengajuan Sewa">
+                <i class="bi bi-patch-check-fill me-1"></i> ACC Sewa
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2 me-1" onclick="bukaModalTolakBooking('${bId}')" title="Tolak Pengajuan">
+                <i class="bi bi-x-circle me-1"></i> Tolak
+              </button>
+              <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-sm btn-outline-success py-1 px-2" title="Chat WhatsApp">
+                <i class="bi bi-whatsapp"></i>
+              </a>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        }
+
+        // 2. Render Kartu Responsif Mobile (0% Scroll Horizontal)
+        if (mobileContainer) {
+          const card = document.createElement("div");
+          card.className = "card border p-3 mb-3 shadow-sm";
+          card.style = "border-radius: 0.85rem; border-color: #e2e8f0 !important;";
+          card.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge text-white font-monospace" style="background-color: #7928ca;">${bId}</span>
+              <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Menunggu ACC</span>
+            </div>
+            <div class="mb-2">
+              <strong class="text-dark fs-6 d-block">${safeNama}</strong>
+              <small class="text-secondary">${typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(b.noWa) : safeNoWa} &bull; ${safeKomunitas}</small>
+            </div>
+            <div class="p-2 rounded bg-light border mb-3 small">
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">Unit Alat:</span>
+                <strong class="text-dark">${safeBarang}</strong>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">Paket Durasi:</span>
+                <span class="badge bg-white text-dark border">${safePaket}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">Jadwal Pinjam:</span>
+                <span>${b.waktuAmbil || '-'}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">Jadwal Kembali:</span>
+                <span class="text-danger fw-bold">${b.waktuSelesai || '-'}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1">
+                <span class="text-muted">Biaya Sewa:</span>
+                ${biayaBadge}
+              </div>
+            </div>
+            <!-- Tombol Aksi Simetris Rapi -->
+            <div class="d-flex gap-2 mb-2">
+              <button type="button" class="btn btn-primary flex-grow-1 fw-bold shadow-sm py-2" onclick="bukaModalAccBooking('${bId}')">
+                <i class="bi bi-patch-check-fill me-1"></i> ACC Sewa
+              </button>
+              <button type="button" class="btn btn-outline-danger fw-bold px-3 py-2" onclick="bukaModalTolakBooking('${bId}')">
+                <i class="bi bi-x-circle me-1"></i> Tolak
+              </button>
+            </div>
+            <div>
+              <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-outline-success w-100 btn-sm fw-bold py-2 text-center">
+                <i class="bi bi-whatsapp me-1"></i> Hubungi Pemohon via WhatsApp
+              </a>
+            </div>
+          `;
+          mobileContainer.appendChild(card);
+        }
+      });
+    }
+
+    // ========================================================
+    // 2. ASET VIEW (INVENTARIS & KATEGORI DINAMIS)
+    // ========================================================
+    function renderTabelAsetAdmin() {
+      const semua = ambilSemuaKatalog();
+      const keyword = (document.getElementById("adminSearchAsetInput").value || "").toLowerCase().trim();
+      const tbody = document.getElementById("adminTabelAsetBody");
+      const mobileContainer = document.getElementById("asetMobileCardsContainer");
+      if (tbody) tbody.innerHTML = "";
+      if (mobileContainer) mobileContainer.innerHTML = "";
+
+      const filtered = semua.filter(item => {
+        if (!keyword) return true;
+        const n = (item.nama || "").toLowerCase();
+        const k = (item.kategoriLabel || item.kategori || "").toLowerCase();
+        const id = (item.id || "").toLowerCase();
+        return n.includes(keyword) || k.includes(keyword) || id.includes(keyword);
+      });
+
+      if (document.getElementById("countAsetFiltered")) {
+        document.getElementById("countAsetFiltered").innerText = filtered.length;
+      }
+
+      if (filtered.length === 0) {
+        if (tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center text-secondary py-4">Tidak ada aset yang sesuai pencarian.</td></tr>`;
+        if (mobileContainer) mobileContainer.innerHTML = `<div class="p-4 text-center rounded border bg-light text-muted small my-2">Tidak ada aset yang sesuai pencarian.</div>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const fotoSrc = item.gambar || "img/canon-rp.jpg";
+        const paketTeks = (item.paketOpsi || []).map(p => `<span class="badge bg-white text-dark border me-1">${p.label || (p.jam + 'j')}: ${formatRupiah(p.tarif)}</span>`).join("");
+
+        const stokTotal = Math.max(1, parseInt(item.stokTotal || 1));
+        const stokBadge = `<span class="badge bg-light text-dark border px-2 py-1 fw-bold"><i class="bi bi-boxes me-1 text-primary"></i>${stokTotal} Unit</span>`;
+
+        // PIC Admin Badge Murni Admin 1 atau Admin 2
+        const isAdm2 = item.adminPic === "admin2" || item.adminPic === "2";
+        const adminBadge = isAdm2
+          ? `<span class="badge text-white px-2 py-1" style="background-color: #d60099;"><i class="bi bi-person-check me-1"></i>Admin 2</span>`
+          : `<span class="badge text-white px-2 py-1" style="background-color: #0066ff;"><i class="bi bi-person-check me-1"></i>Admin 1</span>`;
+
+        // Status Operasional Master Aset (Aktif / Nonaktif)
+        const isAktif = item.status !== "maintenance" && item.status !== "inactive";
+        const statusBtn = isAktif
+          ? `<button class="btn btn-sm btn-outline-success py-0 px-2 fw-bold" onclick="toggleStatusOperasionalAset('${item.id}', 'maintenance')" title="Klik untuk nonaktifkan unit dari katalog"><i class="bi bi-check-circle me-1"></i> Aktif</button>`
+          : `<button class="btn btn-sm btn-outline-secondary py-0 px-2 fw-bold" onclick="toggleStatusOperasionalAset('${item.id}', 'available')" title="Klik untuk aktifkan unit kembali ke katalog"><i class="bi bi-slash-circle me-1"></i> Nonaktif</button>`;
+
+        // 1. Render Baris Desktop (Tabel)
+        if (tbody) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>
+              <img src="${fotoSrc}" alt="${item.nama}" class="rounded border" style="width: 55px; height: 50px; object-fit: cover;" onerror="this.src='img/canon-rp.jpg';" />
+            </td>
+            <td>
+              <strong class="text-dark d-block">${item.nama}</strong>
+              <small class="text-muted font-monospace">${item.id}</small>
+            </td>
+            <td>
+              <span class="badge badge-cyan px-2 py-1">${item.kategoriLabel || item.kategori}</span>
+            </td>
+            <td>${stokBadge}</td>
+            <td>${paketTeks}</td>
+            <td>${adminBadge}</td>
+            <td>${statusBtn}</td>
+            <td class="text-end text-nowrap">
+              <button class="btn btn-sm btn-outline-secondary py-1 px-2 me-1" onclick="editAsetModal('${item.id}')" title="Edit Aset">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger py-1 px-2" onclick="hapusAsetItem('${item.id}', '${item.nama.replace(/'/g, "\\'")}')" title="Hapus Aset">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        }
+
+        // 2. Render Kartu Responsif Mobile (0% Scroll Horizontal)
+        if (mobileContainer) {
+          const card = document.createElement("div");
+          card.className = "card border p-3 mb-3 shadow-sm";
+          card.style = "border-radius: 0.85rem; border-color: #e2e8f0 !important;";
+          const statusBtnMobile = isAktif
+            ? `<button class="btn btn-sm btn-outline-success flex-fill fw-bold py-2" onclick="toggleStatusOperasionalAset('${item.id}', 'maintenance')"><i class="bi bi-check-circle me-1"></i> Status: Aktif</button>`
+            : `<button class="btn btn-sm btn-outline-secondary flex-fill fw-bold py-2" onclick="toggleStatusOperasionalAset('${item.id}', 'available')"><i class="bi bi-slash-circle me-1"></i> Status: Nonaktif</button>`;
+
+          card.innerHTML = `
+            <div class="d-flex gap-3 align-items-center mb-2">
+              <img src="${fotoSrc}" alt="${item.nama}" class="rounded border flex-shrink-0" style="width: 56px; height: 56px; object-fit: cover;" onerror="this.src='img/canon-rp.jpg';" />
+              <div class="overflow-hidden flex-grow-1">
+                <strong class="text-dark d-block text-truncate fs-6 mb-1">${item.nama}</strong>
+                <small class="text-muted font-monospace d-block mb-1">${item.id}</small>
+                <div class="d-flex gap-1 flex-wrap">
+                  <span class="badge badge-cyan px-2 py-1">${item.kategoriLabel || item.kategori}</span>
+                  ${adminBadge}
+                  ${stokBadge}
+                </div>
+              </div>
+            </div>
+            <div class="p-2 rounded bg-light border mb-3 small">
+              <div class="text-muted mb-1 fw-bold">Pilihan Paket & Tarif:</div>
+              <div class="d-flex flex-wrap gap-1">${paketTeks || '<span class="text-muted">-</span>'}</div>
+            </div>
+            <div class="d-flex gap-2">
+              ${statusBtnMobile}
+              <button class="btn btn-sm btn-outline-primary fw-bold px-3 py-2" onclick="editAsetModal('${item.id}')" title="Edit Aset">
+                <i class="bi bi-pencil-square me-1"></i> Edit
+              </button>
+              <button class="btn btn-sm btn-outline-danger px-3 py-2" onclick="hapusAsetItem('${item.id}', '${item.nama.replace(/'/g, "\\'")}')" title="Hapus Aset">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          `;
+          mobileContainer.appendChild(card);
+        }
+      });
+    }
+
+    function toggleStatusOperasionalAset(id, statusBaru) {
+      if (typeof ubahStatusAset === "function") {
+        ubahStatusAset(id, statusBaru);
+      }
+      renderTabelAsetAdmin();
+      renderDashboardView();
+    }
+
+    function hapusAsetItem(id, nama) {
+      if (!confirm(`Apakah Anda yakin ingin menghapus aset "${nama}"?`)) return;
+      if (typeof hapusAset === "function") {
+        hapusAset(id);
+      }
+      renderTabelAsetAdmin();
+      renderDashboardView();
+    }
+
+    // Modal Form Tambah / Edit Aset dengan Kategori Dinamis
+    function muatPilihanKategoriModal(selectedKategoriId = "") {
+      const select = document.getElementById("formKategoriSelect");
+      if (!select) return;
+      select.innerHTML = "";
+
+      const cats = typeof ambilDaftarKategori === "function" ? ambilDaftarKategori() : [
+        { id: "kamera", label: "Kamera & Lensa" },
+        { id: "lighting", label: "Lighting & Flash" },
+        { id: "handycam", label: "Handycam & Video" }
+      ];
+
+      cats.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.innerText = c.label;
+        if (c.id === selectedKategoriId) opt.selected = true;
+        select.appendChild(opt);
+      });
+
+      // Opsi custom tambah kategori baru
+      const optBaru = document.createElement("option");
+      optBaru.value = "__TAMBAH_BARU__";
+      optBaru.innerText = "+ Tambah Kategori Baru...";
+      select.appendChild(optBaru);
+
+      cekPilihanKategoriBaru(select.value);
+    }
+
+    function cekPilihanKategoriBaru(val) {
+      const wrapper = document.getElementById("wrapperKategoriBaru");
+      const input = document.getElementById("formKategoriBaruInput");
+      if (val === "__TAMBAH_BARU__") {
+        wrapper.classList.remove("d-none");
+        input.focus();
+      } else {
+        wrapper.classList.add("d-none");
+        input.value = "";
+      }
+    }
+
+    function bukaModalAsetBaru() {
+      document.getElementById("modalAsetTitle").innerText = "Tambah Aset Baru";
+      document.getElementById("formAsetId").value = "";
+      document.getElementById("formNama").value = "";
+      document.getElementById("formAdminPic").value = "admin1";
+      document.getElementById("formStokTotal").value = 1;
+      document.getElementById("formStatus").value = "available";
+      document.getElementById("formGambarBase64").value = "";
+      document.getElementById("formImgPreview").src = "img/canon-rp.jpg";
+      document.getElementById("formDeskripsi").value = "";
+      document.getElementById("formKelengkapan").value = "1x Unit\n1x Kabel & Aksesoris\n1x Tas";
+      
+      muatPilihanKategoriModal("kamera");
+      renderPaketFormInput([
+        { id: "12", jam: 12, label: "12 Jam", tarif: 50000, desc: "Paket standar sewa 12 jam" }
+      ]);
+
+      modalAsetInstance.show();
+    }
+
+    function editAsetModal(id) {
+      const item = cariAset(id);
+      if (!item) return;
+
+      document.getElementById("modalAsetTitle").innerText = "Edit Aset: " + item.nama;
+      document.getElementById("formAsetId").value = item.id;
+      document.getElementById("formNama").value = item.nama;
+      document.getElementById("formAdminPic").value = (item.adminPic === "admin2" || item.adminPic === "2") ? "admin2" : "admin1";
+      document.getElementById("formStokTotal").value = item.stokTotal || 1;
+      document.getElementById("formStatus").value = (item.status === "maintenance" || item.status === "inactive") ? "maintenance" : "available";
+      document.getElementById("formGambarBase64").value = item.gambar || "";
+      document.getElementById("formImgPreview").src = item.gambar || "img/canon-rp.jpg";
+      document.getElementById("formDeskripsi").value = item.deskripsi || "";
+      document.getElementById("formKelengkapan").value = (item.kelengkapan || []).join("\n");
+
+      muatPilihanKategoriModal(item.kategori || "kamera");
+      renderPaketFormInput(item.paketOpsi || [
+        { id: "12", jam: 12, label: "12 Jam", tarif: 50000, desc: "" }
+      ]);
+
+      modalAsetInstance.show();
+    }
+
+    function renderPaketFormInput(paketList) {
+      const container = document.getElementById("formPaketContainer");
+      container.innerHTML = "";
+
+      paketList.forEach((p, idx) => {
+        const row = document.createElement("div");
+        row.className = "row g-2 align-items-center paket-row";
+        row.innerHTML = `
+          <div class="col-3">
+            <div class="input-group input-group-sm">
+              <input type="number" class="form-control paket-jam" value="${p.jam || 12}" min="1" required />
+              <span class="input-group-text">Jam</span>
+            </div>
+          </div>
+          <div class="col-4">
+            <input type="text" class="form-control form-control-sm paket-label" value="${p.label || (p.jam + ' Jam')}" placeholder="Label Paket" required />
+          </div>
+          <div class="col-4">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">Rp</span>
+              <input type="number" class="form-control paket-tarif" value="${p.tarif || 0}" step="1000" required />
+            </div>
+          </div>
+          <div class="col-1 text-end">
+            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="hapusBarisPaket(this)">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function tambahBarisPaket() {
+      const container = document.getElementById("formPaketContainer");
+      const row = document.createElement("div");
+      row.className = "row g-2 align-items-center paket-row";
+      row.innerHTML = `
+        <div class="col-3">
+          <div class="input-group input-group-sm">
+            <input type="number" class="form-control paket-jam" value="12" min="1" required />
+            <span class="input-group-text">Jam</span>
+          </div>
+        </div>
+        <div class="col-4">
+          <input type="text" class="form-control form-control-sm paket-label" value="12 Jam" placeholder="Label Paket" required />
+        </div>
+        <div class="col-4">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text">Rp</span>
+            <input type="number" class="form-control paket-tarif" value="50000" step="1000" required />
+          </div>
+        </div>
+        <div class="col-1 text-end">
+          <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="hapusBarisPaket(this)">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      `;
+      container.appendChild(row);
+    }
+
+    function hapusBarisPaket(btn) {
+      const row = btn.closest(".paket-row");
+      const allRows = document.querySelectorAll(".paket-row");
+      if (allRows.length <= 1) {
+        alert("Minimal harus memiliki 1 opsi paket durasi!");
+        return;
+      }
+      if (row) row.remove();
+    }
+
+    function handleImageUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          // Kompresi Canvas ke maksimal 600px
+          const maxDim = 600;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+
+          const compressed = canvas.toDataURL("image/jpeg", 0.82);
+          document.getElementById("formGambarBase64").value = compressed;
+          document.getElementById("formImgPreview").src = compressed;
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function simpanFormAset(e) {
+      e.preventDefault();
+      const id = document.getElementById("formAsetId").value;
+      const nama = document.getElementById("formNama").value.trim();
+      const adminPic = document.getElementById("formAdminPic").value;
+      const stokTotal = Math.max(1, parseInt(document.getElementById("formStokTotal").value, 10) || 1);
+      const status = document.getElementById("formStatus").value;
+      const gambar = document.getElementById("formGambarBase64").value;
+      const deskripsi = document.getElementById("formDeskripsi").value.trim();
+      const kelengkapanRaw = document.getElementById("formKelengkapan").value.trim();
+      const kelengkapan = kelengkapanRaw ? kelengkapanRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
+
+      let katVal = document.getElementById("formKategoriSelect").value;
+      let katLabel = "";
+
+      // Jika admin membuat kategori baru
+      if (katVal === "__TAMBAH_BARU__") {
+        const customInput = document.getElementById("formKategoriBaruInput").value.trim();
+        if (!customInput) {
+          alert("Silakan masukkan nama kategori baru!");
+          document.getElementById("formKategoriBaruInput").focus();
+          return;
+        }
+        const createdCat = tambahKategoriBaru(customInput);
+        if (createdCat) {
+          katVal = createdCat.id;
+          katLabel = createdCat.label;
+        } else {
+          katVal = "kustom";
+          katLabel = customInput;
+        }
+      } else {
+        const catObj = ambilDaftarKategori().find(c => c.id === katVal);
+        katLabel = catObj ? catObj.label : katVal;
+      }
+
+      // Kumpulkan paket opsi
+      const paketOpsi = [];
+      const tarifObj = {};
+      const rows = document.querySelectorAll(".paket-row");
+      rows.forEach(r => {
+        const jam = parseInt(r.querySelector(".paket-jam").value, 10) || 12;
+        const label = r.querySelector(".paket-label").value.trim() || (jam + " Jam");
+        const tarif = parseInt(r.querySelector(".paket-tarif").value, 10) || 0;
+        paketOpsi.push({
+          id: String(jam),
+          jam: jam,
+          label: label,
+          tarif: tarif,
+          desc: "Paket sewa " + label
+        });
+        tarifObj[String(jam)] = tarif;
+      });
+
+      const assetObj = {
+        id: id || ("ast-" + Date.now().toString(36)),
+        nama: nama,
+        kategori: katVal,
+        kategoriLabel: katLabel,
+        adminPic: adminPic,
+        stokTotal: stokTotal,
+        status: status,
+        gambar: gambar,
+        deskripsi: deskripsi,
+        kelengkapan: kelengkapan,
+        paketOpsi: paketOpsi,
+        tarif: tarifObj
+      };
+
+      simpanAsetKustom(assetObj);
+      modalAsetInstance.hide();
+      renderTabelAsetAdmin();
+      renderDashboardView();
+      alert(`Aset "${nama}" (${stokTotal} Unit) berhasil disimpan dan langsung sinkron ke seluruh santri!`);
+    }
+
+    // ========================================================
+    // 3. MONITORING VIEW (LIVE SISA WAKTU SEWA & DENDA)
+    // ========================================================
+    function renderMonitoringView() {
+      const container = document.getElementById("monitoringContainer");
+      if (!container) return;
+      container.innerHTML = "";
+
+      // Khusus sewa yang sudah di-ACC / aktif berjalan
+      const list = daftarRiwayatAktif.filter(b => b.status === "active" || b.status === "booked");
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-5 text-secondary bg-white rounded border shadow-sm p-4">
+            <i class="bi bi-clock-history fs-1 d-block mb-2" style="color: #0066ff;"></i>
+            <h6 class="fw-bold text-dark mb-1">Belum Ada Sewaan Aktif yang Berjalan</h6>
+            <small class="text-muted">Aset yang telah disetujui (ACC) di menu Dashboard akan otomatis muncul dan dipantau secara real-time di sini.</small>
+          </div>
+        `;
+        return;
+      }
+
+      const now = new Date();
+      let html = `<div class="row g-3">`;
+
+      list.forEach((b, idx) => {
+        if (b.nama && b.nama.includes('***')) {
+          b.nama = b.nama.replace(/\*+/g, '').trim();
+        }
+        const bId = b.bookingId || ('INV-' + String(idx + 1).padStart(4, '0'));
+        const ambilDate = b.waktuAmbilRaw ? new Date(b.waktuAmbilRaw) : null;
+        const selesaiDate = b.waktuSelesaiRaw ? new Date(b.waktuSelesaiRaw) : null;
+        
+        let statusBadge = "";
+        let countdownTeks = "";
+        let dendaTeks = "Rp 0 (Tepat Waktu)";
+        let isLate = false;
+
+        // 1. Cek apakah waktu sewa sudah habis / terlambat
+        if (selesaiDate && !isNaN(selesaiDate.getTime()) && now > selesaiDate) {
+          const overMs = now - selesaiDate;
+          const overMin = Math.floor(overMs / 60000);
+          if (overMin <= 15) {
+            statusBadge = `<span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i> Masa Toleransi</span>`;
+            countdownTeks = `<span class="text-warning-emphasis fw-bold">Lewat ${overMin} mnt (Toleransi 15 Mnt)</span>`;
+            dendaTeks = "Rp 0";
+          } else {
+            isLate = true;
+            const jamDenda = Math.ceil(overMin / 60);
+            const totalDenda = jamDenda * 10000;
+            statusBadge = `<span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i> Waktu Habis (Terlambat)</span>`;
+            countdownTeks = `<span class="text-danger fw-bolder">Lewat ${Math.floor(overMin / 60)} Jam ${overMin % 60} Menit</span>`;
+            dendaTeks = `<span class="text-danger fw-bolder">${formatRupiah(totalDenda)} (${jamDenda} Jam)</span>`;
+          }
+        } else if (!b.handoverRiil && ambilDate && !isNaN(ambilDate.getTime()) && now < ambilDate) {
+          // 2. Cek apakah belum diambil (menuju jam pinjam)
+          const waitMs = ambilDate - now;
+          const waitH = Math.floor(waitMs / 3600000);
+          const waitM = Math.floor((waitMs % 3600000) / 60000);
+          statusBadge = `<span class="badge bg-warning text-dark"><i class="bi bi-box-arrow-up-right me-1"></i> Belum Diambil</span>`;
+          countdownTeks = `<span class="text-warning-emphasis fw-bold">Pengambilan: ${b.waktuAmbil || '-'} (dlm ${waitH}j ${waitM}m)</span>`;
+          dendaTeks = `<span class="text-muted">Belum diserahterimakan</span>`;
+        } else {
+          // 3. Status: Sedang disewa & dipakai santri
+          const diffMs = selesaiDate ? (selesaiDate - now) : 0;
+          const h = Math.max(0, Math.floor(diffMs / 3600000));
+          const m = Math.max(0, Math.floor((diffMs % 3600000) / 60000));
+          statusBadge = `<span class="badge bg-success"><i class="bi bi-play-circle-fill me-1"></i> Sedang Dipakai</span>`;
+          countdownTeks = `Sisa Waktu: <strong class="text-success">${h} Jam ${m} Menit</strong>`;
+        }
+
+        const safeNama = typeof escapeHtml === "function" ? escapeHtml(b.nama || '-') : (b.nama || '-');
+        const safeBarang = typeof escapeHtml === "function" ? escapeHtml(b.namaBarang || '-') : (b.namaBarang || '-');
+        const safeNoWa = typeof escapeHtml === "function" ? escapeHtml(b.noWa || '-') : (b.noWa || '-');
+        const safeWaktuSelesai = typeof escapeHtml === "function" ? escapeHtml(b.waktuSelesai || '-') : (b.waktuSelesai || '-');
+        const badgeJaminan = b.jaminanIdentitas ? `<span class="badge bg-light text-dark border ms-1" title="Jaminan Fisik"><i class="bi bi-card-heading text-primary me-1"></i>${typeof escapeHtml === "function" ? escapeHtml(b.jaminanIdentitas) : b.jaminanIdentitas}</span>` : '';
+        const badgeHandover = b.handoverRiil ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1" style="font-size: 0.68rem;"><i class="bi bi-stopwatch me-1"></i>Handover Riil</span>` : '';
+
+        const noTujuan = typeof formatNomorWa === "function" ? formatNomorWa(b.noWa) : (b.noWa || '').replace(/[^0-9]/g, '');
+        let pesanWa = "";
+        if (isLate) {
+          pesanWa = encodeURIComponent(`Assalamu'alaikum wr. wb. Saudara/i *${b.nama}*,\n\nAdmin Multimedia Ma'had Aly menginfokan bahwa waktu peminjaman aset *${b.namaBarang}* (${bId}) telah melewati batas pengembalian (*${b.waktuSelesai || ''}*).\n\nMohon segera kembalikan aset ke sekretariat. Terima kasih.`);
+        } else {
+          pesanWa = encodeURIComponent(`Assalamu'alaikum wr. wb. Saudara/i *${b.nama}*,\n\nAdmin Multimedia Ma'had Aly terkait peminjaman aset *${b.namaBarang}* (${bId}).\nJadwal pengembalian: *${b.waktuSelesai || '-'}*.\n\nApakah ada kendala pada unit alat? Terima kasih.`);
+        }
+
+        html += `
+          <div class="col-lg-6">
+            <div class="p-3 rounded border bg-white shadow-sm h-100 ${isLate ? 'border-danger' : ''}" style="border-radius: 0.85rem !important;">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge text-white font-monospace" style="background-color: #7928ca;">${bId}</span>
+                ${statusBadge}
+              </div>
+              <h6 class="fw-bolder text-dark mb-1">${safeBarang} ${badgeHandover}</h6>
+              <div class="small text-secondary mb-2">
+                Penyewa: <strong class="text-dark">${safeNama}</strong> (${safeNoWa}) ${badgeJaminan}
+              </div>
+              <div class="p-2 rounded bg-light border small mb-3">
+                <div class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Jadwal Selesai:</span>
+                  <strong class="text-dark">${safeWaktuSelesai}</strong>
+                </div>
+                <div class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Status Sewa:</span>
+                  <span>${countdownTeks}</span>
+                </div>
+                <div class="d-flex justify-content-between py-1">
+                  <span class="text-muted">Kalkulasi Denda:</span>
+                  <strong>${dendaTeks}</strong>
+                </div>
+              </div>
+
+              <!-- Baris 1: Tombol Aksi Utama (Terima Pengembalian Fisik) -->
+              <button type="button" class="btn btn-success w-100 fw-bold py-2 mb-2 shadow-sm" onclick="selesaikanPenyewaan('${bId}')">
+                <i class="bi bi-box-arrow-in-down me-1"></i> Terima Pengembalian Fisik
+              </button>
+
+              <!-- Baris 2: Tombol Pendukung Sejajar Rapi & Simetris -->
+              <div class="d-flex gap-2">
+                <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-sm btn-outline-success flex-fill fw-bold py-2 text-center" title="Chat WhatsApp">
+                  <i class="bi bi-whatsapp me-1"></i> Hubungi WA
+                </a>
+                <a href="status.html?id=${encodeURIComponent(bId)}" target="_blank" class="btn btn-sm btn-outline-primary flex-fill fw-bold py-2 text-center" title="Buka Countdown">
+                  <i class="bi bi-clock-history me-1"></i> Countdown
+                </a>
+                <a href="invoice.html?id=${encodeURIComponent(bId)}" target="_blank" class="btn btn-sm btn-outline-dark flex-fill fw-bold py-2 text-center" title="Bukti Invoice">
+                  <i class="bi bi-file-earmark-pdf me-1"></i> Invoice
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-danger px-2 py-2" onclick="bukaModalTolakBooking('${bId}')" title="Batalkan Sewa">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    // ========================================================
+    // 4. RIWAYAT VIEW (ARSIP LENGKAP & REKAP KAS)
+    // ========================================================
+    function renderTabelRiwayatAdmin() {
+      const tbody = document.getElementById("adminTabelRiwayatBody");
+      const mobileContainer = document.getElementById("riwayatMobileCardsContainer");
+      if (tbody) tbody.innerHTML = "";
+      if (mobileContainer) mobileContainer.innerHTML = "";
+
+      const filterStatus = document.getElementById("filterRiwayatStatus") ? document.getElementById("filterRiwayatStatus").value : "completed";
+      const list = [...daftarRiwayatAktif];
+      const now = new Date();
+
+      let sumPokok = 0;
+      let sumDenda = 0;
+      let sumKas = 0;
+
+      list.forEach(b => {
+        const biayaSewa = parseInt(b.biayaSewa || 0);
+        let denda = 0;
+        if (b.status === "completed") {
+          denda = parseInt(b.dendaKeterlambatan || 0);
+        } else if (b.waktuSelesaiRaw) {
+          const selesaiDate = new Date(b.waktuSelesaiRaw);
+          if (!isNaN(selesaiDate.getTime()) && (now - selesaiDate) > 15 * 60 * 1000) {
+            const overMs = now - selesaiDate;
+            const overMin = Math.floor(overMs / 60000);
+            const jamDenda = Math.ceil(overMin / 60);
+            denda = jamDenda * 10000;
+          }
+        }
+        sumPokok += biayaSewa;
+        sumDenda += denda;
+        sumKas += (biayaSewa + denda);
+      });
+
+      if (document.getElementById("rekapSewaPokok")) {
+        document.getElementById("rekapSewaPokok").innerText = formatRupiah(sumPokok);
+      }
+      if (document.getElementById("rekapTotalDenda")) {
+        document.getElementById("rekapTotalDenda").innerText = formatRupiah(sumDenda);
+      }
+      if (document.getElementById("rekapTotalKas")) {
+        document.getElementById("rekapTotalKas").innerText = formatRupiah(sumKas);
+      }
+
+      let filteredList = list;
+      if (filterStatus === "completed") {
+        filteredList = list.filter(b => b.status === "completed");
+      } else if (filterStatus === "pending") {
+        filteredList = list.filter(b => b.status === "pending");
+      } else if (filterStatus === "active" || filterStatus === "booked") {
+        filteredList = list.filter(b => b.status === "active" || b.status === "booked");
+      } else if (filterStatus === "rejected") {
+        filteredList = list.filter(b => b.status === "rejected" || b.status === "cancelled");
+      }
+
+      if (filteredList.length === 0) {
+        if (tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center text-secondary py-5"><i class="bi bi-inbox fs-2 d-block mb-2 text-muted"></i>Tidak ada data riwayat yang sesuai filter (${filterStatus}).</td></tr>`;
+        if (mobileContainer) mobileContainer.innerHTML = `<div class="p-4 text-center rounded border bg-light text-muted small my-2"><i class="bi bi-inbox fs-2 d-block mb-2 text-muted"></i>Tidak ada data riwayat yang sesuai filter (${filterStatus}).</div>`;
+        return;
+      }
+
+      filteredList.forEach((b, idx) => {
+        if (b.nama && b.nama.includes('***')) {
+          b.nama = b.nama.replace(/\*+/g, '').trim();
+        }
+        const bId = b.bookingId || ('INV-' + String(idx + 1).padStart(4, '0'));
+        if (!b.bookingId) b.bookingId = bId;
+        const biayaSewa = parseInt(b.biayaSewa || 0);
+
+        let denda = 0;
+        let dendaBadge = `<span class="text-muted">Rp 0</span>`;
+        if (b.status === "completed") {
+          denda = parseInt(b.denda || b.dendaKeterlambatan || 0);
+          if (denda > 0) {
+            dendaBadge = `<span class="text-danger fw-bold">${formatRupiah(denda)}</span>`;
+          }
+        } else if (b.waktuSelesaiRaw) {
+          const selesaiDate = new Date(b.waktuSelesaiRaw);
+          if (!isNaN(selesaiDate.getTime()) && (now - selesaiDate) > 15 * 60 * 1000) {
+            const overMs = now - selesaiDate;
+            const overMin = Math.floor(overMs / 60000);
+            const jamDenda = Math.ceil(overMin / 60);
+            denda = jamDenda * 10000;
+            dendaBadge = `<span class="badge bg-danger-subtle text-danger border border-danger">${formatRupiah(denda)}</span>`;
+          }
+        }
+
+        const totalBayar = biayaSewa + denda;
+        const isSelesai = b.status === "completed";
+        const isDitolak = b.status === "rejected" || b.status === "cancelled";
+        const isPending = b.status === "pending";
+
+        let aksiSelesaiDesktop = "";
+        if (isSelesai) {
+          aksiSelesaiDesktop = `<button type="button" class="btn btn-sm btn-outline-warning py-1 px-2 me-1" onclick="batalkanSelesaiPenyewaan('${bId}')" title="Salah pencet? Batalkan status selesai (Undo)"><i class="bi bi-arrow-counterclockwise"></i> Batal</button>`;
+        } else if (isDitolak) {
+          aksiSelesaiDesktop = `<span class="badge bg-secondary me-1 py-1 px-2">Dibatalkan</span>`;
+        } else if (isPending) {
+          aksiSelesaiDesktop = `
+            <button type="button" class="btn btn-sm btn-primary fw-bold py-1 px-2 me-1 shadow-sm" onclick="bukaModalAccBooking('${bId}')" title="Tinjau & Setujui Pengajuan"><i class="bi bi-patch-check-fill"></i> ACC</button>
+            <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2 me-1" onclick="bukaModalTolakBooking('${bId}')" title="Tolak Pengajuan"><i class="bi bi-x-circle"></i></button>
+          `;
+        } else {
+          aksiSelesaiDesktop = `
+            <button type="button" class="btn btn-sm btn-success fw-bold py-1 px-2 me-1 shadow-sm" onclick="selesaikanPenyewaan('${bId}')" title="Terima Pengembalian Fisik Alat"><i class="bi bi-box-arrow-in-down"></i> Terima</button>
+            <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2 me-1" onclick="bukaModalTolakBooking('${bId}')" title="Tolak / Batalkan Booking"><i class="bi bi-x-circle"></i></button>
+          `;
+        }
+
+        const noTujuan = typeof formatNomorWa === "function" ? formatNomorWa(b.noWa) : (b.noWa || '').replace(/[^0-9]/g, '');
+        const pesanWa = encodeURIComponent(`Assalamu'alaikum wr. wb. Saudara/i *${b.nama}*,\n\nAdmin Multimedia Ma'had Aly menginfokan arsip sewa aset *${b.namaBarang}* (${bId}).\nStatus: *${isSelesai ? 'Selesai / Lunas' : (isPending ? 'Menunggu ACC' : 'Sedang Berjalan')}*.\nTotal Bayar: *${formatRupiah(totalBayar)}*.\n\nTerima kasih.`);
+
+        let statusTag = `<span class="badge bg-primary-subtle text-primary border border-primary py-1 px-2 mb-1 d-inline-block"><i class="bi bi-play-circle"></i> Berjalan</span>`;
+        if (isSelesai) {
+          statusTag = `<span class="badge bg-success-subtle text-success border border-success py-1 px-2 mb-1 d-inline-block"><i class="bi bi-check2-all"></i> Selesai</span>`;
+        } else if (isDitolak) {
+          statusTag = `<span class="badge bg-danger-subtle text-danger border border-danger py-1 px-2 mb-1 d-inline-block"><i class="bi bi-x-circle"></i> Ditolak</span>`;
+        } else if (isPending) {
+          statusTag = `<span class="badge bg-warning text-dark py-1 px-2 mb-1 d-inline-block"><i class="bi bi-hourglass-top"></i> Menunggu ACC</span>`;
+        }
+
+        let biayaPokokHtml = `<span class="fw-bold text-primary">${formatRupiah(biayaSewa)}</span>`;
+        if (b.isDinas === true) {
+          biayaPokokHtml = `<span class="badge bg-primary-subtle text-primary border border-primary-subtle">Gratis (Dinas)</span>`;
+        }
+
+        let buktiFotoBadge = "";
+        if (b.buktiFoto) {
+          buktiFotoBadge = `<button type="button" class="btn btn-xs btn-outline-info py-0 px-1 ms-1" onclick="lihatFotoBuktiModal('${encodeURIComponent(b.buktiFoto)}')" title="Lihat Foto Bukti Pengembalian"><i class="bi bi-camera-fill"></i> Foto</button>`;
+        }
+
+        const safeNama = typeof escapeHtml === "function" ? escapeHtml(b.nama || '-') : (b.nama || '-');
+        const safeNoWa = typeof escapeHtml === "function" ? escapeHtml(b.noWa || '-') : (b.noWa || '-');
+        const safeKomunitas = typeof escapeHtml === "function" ? escapeHtml(b.komunitas || '-') : (b.komunitas || '-');
+        const safeNamaBarang = typeof escapeHtml === "function" ? escapeHtml(b.namaBarang || '-') : (b.namaBarang || '-');
+        const safePaketLabel = typeof escapeHtml === "function" ? escapeHtml(b.paketLabel || (b.paketJam + ' Jam')) : (b.paketLabel || (b.paketJam + ' Jam'));
+        const safeWaktuAmbil = typeof escapeHtml === "function" ? escapeHtml(b.waktuAmbil || '-') : (b.waktuAmbil || '-');
+        const safeWaktuSelesai = typeof escapeHtml === "function" ? escapeHtml(b.waktuSelesai || '-') : (b.waktuSelesai || '-');
+        const safeJaminan = b.jaminanIdentitas ? `<small class="d-block text-muted"><i class="bi bi-card-heading text-primary me-1"></i>Jaminan: <strong>${typeof escapeHtml === "function" ? escapeHtml(b.jaminanIdentitas) : b.jaminanIdentitas}</strong></small>` : '';
+        const safeHandoverBadge = b.handoverRiil ? `<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle ms-1" style="font-size: 0.65rem;"><i class="bi bi-stopwatch me-1"></i>Riil</span>` : '';
+
+        // 1. Render Baris Desktop (Tabel)
+        if (tbody) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>
+              <span class="badge text-white font-monospace" style="background-color: #7928ca;">${bId}</span>
+              <small class="d-block text-muted mt-1">${b.createdAt ? new Date(b.createdAt).toLocaleDateString('id-ID') : '-'}</small>
+            </td>
+            <td>
+              <strong class="text-dark d-block">${safeNama}</strong>
+              <small class="text-secondary">${typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(safeNoWa) : safeNoWa} &bull; ${safeKomunitas}</small>
+              ${safeJaminan}
+            </td>
+            <td>
+              <strong class="text-dark d-block">${safeNamaBarang} ${safeHandoverBadge}</strong>
+              <span class="badge bg-white text-dark border">${safePaketLabel}</span>
+            </td>
+            <td>
+              <small class="d-block text-secondary">Ambil: <strong>${safeWaktuAmbil}</strong></small>
+              <small class="d-block text-danger">Kembali: <strong>${safeWaktuSelesai}</strong></small>
+            </td>
+            <td>${biayaPokokHtml}</td>
+            <td>${dendaBadge}</td>
+            <td class="fw-bolder text-success">${formatRupiah(totalBayar)}</td>
+            <td class="text-end text-nowrap">
+              <div class="mb-1">${statusTag} ${buktiFotoBadge}</div>
+              ${aksiSelesaiDesktop}
+              <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-sm btn-outline-success py-1 px-2 me-1" title="Hubungi Penyewa via WhatsApp">
+                <i class="bi bi-whatsapp"></i>
+              </a>
+              <a href="status.html?id=${encodeURIComponent(bId)}" target="_blank" class="btn btn-sm btn-outline-primary py-1 px-2 me-1" title="Buka Countdown">
+                <i class="bi bi-clock-history"></i>
+              </a>
+              ${isSelesai ? `
+              <a href="invoice.html?id=${encodeURIComponent(bId)}" target="_blank" class="btn btn-sm btn-metahati py-1 px-2 me-1" title="Cetak Invoice PDF">
+                <i class="bi bi-file-earmark-pdf"></i>
+              </a>` : ''}
+              <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        }
+
+        // 2. Render Kartu Responsif Mobile (0% Scroll Horizontal)
+        if (mobileContainer) {
+          const card = document.createElement("div");
+          card.className = "card border p-3 mb-3 shadow-sm";
+          card.style = "border-radius: 0.85rem; border-color: #e2e8f0 !important;";
+
+          let aksiMobile = "";
+          if (isSelesai) {
+            aksiMobile = `
+              <div class="d-flex gap-2 mb-2">
+                <a href="invoice.html?id=${encodeURIComponent(bId)}" target="_blank" class="btn btn-metahati flex-grow-1 fw-bold py-2 text-center shadow-sm">
+                  <i class="bi bi-file-earmark-pdf me-1"></i> Cetak Invoice PDF
+                </a>
+                <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-outline-success fw-bold px-3 py-2 text-center" title="Chat WhatsApp">
+                  <i class="bi bi-whatsapp"></i>
+                </a>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-warning flex-fill py-2 fw-bold" onclick="batalkanSelesaiPenyewaan('${bId}')">
+                  <i class="bi bi-arrow-counterclockwise me-1"></i> Batal Status Selesai
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger px-3 py-2" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            `;
+          } else if (isDitolak) {
+            aksiMobile = `
+              <div class="d-flex gap-2">
+                <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-outline-success flex-fill fw-bold py-2 text-center">
+                  <i class="bi bi-whatsapp me-1"></i> Hubungi WA
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-danger px-3 py-2" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
+                  <i class="bi bi-trash"></i> Hapus
+                </button>
+              </div>
+            `;
+          } else if (isPending) {
+            aksiMobile = `
+              <div class="d-flex gap-2 mb-2">
+                <button type="button" class="btn btn-primary flex-grow-1 fw-bold py-2 text-center shadow-sm" onclick="bukaModalAccBooking('${bId}')">
+                  <i class="bi bi-patch-check-fill me-1"></i> ACC Sewa
+                </button>
+                <button type="button" class="btn btn-outline-danger px-3 py-2 fw-bold" onclick="bukaModalTolakBooking('${bId}')" title="Tolak Pengajuan">
+                  <i class="bi bi-x-circle"></i>
+                </button>
+              </div>
+              <div class="d-flex gap-2">
+                <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-sm btn-outline-success flex-fill py-2 fw-bold text-center">
+                  <i class="bi bi-whatsapp me-1"></i> Chat WA
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-danger px-3 py-2" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            `;
+          } else {
+            // Status Aktif Berjalan
+            aksiMobile = `
+              <div class="d-flex gap-2 mb-2">
+                <button type="button" class="btn btn-success flex-grow-1 fw-bold py-2 text-center shadow-sm" onclick="selesaikanPenyewaan('${bId}')">
+                  <i class="bi bi-box-arrow-in-down me-1"></i> Terima Pengembalian
+                </button>
+                <button type="button" class="btn btn-outline-danger px-3 py-2 fw-bold" onclick="bukaModalTolakBooking('${bId}')" title="Batalkan / Tolak">
+                  <i class="bi bi-x-circle"></i>
+                </button>
+              </div>
+              <div class="d-flex gap-2">
+                <a href="status.html?id=${encodeURIComponent(bId)}" target="_blank" class="btn btn-sm btn-outline-primary flex-fill py-2 fw-bold text-center">
+                  <i class="bi bi-clock-history me-1"></i> Countdown
+                </a>
+                <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-sm btn-outline-success px-3 py-2" title="Chat WA">
+                  <i class="bi bi-whatsapp"></i>
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-danger px-3 py-2" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            `;
+          }
+
+          card.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge text-white font-monospace" style="background-color: #7928ca;">${bId}</span>
+              <div class="d-flex align-items-center gap-1">${statusTag} ${buktiFotoBadge}</div>
+            </div>
+            <div class="mb-2">
+              <strong class="text-dark fs-6 d-block">${safeNama}</strong>
+              <small class="text-secondary">${typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(safeNoWa) : safeNoWa} &bull; ${safeKomunitas}</small>
+              ${safeJaminan}
+            </div>
+            <div class="p-2 rounded bg-light border mb-3 small">
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">Unit Alat:</span>
+                <strong class="text-dark">${safeNamaBarang} ${safeHandoverBadge}</strong>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">Paket:</span>
+                <span class="badge bg-white text-dark border">${safePaketLabel}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">Jadwal Pinjam:</span>
+                <span>${safeWaktuAmbil}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">Jadwal Kembali:</span>
+                <span class="text-danger fw-bold">${safeWaktuSelesai}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">Biaya Pokok:</span>
+                ${biayaPokokHtml}
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">Denda:</span>
+                ${dendaBadge}
+              </div>
+              <div class="d-flex justify-content-between py-1">
+                <span class="text-muted fw-bold">Total Bayar:</span>
+                <strong class="text-success fs-6">${formatRupiah(totalBayar)}</strong>
+              </div>
+            </div>
+            ${aksiMobile}
+          `;
+          mobileContainer.appendChild(card);
+        }
+      });
+    }
+
+    function toggleLihatPasswordSetting() {
+      const input = document.getElementById("settingPassword");
+      const icon = document.getElementById("iconTogglePassSetting");
+      if (!input) return;
+      if (input.type === "password") {
+        input.type = "text";
+        if (icon) icon.className = "bi bi-eye-slash";
+      } else {
+        input.type = "password";
+        if (icon) icon.className = "bi bi-eye";
+      }
+    }
+
+    let modalAccInstance = null;
+    let modalTerimaInstance = null;
+    let modalTolakInstance = null;
+    let targetBookingAcc = null;
+    let targetBookingTerima = null;
+    let targetBookingTolak = null;
+    let fotoBuktiBase64 = null;
+
+    // ========================================================
+    // MODAL ACC / SETUJUI PENGAJUAN SEWA
+    // ========================================================
+    function bukaModalAccBooking(bId) {
+      if (!bId) return;
+      const targetIdx = daftarRiwayatAktif.findIndex(b => (b.bookingId && b.bookingId.toUpperCase() === bId.toUpperCase()) || (b.id && b.id.toUpperCase() === bId.toUpperCase()));
+      let targetBooking = targetIdx >= 0 ? daftarRiwayatAktif[targetIdx] : null;
+
+      if (!targetBooking) {
+        const cur = ambilDataBooking();
+        if (cur && ((cur.bookingId && cur.bookingId.toUpperCase() === bId.toUpperCase()) || (cur.id && cur.id.toUpperCase() === bId.toUpperCase()))) {
+          targetBooking = cur;
+        }
+      }
+
+      if (!targetBooking) {
+        alert(`Data pengajuan booking "${bId}" tidak ditemukan.`);
+        return;
+      }
+
+      targetBookingAcc = targetBooking;
+
+      document.getElementById("modalAccId").value = bId;
+      document.getElementById("modalAccWa").value = targetBooking.noWa || "";
+      document.getElementById("modalAccBadgeId").innerText = bId;
+      document.getElementById("modalAccNama").innerText = targetBooking.nama || "-";
+      document.getElementById("modalAccAset").innerText = targetBooking.namaBarang || "-";
+      document.getElementById("modalAccJadwal").innerText = `${targetBooking.waktuAmbil || '-'} s.d ${targetBooking.waktuSelesai || '-'}`;
+      document.getElementById("modalAccPaket").innerText = targetBooking.paketLabel || (targetBooking.paketJam + " Jam");
+
+      const tarifAsli = hitungTarifRiilBooking(targetBooking);
+      document.getElementById("modalAccTarifAsli").innerText = formatRupiah(tarifAsli);
+
+      const isDinas = targetBooking.isDinas === true;
+      const checkDinas = document.getElementById("checkAccDinasPondok");
+      if (checkDinas) {
+        checkDinas.checked = isDinas;
+        handleToggleAccDinas(isDinas);
+      }
+
+      const checkMulaiSekarang = document.getElementById("checkAccMulaiSekarang");
+      if (checkMulaiSekarang) checkMulaiSekarang.checked = false;
+
+      const inputJaminan = document.getElementById("modalAccJaminanFisik");
+      if (inputJaminan) inputJaminan.value = targetBooking.jaminanIdentitas || "";
+
+      if (!modalAccInstance) {
+        const modalEl = document.getElementById("modalAccBooking");
+        modalAccInstance = new bootstrap.Modal(modalEl);
+        modalEl.addEventListener("hidden.bs.modal", () => {
+          batalAccBooking();
+        });
+      }
+      modalAccInstance.show();
+    }
+
+    function hitungTarifRiilBooking(b) {
+      if (!b) return 0;
+      // 1. Cek dari katalog master aset berdasarkan ID atau Nama Barang & Paket
+      const semuaAset = typeof ambilSemuaKatalog === "function" ? ambilSemuaKatalog() : [];
+      const item = semuaAset.find(a => (b.asetId && a.id === b.asetId) || (b.namaBarang && a.nama && a.nama.toLowerCase().trim() === b.namaBarang.toLowerCase().trim()));
+      if (item && Array.isArray(item.paketOpsi) && item.paketOpsi.length > 0) {
+        const match = item.paketOpsi.find(p => (b.paketJam && p.jam == b.paketJam) || (b.paketLabel && p.label == b.paketLabel));
+        if (match && match.tarif > 0) return parseInt(match.tarif);
+        if (item.paketOpsi[0] && item.paketOpsi[0].tarif > 0) return parseInt(item.paketOpsi[0].tarif);
+      }
+      // 2. Cek paketTarif langsung dari booking
+      if (b.paketTarif && parseInt(b.paketTarif) > 0) return parseInt(b.paketTarif);
+      // 3. Cek biayaSewa jika tidak dinas
+      if (!b.isDinas && typeof b.biayaSewa !== 'undefined' && parseInt(b.biayaSewa) > 0) {
+        return parseInt(b.biayaSewa);
+      }
+      // 4. Cek biayaSewaAsli jika dinas
+      if (b.biayaSewaAsli && parseInt(b.biayaSewaAsli) > 0) {
+        return parseInt(b.biayaSewaAsli);
+      }
+      return parseInt(b.biayaSewa || 0);
+    }
+
+    function handleToggleAccDinas(isDinas) {
+      if (!targetBookingAcc) return;
+      const elFinal = document.getElementById("modalAccBiayaFinal");
+      const tarifAsli = hitungTarifRiilBooking(targetBookingAcc);
+      if (isDinas) {
+        elFinal.innerText = "Rp 0 (Gratis Dinas Pondok)";
+        elFinal.className = "fw-bolder fs-5 text-success";
+      } else {
+        elFinal.innerText = formatRupiah(tarifAsli);
+        elFinal.className = "fw-bolder fs-5 text-primary";
+      }
+    }
+
+    function batalAccBooking() {
+      targetBookingAcc = null;
+      const checkDinas = document.getElementById("checkAccDinasPondok");
+      if (checkDinas) checkDinas.checked = false;
+      const checkMulaiSekarang = document.getElementById("checkAccMulaiSekarang");
+      if (checkMulaiSekarang) checkMulaiSekarang.checked = false;
+      const inputJaminan = document.getElementById("modalAccJaminanFisik");
+      if (inputJaminan) inputJaminan.value = "";
+    }
+
+    async function eksekusiKonfirmasiAccBooking() {
+      if (!targetBookingAcc) return;
+      const bId = targetBookingAcc.bookingId;
+      const isDinas = document.getElementById("checkAccDinasPondok").checked;
+      const tarifAsli = hitungTarifRiilBooking(targetBookingAcc);
+      const biayaFinal = isDinas ? 0 : tarifAsli;
+
+      const checkMulaiSekarang = document.getElementById("checkAccMulaiSekarang");
+      const mulaiSekarang = checkMulaiSekarang ? checkMulaiSekarang.checked : false;
+
+      const inputJaminan = document.getElementById("modalAccJaminanFisik");
+      const jaminanIdentitas = inputJaminan ? inputJaminan.value.trim() : "";
+
+      if (typeof accBookingAdminAsync === "function") {
+        await accBookingAdminAsync(bId, {
+          isDinas: isDinas,
+          biayaFinal: biayaFinal,
+          mulaiSekarang: mulaiSekarang,
+          jaminanIdentitas: jaminanIdentitas
+        });
+      } else {
+        targetBookingAcc.status = "active";
+        targetBookingAcc.waktuDiAcc = new Date().toISOString();
+        if (isDinas) {
+          targetBookingAcc.isDinas = true;
+          if (!targetBookingAcc.biayaSewaAsli) targetBookingAcc.biayaSewaAsli = tarifAsli;
+          targetBookingAcc.biayaSewa = 0;
+        } else {
+          targetBookingAcc.isDinas = false;
+          targetBookingAcc.biayaSewa = tarifAsli;
+        }
+        if (jaminanIdentitas) {
+          targetBookingAcc.jaminanIdentitas = jaminanIdentitas;
+        }
+        if (mulaiSekarang) {
+          let durasiMs = 2 * 3600 * 1000;
+          if (targetBookingAcc.waktuAmbilRaw && targetBookingAcc.waktuSelesaiRaw) {
+            const t1 = new Date(targetBookingAcc.waktuAmbilRaw).getTime();
+            const t2 = new Date(targetBookingAcc.waktuSelesaiRaw).getTime();
+            if (!isNaN(t1) && !isNaN(t2) && t2 > t1) durasiMs = t2 - t1;
+          }
+          const now = new Date();
+          const tSelesai = new Date(now.getTime() + durasiMs);
+          targetBookingAcc.waktuAmbilRaw = now.toISOString();
+          targetBookingAcc.waktuSelesaiRaw = tSelesai.toISOString();
+          targetBookingAcc.waktuAmbil = (typeof formatWaktuIndo === 'function' ? formatWaktuIndo(now) : now.toLocaleString('id-ID')) + ' WIB';
+          targetBookingAcc.waktuSelesai = (typeof formatWaktuIndo === 'function' ? formatWaktuIndo(tSelesai) : tSelesai.toLocaleString('id-ID')) + ' WIB';
+          targetBookingAcc.handoverRiil = true;
+        }
+        const targetIdx = daftarRiwayatAktif.findIndex(b => (b.bookingId && b.bookingId.toUpperCase() === bId.toUpperCase()) || (b.id && b.id.toUpperCase() === bId.toUpperCase()));
+        if (targetIdx >= 0) daftarRiwayatAktif[targetIdx] = targetBookingAcc;
+        localStorage.setItem(STORAGE_BOOKING_HISTORY, JSON.stringify(daftarRiwayatAktif));
+      }
+
+      if (typeof sinkronkanStatusSemuaAset === "function") {
+        sinkronkanStatusSemuaAset();
+      }
+
+      if (modalAccInstance) modalAccInstance.hide();
+      segarkanSemuaData();
+
+      // Kirim Notifikasi WhatsApp Persetujuan
+      const noTujuan = typeof formatNomorWa === "function" ? formatNomorWa(targetBookingAcc.noWa) : (targetBookingAcc.noWa || '').replace(/[^0-9]/g, '');
+      if (noTujuan) {
+        const infoBiaya = isDinas ? "*GRATIS (Dinas Resmi Pondok)*" : `*${formatRupiah(biayaFinal)}*`;
+        const infoJaminan = jaminanIdentitas ? `*${jaminanIdentitas}* (Tercatat sebagai jaminan titipan fisik)` : "Harap membawa KTS / KTP Asli saat serah terima";
+        const catatanRiil = mulaiSekarang ? "\n_Catatan: Durasi sewa dihitung mulai saat serah terima alat fisik sekarang._\n" : "";
+
+        const baseUrl = (typeof dapatkanBaseUrl === "function" && dapatkanBaseUrl()) ? dapatkanBaseUrl() : "https://aset.mahadalyamtsilati.ac.id";
+        const linkCountdown = `${baseUrl}/status.html?id=${encodeURIComponent(bId)}`;
+
+        const pesanAcc = encodeURIComponent(`Assalamu'alaikum wr. wb. Saudara/i *${targetBookingAcc.nama}*,\n\nAlhamdulillah, permohonan sewa alat multimedia *${targetBookingAcc.namaBarang}* (${bId}) telah *DISETUJUI (ACC)* oleh pengurus inventaris.\n\n*Rincian Pengambilan:*
+- Jadwal Ambil: *${targetBookingAcc.waktuAmbil || '-'}*
+- Batas Kembali: *${targetBookingAcc.waktuSelesai || '-'}*
+- Biaya Sewa: ${infoBiaya}
+- Jaminan Identitas: ${infoJaminan}
+${catatanRiil}
+Silakan datang ke kantor Ma'had Aly Amtsilati saat jadwal pengambilan tiba.\n\n*Pantau Countdown & Durasi Pemakaian:*
+${linkCountdown}\n\nTerima kasih.`);
+        const kirimWa = confirm(`Pengajuan sewa ${targetBookingAcc.nama} (${bId}) berhasil DISETUJUI (ACC)!\n\nNotifikasi WhatsApp otomatis telah dikirim ke nomor santri.\nApakah Anda tetap ingin membuka chat WhatsApp manual ke santri?`);
+        if (kirimWa) {
+          window.open(`https://wa.me/${noTujuan}?text=${pesanAcc}`, "_blank");
+        }
+      } else {
+        alert(`Pengajuan sewa ${targetBookingAcc.nama} (${bId}) berhasil DISETUJUI! Notifikasi WhatsApp otomatis telah dikirim.`);
+      }
+    }
+
+    // ========================================================
+    // MODAL TERIMA PENGEMBALIAN FISIK ALAT
+    // ========================================================
+    function selesaikanPenyewaan(bId) {
+      if (!bId) return;
+      const targetIdx = daftarRiwayatAktif.findIndex(b => (b.bookingId && b.bookingId.toUpperCase() === bId.toUpperCase()) || (b.id && b.id.toUpperCase() === bId.toUpperCase()));
+      let targetBooking = targetIdx >= 0 ? daftarRiwayatAktif[targetIdx] : null;
+
+      if (!targetBooking) {
+        const cur = ambilDataBooking();
+        if (cur && ((cur.bookingId && cur.bookingId.toUpperCase() === bId.toUpperCase()) || (cur.id && cur.id.toUpperCase() === bId.toUpperCase()))) {
+          targetBooking = cur;
+        }
+      }
+
+      if (!targetBooking) {
+        alert(`Data booking dengan ID "${bId}" tidak ditemukan.`);
+        return;
+      }
+
+      targetBookingTerima = targetBooking;
+
+      document.getElementById("modalTerimaId").value = bId;
+      document.getElementById("modalTerimaBadgeId").innerText = bId;
+      document.getElementById("modalTerimaNama").innerText = targetBooking.nama || "-";
+      document.getElementById("modalTerimaAset").innerText = targetBooking.namaBarang || "-";
+      document.getElementById("modalTerimaBatas").innerText = targetBooking.waktuSelesai || "-";
+
+      const biayaPokok = parseInt(targetBooking.biayaSewa || 0);
+      if (targetBooking.isDinas || biayaPokok === 0) {
+        document.getElementById("modalTerimaSewaPokok").innerHTML = `<span class="badge bg-primary-subtle text-primary border border-primary-subtle">Gratis (Dinas Pondok)</span>`;
+      } else {
+        document.getElementById("modalTerimaSewaPokok").innerText = formatRupiah(biayaPokok);
+      }
+
+      // Analisis Keterlambatan Otomatis
+      const now = new Date();
+      let estimasiDendaTelat = 0;
+      const infoTelatEl = document.getElementById("modalTerimaInfoKeterlambatan");
+
+      if (targetBooking.waktuSelesaiRaw) {
+        const tSelesai = new Date(targetBooking.waktuSelesaiRaw).getTime();
+        const diffMs = now.getTime() - tSelesai;
+        if (diffMs > 15 * 60 * 1000) {
+          const overMin = Math.floor(diffMs / 60000);
+          const jamDenda = Math.ceil(overMin / 60);
+          estimasiDendaTelat = jamDenda * 10000;
+          if (infoTelatEl) {
+            infoTelatEl.innerHTML = `<span class="text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i>Terdeteksi lewat ${Math.floor(overMin / 60)} Jam ${overMin % 60} Menit</span> (Estimasi sistem: ${formatRupiah(estimasiDendaTelat)})`;
+          }
+        } else {
+          if (infoTelatEl) {
+            infoTelatEl.innerHTML = `<span class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i>Tepat Waktu</span> (Belum melewati batas sewa toleransi)`;
+          }
+        }
+      } else {
+        if (infoTelatEl) infoTelatEl.innerText = "Jadwal batas sewa tidak tercatat spesifik.";
+      }
+
+      document.getElementById("modalTerimaInputDendaTelat").value = estimasiDendaTelat;
+
+      // Reset Pilihan Kondisi Fisik & Denda Rusak
+      document.getElementById("kondisiNormal").checked = true;
+      toggleKondisiRusak(false);
+      document.getElementById("modalTerimaInputDendaRusak").value = 0;
+      const checkServis = document.getElementById("checkNonaktifkanServis");
+      if (checkServis) checkServis.checked = true;
+
+      // Reset Foto Bukti
+      hapusFotoBuktiTerima();
+
+      updateTotalBayarModalTerima();
+
+      if (!modalTerimaInstance) {
+        modalTerimaInstance = new bootstrap.Modal(document.getElementById("modalTerimaPengembalian"));
+      }
+      modalTerimaInstance.show();
+    }
+
+    function setDendaTelatNol() {
+      const input = document.getElementById("modalTerimaInputDendaTelat");
+      if (input) input.value = 0;
+      updateTotalBayarModalTerima();
+    }
+
+    function toggleKondisiRusak(isRusak) {
+      const box = document.getElementById("boxDendaKerusakan");
+      const rowFinal = document.getElementById("rowDendaRusakFinal");
+      if (box) box.classList.toggle("d-none", !isRusak);
+      if (rowFinal) rowFinal.classList.toggle("d-none", !isRusak);
+      if (!isRusak) {
+        const inp = document.getElementById("modalTerimaInputDendaRusak");
+        if (inp) inp.value = 0;
+      }
+      updateTotalBayarModalTerima();
+    }
+
+    async function handlePilihFotoBukti(input) {
+      if (!input || !input.files || !input.files[0]) return;
+      const file = input.files[0];
+      try {
+        if (typeof kompresGambarClient === "function") {
+          fotoBuktiBase64 = await kompresGambarClient(file, 800, 0.6);
+        } else {
+          fotoBuktiBase64 = await new Promise((res) => {
+            const r = new FileReader();
+            r.onload = e => res(e.target.result);
+            r.readAsDataURL(file);
+          });
+        }
+        const img = document.getElementById("previewFotoBuktiImg");
+        const box = document.getElementById("previewFotoBuktiContainer");
+        const btnHapus = document.getElementById("btnHapusFotoBukti");
+        if (img) img.src = fotoBuktiBase64;
+        if (box) box.classList.remove("d-none");
+        if (btnHapus) btnHapus.classList.remove("d-none");
+      } catch (e) {
+        console.error("Gagal memproses foto bukti", e);
+      }
+    }
+
+    function hapusFotoBuktiTerima() {
+      fotoBuktiBase64 = null;
+      const inp = document.getElementById("modalTerimaInputFoto");
+      if (inp) inp.value = "";
+      const box = document.getElementById("previewFotoBuktiContainer");
+      if (box) box.classList.add("d-none");
+      const btnHapus = document.getElementById("btnHapusFotoBukti");
+      if (btnHapus) btnHapus.classList.add("d-none");
+    }
+
+    function updateTotalBayarModalTerima() {
+      if (!targetBookingTerima) return;
+      const biayaPokok = parseInt(targetBookingTerima.biayaSewa || 0);
+      const dendaTelat = Math.max(0, parseInt(document.getElementById("modalTerimaInputDendaTelat").value || 0));
+      const isRusak = document.getElementById("kondisiRusak").checked;
+      const dendaRusak = isRusak ? Math.max(0, parseInt(document.getElementById("modalTerimaInputDendaRusak").value || 0)) : 0;
+
+      document.getElementById("modalTerimaDendaAktif").innerText = formatRupiah(dendaTelat);
+      document.getElementById("modalTerimaDendaRusakAktif").innerText = formatRupiah(dendaRusak);
+      document.getElementById("modalTerimaTotalPelunasan").innerText = formatRupiah(biayaPokok + dendaTelat + dendaRusak);
+    }
+
+    async function eksekusiKonfirmasiTerimaAlat() {
+      if (!targetBookingTerima) return;
+      const bId = targetBookingTerima.bookingId;
+
+      const dendaTelat = Math.max(0, parseInt(document.getElementById("modalTerimaInputDendaTelat").value || 0));
+      const isRusak = document.getElementById("kondisiRusak").checked;
+      const dendaRusak = isRusak ? Math.max(0, parseInt(document.getElementById("modalTerimaInputDendaRusak").value || 0)) : 0;
+      const checkServis = document.getElementById("checkNonaktifkanServis");
+      const nonaktifkanServis = isRusak && checkServis && checkServis.checked;
+
+      const returnPayload = {
+        bookingId: bId,
+        waktuDikembalikan: new Date().toISOString(),
+        dendaKeterlambatan: dendaTelat,
+        dendaKerusakan: dendaRusak,
+        kondisiFisik: isRusak ? 'rusak' : 'normal',
+        nonaktifkanAsetServis: nonaktifkanServis
+      };
+      if (fotoBuktiBase64) {
+        returnPayload.buktiFoto = fotoBuktiBase64;
+      }
+
+      if (typeof kembalikanBookingAdminAsync === "function") {
+        await kembalikanBookingAdminAsync(bId, returnPayload);
+      } else {
+        targetBookingTerima.status = "completed";
+        targetBookingTerima.waktuDikembalikan = returnPayload.waktuDikembalikan;
+        targetBookingTerima.dendaKeterlambatan = dendaTelat;
+        targetBookingTerima.dendaKerusakan = dendaRusak;
+        targetBookingTerima.denda = dendaTelat + dendaRusak;
+        targetBookingTerima.kondisiFisik = returnPayload.kondisiFisik;
+        if (fotoBuktiBase64) targetBookingTerima.buktiFoto = fotoBuktiBase64;
+
+        const targetIdx = daftarRiwayatAktif.findIndex(b => (b.bookingId && b.bookingId.toUpperCase() === bId.toUpperCase()) || (b.id && b.id.toUpperCase() === bId.toUpperCase()));
+        if (targetIdx >= 0) daftarRiwayatAktif[targetIdx] = targetBookingTerima;
+        localStorage.setItem(STORAGE_BOOKING_HISTORY, JSON.stringify(daftarRiwayatAktif));
+      }
+
+      if (typeof sinkronkanStatusSemuaAset === "function") {
+        sinkronkanStatusSemuaAset();
+      }
+
+      if (modalTerimaInstance) modalTerimaInstance.hide();
+      segarkanSemuaData();
+
+      // Kirim Notifikasi WhatsApp Tanda Terima & Ucapan Terima Kasih ke Santri
+      const noTujuan = typeof formatNomorWa === "function" ? formatNomorWa(targetBookingTerima.noWa) : (targetBookingTerima.noWa || '').replace(/[^0-9]/g, '');
+      const biayaPokok = parseInt(targetBookingTerima.biayaSewa || 0);
+      const totalPelunasan = biayaPokok + dendaTelat + dendaRusak;
+      const statusPelunasan = (totalPelunasan === 0) ? "LUNAS (Bebas Biaya / Rp 0)" : `LUNAS (${formatRupiah(totalPelunasan)})`;
+      const infoKondisi = isRusak ? `Ada Kerusakan (${formatRupiah(dendaRusak)})` : "Normal & Lengkap";
+
+      const baseUrl = (typeof dapatkanBaseUrl === "function" && dapatkanBaseUrl()) ? dapatkanBaseUrl() : "https://aset.mahadalyamtsilati.ac.id";
+      const linkInvoice = `${baseUrl}/invoice.html?id=${encodeURIComponent(bId)}&download=1`;
+
+      const pesanKembali = `Assalamu'alaikum wr. wb. Saudara/i *${targetBookingTerima.nama}*,\n\nAlhamdulillah, serah terima pengembalian aset *${targetBookingTerima.namaBarang}* (${bId}) telah *SELESAI DITERIMA* oleh pengurus inventaris.\n\n*Rincian Pengembalian:*
+- Waktu Kembali: *${typeof formatWaktuIndo === 'function' ? formatWaktuIndo(new Date()) : new Date().toLocaleString('id-ID')}*
+- Kondisi Fisik: *${infoKondisi}*
+- Denda Keterlambatan: *${formatRupiah(dendaTelat)}*
+- Total Pelunasan: *${statusPelunasan}*\n\n*Unduh Bukti Sewa & Tanda Terima Resmi (PDF/Invoice):*
+${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'had Aly Amtsilati dengan baik. Semoga berkah dan bermanfaat.\n\nWassalamu'alaikum wr. wb.\n*Pengurus Inventaris Ma'had Aly Amtsilati*`;
+
+      if (noTujuan) {
+        const kirimWa = confirm(`Penerimaan fisik aset "${targetBookingTerima.namaBarang}" dari ${targetBookingTerima.nama} (${bId}) berhasil diselesaikan!\n\nNotifikasi WhatsApp otomatis telah dikirim ke nomor santri.\nApakah Anda tetap ingin membuka chat WhatsApp santri?`);
+        if (kirimWa) {
+          window.open(`https://wa.me/${noTujuan}?text=${encodeURIComponent(pesanKembali)}`, "_blank");
+        }
+      } else {
+        alert(`Penerimaan fisik aset "${targetBookingTerima.namaBarang}" dari ${targetBookingTerima.nama} (${bId}) berhasil diselesaikan! Notifikasi WhatsApp telah dikirim.`);
+      }
+    }
+
+    function lihatFotoBuktiModal(encodedBase64) {
+      if (!encodedBase64) return;
+      const src = decodeURIComponent(encodedBase64);
+      const w = window.open("");
+      if (w) {
+        w.document.write(`<html><head><title>Foto Bukti Pengembalian - ${document.title}</title></head><body style="margin:0;background:#0f172a;display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;"><img src="${src}" style="max-width:90vw;max-height:85vh;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.5);border:2px solid rgba(255,255,255,0.2);" /><p style="color:#e2e8f0;font-family:sans-serif;margin-top:15px;font-size:0.9rem;">Foto Bukti Serah Terima Pengembalian Aset</p></body></html>`);
+      }
+    }
+
+    function bukaModalTolakBooking(bId) {
+      if (!bId) return;
+      const targetIdx = daftarRiwayatAktif.findIndex(b => (b.bookingId && b.bookingId.toUpperCase() === bId.toUpperCase()) || (b.id && b.id.toUpperCase() === bId.toUpperCase()));
+      const targetBooking = targetIdx >= 0 ? daftarRiwayatAktif[targetIdx] : null;
+
+      if (!targetBooking) {
+        alert(`Data booking ID "${bId}" tidak ditemukan.`);
+        return;
+      }
+
+      targetBookingTolak = targetBooking;
+
+      document.getElementById("modalTolakId").value = bId;
+      document.getElementById("modalTolakWa").value = targetBooking.noWa || "";
+      document.getElementById("modalTolakBadgeId").innerText = bId;
+      document.getElementById("modalTolakNama").innerText = targetBooking.nama || "-";
+      document.getElementById("modalTolakAset").innerText = targetBooking.namaBarang || "-";
+      document.getElementById("modalTolakOpsiAlasan").value = "Unit alat sedang dalam pemeliharaan / perbaikan rutin";
+      document.getElementById("modalTolakKeteranganManual").classList.add("d-none");
+      document.getElementById("modalTolakKeteranganManual").value = "";
+
+      if (!modalTolakInstance) {
+        modalTolakInstance = new bootstrap.Modal(document.getElementById("modalTolakBooking"));
+      }
+      modalTolakInstance.show();
+    }
+
+    function handlePilihAlasanTolak(val) {
+      const custom = document.getElementById("modalTolakKeteranganManual");
+      if (val === "__LAINNYA__") {
+        custom.classList.remove("d-none");
+        custom.focus();
+      } else {
+        custom.classList.add("d-none");
+      }
+    }
+
+    async function eksekusiKonfirmasiTolakBooking() {
+      if (!targetBookingTolak) return;
+      const bId = targetBookingTolak.bookingId;
+      const selectVal = document.getElementById("modalTolakOpsiAlasan").value;
+      let alasanFinal = selectVal;
+      if (selectVal === "__LAINNYA__") {
+        alasanFinal = document.getElementById("modalTolakKeteranganManual").value.trim() || "Unit tidak dapat disewakan pada jadwal tersebut";
+      }
+
+      if (typeof tolakBookingAdminAsync === "function") {
+        await tolakBookingAdminAsync(bId, alasanFinal);
+      } else {
+        targetBookingTolak.status = "rejected";
+        targetBookingTolak.alasanTolak = alasanFinal;
+        const targetIdx = daftarRiwayatAktif.findIndex(b => (b.bookingId && b.bookingId.toUpperCase() === bId.toUpperCase()) || (b.id && b.id.toUpperCase() === bId.toUpperCase()));
+        if (targetIdx >= 0) daftarRiwayatAktif[targetIdx] = targetBookingTolak;
+        localStorage.setItem(STORAGE_BOOKING_HISTORY, JSON.stringify(daftarRiwayatAktif));
+      }
+
+      if (typeof sinkronkanStatusSemuaAset === "function") {
+        sinkronkanStatusSemuaAset();
+      }
+
+      if (modalTolakInstance) modalTolakInstance.hide();
+      segarkanSemuaData();
+
+      // Buka WhatsApp untuk notifikasi santri
+      const noTujuan = typeof formatNomorWa === "function" ? formatNomorWa(targetBookingTolak.noWa) : (targetBookingTolak.noWa || '').replace(/[^0-9]/g, '');
+      if (noTujuan) {
+        const pesanTolak = encodeURIComponent(`Assalamu'alaikum wr. wb. Saudara/i *${targetBookingTolak.nama}*,\n\nKami dari Admin Multimedia Ma'had Aly menginfokan terkait permohonan sewa alat *${targetBookingTolak.namaBarang}* (${bId}).\n\nMohon maaf, permohonan sewa pada jadwal tersebut *belum dapat kami proses / dibatalkan* karena:\n*"${alasanFinal}"*.\n\nAnda dapat memilih jadwal lain atau alat multimedia lainnya di katalog. Terima kasih.`);
+        const kirimWa = confirm(`Booking berhasil ditolak dan slot jadwal langsung dibebaskan!\n\nNotifikasi WhatsApp otomatis telah dikirim ke santri (${targetBookingTolak.nama}).\nApakah Anda tetap ingin membuka chat WhatsApp manual santri?`);
+        if (kirimWa) {
+          window.open(`https://wa.me/${noTujuan}?text=${pesanTolak}`, "_blank");
+        }
+      } else {
+        alert("Booking berhasil ditolak dan jadwal alat telah dibebaskan. Notifikasi WhatsApp otomatis telah dikirim.");
+      }
+    }
+
+    async function batalkanSelesaiPenyewaan(bId) {
+      if (!bId) return;
+
+      const targetIdx = daftarRiwayatAktif.findIndex(b => (b.bookingId && b.bookingId.toUpperCase() === bId.toUpperCase()) || (b.id && b.id.toUpperCase() === bId.toUpperCase()));
+      let targetBooking = targetIdx >= 0 ? daftarRiwayatAktif[targetIdx] : null;
+
+      if (!targetBooking) {
+        const cur = ambilDataBooking();
+        if (cur && ((cur.bookingId && cur.bookingId.toUpperCase() === bId.toUpperCase()) || (cur.id && cur.id.toUpperCase() === bId.toUpperCase()))) {
+          targetBooking = cur;
+        }
+      }
+
+      if (!targetBooking) {
+        alert(`Data booking dengan ID "${bId}" tidak ditemukan.`);
+        return;
+      }
+
+      const namaPenyewa = targetBooking.nama || "Penyewa";
+      const namaAlat = targetBooking.namaBarang || "Aset";
+
+      if (!confirm(`Batalkan Status Selesai (Undo):\n\nID: ${bId}\nPenyewa: ${namaPenyewa}\nAset: ${namaAlat}\n\nStatus peminjaman akan dikembalikan ke "Sedang Berjalan". Lanjutkan?`)) {
+        return;
+      }
+
+      targetBooking.status = "booked";
+      delete targetBooking.waktuDikembalikan;
+
+      if (targetIdx >= 0) {
+        daftarRiwayatAktif[targetIdx] = targetBooking;
+      } else {
+        daftarRiwayatAktif.unshift(targetBooking);
+      }
+      localStorage.setItem(STORAGE_BOOKING_HISTORY, JSON.stringify(daftarRiwayatAktif));
+
+      const curBooking = ambilDataBooking();
+      if (curBooking && (curBooking.bookingId === bId || (curBooking.nama === targetBooking.nama && curBooking.waktuAmbil === targetBooking.waktuAmbil))) {
+        curBooking.status = "booked";
+        delete curBooking.waktuDikembalikan;
+        simpanDataBooking(curBooking);
+      }
+
+      if (typeof sinkronkanStatusSemuaAset === "function") {
+        sinkronkanStatusSemuaAset();
+      }
+
+      try {
+        await fetch((typeof dapatkanApiEndpoint === 'function' ? dapatkanApiEndpoint('action=simpan_booking') : 'api-service.php?action=simpan_booking'), {
+          method: 'POST',
+          headers: typeof ambilHeaderAdminAuth === "function" ? ambilHeaderAdminAuth() : { 'Content-Type': 'application/json' },
+          body: JSON.stringify(targetBooking)
+        });
+      } catch (e) {}
+
+      alert(`Penerimaan alat "${bId}" berhasil dibatalkan (Undo)! Status kembali "Sedang Berjalan".`);
+      segarkanSemuaData();
+    }
+
+    function cetakLaporanKas() {
+      const filterStatus = document.getElementById("filterRiwayatStatus") ? document.getElementById("filterRiwayatStatus").value : "semua";
+      let list = [...daftarRiwayatAktif];
+      if (filterStatus === "completed") list = list.filter(b => b.status === "completed");
+      if (filterStatus === "booked") list = list.filter(b => b.status !== "completed");
+
+      const printWindow = window.open('', '_blank');
+      let totalPokok = 0, totalDenda = 0, totalKas = 0;
+
+      const rowsHtml = list.map((b, idx) => {
+        const bId = b.bookingId || ('INV-' + String(idx + 1).padStart(4, '0'));
+        const pokok = parseInt(b.biayaSewa || 0);
+        const denda = parseInt(b.dendaKeterlambatan || 0);
+        const total = pokok + denda;
+        totalPokok += pokok;
+        totalDenda += denda;
+        totalKas += total;
+        return `
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace;">${bId}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${b.nama}<br><small style="color:#666">${b.noWa || '-'}</small></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${b.namaBarang} (${b.paketLabel || (b.paketJam + ' Jam')})</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${b.waktuAmbil || '-'}<br><small style="color:#d00">s/d ${b.waktuSelesai || '-'}</small></td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${formatRupiah(pokok)}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${formatRupiah(denda)}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatRupiah(total)}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${b.status === 'completed' ? 'Lunas / Selesai' : (b.status === 'pending' ? 'Menunggu ACC' : (b.status === 'rejected' || b.status === 'cancelled' ? 'Ditolak' : 'Sedang Berjalan'))}</td>
+          </tr>
+        `;
+      }).join('');
+
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Laporan Kas Peminjaman Aset - Ma'had Aly Amtsilati</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 30px; color: #111; }
+            .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 12px; margin-bottom: 20px; }
+            .header h2 { margin: 0 0 4px 0; text-transform: uppercase; letter-spacing: 1px; }
+            .header p { margin: 0; font-size: 13px; color: #555; }
+            table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 15px; }
+            th { background: #f4f6f9; border: 1px solid #ddd; padding: 10px; text-align: left; }
+            .summary-box { display: flex; justify-content: space-between; margin-top: 20px; font-size: 14px; font-weight: bold; border-top: 2px solid #333; padding-top: 10px; }
+            @media print { .no-print { display: none; } }
+          </style>
+        </head>
+        <body>
+          <div class="no-print" style="margin-bottom: 15px; text-align: right;">
+            <button onclick="window.print()" style="padding: 8px 16px; background: #0066ff; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Cetak / Simpan PDF</button>
+          </div>
+          <div class="header">
+            <h2>LAPORAN KAS & KEUANGAN PENYEWAAN ASET</h2>
+            <p>Admin Multimedia &bull; Ma'had Aly Amtsilati Bangsri Jepara</p>
+            <p style="font-size: 11px; margin-top: 4px; color: #777;">Dicetak pada: ${new Date().toLocaleString('id-ID')} &bull; Kategori: ${filterStatus.toUpperCase()}</p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>No Invoice</th>
+                <th>Penyewa</th>
+                <th>Unit Aset</th>
+                <th>Jadwal Pinjam</th>
+                <th style="text-align: right;">Sewa Pokok</th>
+                <th style="text-align: right;">Denda</th>
+                <th style="text-align: right;">Total Kas</th>
+                <th style="text-align: center;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml || '<tr><td colspan="8" style="text-align:center; padding: 20px;">Belum ada data riwayat transaksi.</td></tr>'}
+            </tbody>
+          </table>
+          <div class="summary-box">
+            <div>Total Transaksi: ${list.length} Data</div>
+            <div>Total Sewa Pokok: ${formatRupiah(totalPokok)}</div>
+            <div>Total Denda: ${formatRupiah(totalDenda)}</div>
+            <div style="color: #0066ff;">TOTAL KAS MASUK: ${formatRupiah(totalKas)}</div>
+          </div>
+          <div style="margin-top: 40px; display: flex; justify-content: flex-end; text-align: center;">
+            <div style="width: 220px;">
+              <p style="font-size: 12px; margin-bottom: 50px;">Jepara, ${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}<br>Bendahara Multimedia,</p>
+              <p style="font-size: 12px; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 4px;">( ___________________ )</p>
+              <p style="font-size: 10px; color: #666;">Admin Ma'had Aly Amtsilati</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
+    function exportKasCsv() {
+      const filterStatus = document.getElementById("filterRiwayatStatus") ? document.getElementById("filterRiwayatStatus").value : "semua";
+      let list = [...daftarRiwayatAktif];
+      if (filterStatus === "completed") list = list.filter(b => b.status === "completed");
+      if (filterStatus === "booked") list = list.filter(b => b.status !== "completed");
+
+      let csv = "No Invoice,Nama Penyewa,No WA,Komunitas / Lembaga,Nama Aset,Paket Durasi,Waktu Ambil,Waktu Selesai,Sewa Pokok (Rp),Denda (Rp),Total Bayar (Rp),Status Transaksi\n";
+
+      list.forEach((b, idx) => {
+        const bId = b.bookingId || ('INV-' + String(idx + 1).padStart(4, '0'));
+        const pokok = parseInt(b.biayaSewa || 0);
+        const denda = parseInt(b.dendaKeterlambatan || 0);
+        const total = pokok + denda;
+        const status = b.status === 'completed' ? 'Selesai / Lunas' : (b.status === 'pending' ? 'Menunggu ACC' : (b.status === 'rejected' || b.status === 'cancelled' ? 'Ditolak' : 'Sedang Berjalan'));
+
+        const clean = str => '"' + (str || '').toString().replace(/"/g, '""') + '"';
+
+        csv += [
+          clean(bId),
+          clean(b.nama),
+          clean(b.noWa),
+          clean(b.komunitas),
+          clean(b.namaBarang),
+          clean(b.paketLabel || (b.paketJam + ' Jam')),
+          clean(b.waktuAmbil),
+          clean(b.waktuSelesai),
+          pokok,
+          denda,
+          total,
+          clean(status)
+        ].join(",") + "\n";
+      });
+
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `laporan_kas_aset_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    async function hapusRiwayatItem(bookingId) {
+      if (!confirm(`Hapus riwayat booking "${bookingId}" dari server?`)) return;
+      if (typeof hapusBookingServer === "function") {
+        await hapusBookingServer(bookingId);
+      }
+      segarkanSemuaData();
+    }
+
+    async function bersihkanSemuaRiwayat() {
+      if (!confirm("PERINGATAN: Apakah Anda yakin ingin mengosongkan seluruh arsip riwayat sewa di server?")) return;
+      try {
+        await fetch((typeof dapatkanApiEndpoint === 'function' ? dapatkanApiEndpoint('action=bersihkan_booking') : 'api-service.php?action=bersihkan_booking'), {
+          method: 'POST',
+          headers: typeof ambilHeaderAdminAuth === "function" ? ambilHeaderAdminAuth() : { 'Content-Type': 'application/json' }
+        });
+      } catch (e) {}
+      localStorage.removeItem(STORAGE_BOOKING_HISTORY);
+      segarkanSemuaData();
+    }
+
+    // ========================================================
+    // ========================================================
+    // 5. PENGATURAN VIEW (FLEKSIBEL ADMIN 1 & 2 + WA GATEWAY + AKUN)
+    // ========================================================
+    function muatPengaturanForm() {
+      const config = ambilPengaturanAdmin();
+      document.getElementById("settingWaAdmin1").value = (config.admin1 && config.admin1.wa) ? config.admin1.wa : "6287748921490";
+      document.getElementById("settingWaAdmin2").value = (config.admin2 && config.admin2.wa) ? config.admin2.wa : "628812762520";
+      document.getElementById("settingUsername").value = config.username || "admin";
+      document.getElementById("settingPassword").value = config.password || "metahati2026";
+      
+      // Muat data WA Gateway Multi Session
+      const gw = config.waGateway || {};
+      const elUrl = document.getElementById("gwApiUrl");
+      if (elUrl) elUrl.value = gw.apiUrl || "https://wa-multi-session.amtsilatipusat.com/api/v1";
+      const elKey = document.getElementById("gwApiKey");
+      if (elKey) elKey.value = gw.apiKey || "1fcea2a9-6c3d-4158-8280-76ccdb9d9f66";
+      const elSess = document.getElementById("gwSessionId");
+      if (elSess) elSess.value = gw.sessionIdAdmin || "0ab9413c-aab1-4705-bd92-3e4b0a8c5426";
+      const elSessName = document.getElementById("gwSessionName");
+      if (elSessName) elSessName.value = gw.sessionName || "Admin Ma'had Aly Amtsilati";
+      const elPhone = document.getElementById("gwPhoneAdmin");
+      if (elPhone) elPhone.value = gw.phoneAdmin || "6287748921490";
+      const txtDispPhone = document.getElementById("txtDisplayAdminPhone");
+      if (txtDispPhone) txtDispPhone.innerText = gw.phoneAdmin || "6287748921490";
+
+      const elEnabled = document.getElementById("gwEnabled");
+      if (elEnabled) elEnabled.checked = (gw.enabled !== false);
+      const elNotifAdmin = document.getElementById("gwNotifyAdmin");
+      if (elNotifAdmin) elNotifAdmin.checked = (gw.notifyAdminNewBooking !== false);
+      const elNotifSantri = document.getElementById("gwNotifySantri");
+      if (elNotifSantri) elNotifSantri.checked = (gw.notifySantriBooking !== false);
+
+      muatFotoProfilAdminSaatIni();
+    }
+
+    function toggleLihatApiKey() {
+      const inp = document.getElementById("gwApiKey");
+      const ico = document.getElementById("iconToggleApiKey");
+      if (inp.type === "password") {
+        inp.type = "text";
+        ico.className = "bi bi-eye-slash";
+      } else {
+        inp.type = "password";
+        ico.className = "bi bi-eye";
+      }
+    }
+
+    function simpanPengaturanWaGateway(e) {
+      e.preventDefault();
+      const apiUrl = document.getElementById("gwApiUrl").value.trim();
+      const apiKey = document.getElementById("gwApiKey").value.trim();
+      const sessionId = document.getElementById("gwSessionId").value.trim();
+      const phoneAdmin = document.getElementById("gwPhoneAdmin").value.trim().replace(/[^0-9]/g, '');
+      const enabled = document.getElementById("gwEnabled").checked;
+      const notifyAdmin = document.getElementById("gwNotifyAdmin").checked;
+      const notifySantri = document.getElementById("gwNotifySantri").checked;
+
+      if (!apiUrl || !apiKey || !sessionId || !phoneAdmin) {
+        alert("Semua kolom pengaturan WhatsApp Gateway wajib diisi!");
+        return;
+      }
+
+      const cfg = ambilPengaturanAdmin();
+      cfg.waGateway = {
+        enabled: enabled,
+        apiUrl: apiUrl,
+        apiKey: apiKey,
+        sessionIdAdmin: sessionId,
+        sessionName: "Admin Ma'had Aly Amtsilati",
+        phoneAdmin: phoneAdmin,
+        notifyAdminNewBooking: notifyAdmin,
+        notifySantriBooking: notifySantri,
+        notifySantriAcc: notifySantri,
+        notifySantriTolak: notifySantri,
+        notifySantriKembali: notifySantri
+      };
+
+      // Sinkronkan juga nomor WhatsApp Admin 1 agar seragam
+      if (!cfg.admin1) cfg.admin1 = {};
+      cfg.admin1.wa = phoneAdmin;
+      const elWa1 = document.getElementById("settingWaAdmin1");
+      if (elWa1) elWa1.value = phoneAdmin;
+      const txtDispPhone = document.getElementById("txtDisplayAdminPhone");
+      if (txtDispPhone) txtDispPhone.innerText = phoneAdmin;
+
+      simpanPengaturanAdmin(cfg);
+      alert("Pengaturan WhatsApp Gateway Multi Session berhasil disimpan dan aktif di server!");
+    }
+
+    async function lakukanTestKirimWaGateway() {
+      const defaultNo = document.getElementById("gwPhoneAdmin") ? document.getElementById("gwPhoneAdmin").value : "6287748921490";
+      const targetNo = prompt("Masukkan nomor WhatsApp tujuan tes (gunakan format 628...):", defaultNo);
+      if (!targetNo) return;
+
+      const btn = document.getElementById("btnTestWaGw");
+      const originalHtml = btn ? btn.innerHTML : "";
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Mengirim tes...';
+      }
+
+      try {
+        const token = sessionStorage.getItem("admin_token") || "metahati2026";
+        const res = await fetch((typeof dapatkanApiEndpoint === 'function' ? dapatkanApiEndpoint('action=test_kirim_wa') : 'api-service.php?action=test_kirim_wa'), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Admin-Token": token
+          },
+          body: JSON.stringify({ target: targetNo })
+        });
+        const json = await res.json();
+        if (json.success) {
+          alert("🎉 ALHAMDULILLAH BERHASIL!\n\nPesan tes WhatsApp berhasil terkirim melalui sesi Admin Ma'had Aly Amtsilati ke nomor " + targetNo + ".\n\nSistem notifikasi otomatis kini 100% aktif!");
+        } else {
+          alert("⚠️ Gagal mengirim: " + (json.message || "Pastikan sesi WhatsApp di dashboard WA Multi berstatus Connected"));
+        }
+      } catch (err) {
+        alert("Gagal menghubungi api.php: " + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+        }
+      }
+    }
+
+    function simpanPengaturanWaAdmin(e) {
+      e.preventDefault();
+      const wa1 = document.getElementById("settingWaAdmin1").value.trim().replace(/[^0-9]/g, '');
+      const wa2 = document.getElementById("settingWaAdmin2").value.trim().replace(/[^0-9]/g, '');
+
+      if (!wa1 || !wa2) {
+        alert("Nomor WhatsApp Admin 1 dan Admin 2 tidak boleh kosong!");
+        return;
+      }
+
+      const cfg = ambilPengaturanAdmin();
+      cfg.admin1 = { id: "admin1", label: "Admin 1", wa: wa1 };
+      cfg.admin2 = { id: "admin2", label: "Admin 2", wa: wa2 };
+      simpanPengaturanAdmin(cfg);
+
+      alert("Pengaturan nomor WhatsApp Admin 1 & Admin 2 berhasil disimpan dan langsung aktif!");
+    }
+
+    function simpanAkunAdmin(e) {
+      e.preventDefault();
+      const user = document.getElementById("settingUsername").value.trim();
+      const pass = document.getElementById("settingPassword").value.trim();
+
+      if (!user || !pass) {
+        alert("Username dan password tidak boleh kosong!");
+        return;
+      }
+
+      const cfg = ambilPengaturanAdmin();
+      cfg.username = user;
+      cfg.password = pass;
+      simpanPengaturanAdmin(cfg);
+
+      sessionStorage.setItem("admin_user", user);
+      document.getElementById("navAdminName").innerText = user;
+      const sidebarName = document.getElementById("sidebarAdminName");
+      if (sidebarName) sidebarName.innerText = user;
+      const dropdownName = document.getElementById("dropdownAdminName");
+      if (dropdownName) dropdownName.innerText = user;
+
+      alert("Profil akun Admin berhasil diperbarui!");
+    }
+
+    // ==========================================
+    // MANAJEMEN FOTO PROFIL ADMIN (UPLOAD & SYNC)
+    // ==========================================
+    const STORAGE_ADMIN_AVATAR = "metahati_admin_avatar";
+
+    function ambilFotoProfilAdmin() {
+      const local = localStorage.getItem(STORAGE_ADMIN_AVATAR);
+      if (local) return local;
+      const cfg = ambilPengaturanAdmin();
+      return (cfg && cfg.avatar) ? cfg.avatar : "";
+    }
+
+    function pasangFotoProfilAdmin(avatarBase64) {
+      const elements = [
+        { img: "navAdminAvatarImg", icon: "navAdminAvatarIcon" },
+        { img: "sidebarAdminAvatarImg", icon: "sidebarAdminAvatarIcon" },
+        { img: "dropdownAdminAvatarImg", icon: "dropdownAdminAvatarIcon" },
+        { img: "previewAdminAvatar", icon: "iconAdminAvatarFallback" }
+      ];
+
+      elements.forEach(item => {
+        const elImg = document.getElementById(item.img);
+        const elIcon = document.getElementById(item.icon);
+        if (!elImg) return;
+
+        if (avatarBase64 && avatarBase64.startsWith("data:image")) {
+          elImg.src = avatarBase64;
+          elImg.classList.remove("d-none");
+          if (elIcon) elIcon.classList.add("d-none");
+        } else {
+          elImg.src = "";
+          elImg.classList.add("d-none");
+          if (elIcon) elIcon.classList.remove("d-none");
+        }
+      });
+    }
+
+    function muatFotoProfilAdminSaatIni() {
+      const currentAvatar = ambilFotoProfilAdmin();
+      pasangFotoProfilAdmin(currentAvatar);
+    }
+
+    function simpanFotoProfilAdmin(avatarBase64) {
+      if (avatarBase64) {
+        localStorage.setItem(STORAGE_ADMIN_AVATAR, avatarBase64);
+      } else {
+        localStorage.removeItem(STORAGE_ADMIN_AVATAR);
+      }
+      pasangFotoProfilAdmin(avatarBase64);
+
+      // Simpan ke konfigurasi admin dan sinkronkan ke server
+      try {
+        const cfg = ambilPengaturanAdmin();
+        cfg.avatar = avatarBase64 || "";
+        simpanPengaturanAdmin(cfg);
+      } catch (e) {}
+    }
+
+    function handleUploadFotoProfilAdmin(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        alert("Harap pilih file gambar (JPG, PNG, atau WebP)!");
+        event.target.value = "";
+        return;
+      }
+
+      if (file.size > 3 * 1024 * 1024) {
+        alert("Ukuran file foto maksimal 3 MB!");
+        event.target.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          // Kompres dan potong bujur sangkar optimal (250x250)
+          const canvas = document.createElement("canvas");
+          const size = 250;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+
+          const minDimension = Math.min(img.width, img.height);
+          const sx = (img.width - minDimension) / 2;
+          const sy = (img.height - minDimension) / 2;
+          ctx.drawImage(img, sx, sy, minDimension, minDimension, 0, 0, size, size);
+
+          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.85);
+          simpanFotoProfilAdmin(compressedBase64);
+          alert("Foto profil Admin berhasil diperbarui!");
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetFotoProfilAdmin() {
+      if (confirm("Apakah Anda yakin ingin mengembalikan foto profil ke avatar default?")) {
+        simpanFotoProfilAdmin("");
+        const inputEl = document.getElementById("inputFotoProfilAdmin");
+        if (inputEl) inputEl.value = "";
+        alert("Foto profil berhasil dikembalikan ke avatar default.");
+      }
+    }
+
+    // ==========================================
+    // BACKUP & RESTORE DATABASE LENGKAP MANDIRI
+    // ==========================================
+    function unduhBackupDatabaseLengkap() {
+      const riwayat = ambilRiwayatBooking();
+      const aset = ambilSemuaKatalog();
+      const config = ambilPengaturanAdmin();
+      const kategori = typeof ambilDaftarKategori === "function" ? ambilDaftarKategori() : [];
+
+      const backupObj = {
+        appName: "Sistem Peminjaman Aset Multimedia Ma'had Aly Amtsilati",
+        backupDate: new Date().toISOString(),
+        totalBookings: riwayat.length,
+        totalAssets: aset.length,
+        bookings: riwayat,
+        assets: aset,
+        settings: config,
+        categories: kategori
+      };
+
+      const jsonStr = JSON.stringify(backupObj, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const tgl = new Date().toISOString().slice(0, 10);
+      link.href = url;
+      link.download = `backup-metahati-amtsilati-${tgl}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    function prosesRestoreDatabase(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (!data || (!Array.isArray(data.bookings) && !Array.isArray(data.assets))) {
+            alert("Format file cadangan tidak sesuai. Pastikan file berformat JSON backup resmi METAHATI.");
+            event.target.value = "";
+            return;
+          }
+
+          const countBookings = (data.bookings || []).length;
+          const countAssets = (data.assets || []).length;
+
+          if (!confirm(`Konfirmasi Pemulihan Data:\n\n- Riwayat Booking: ${countBookings} data\n- Katalog Aset: ${countAssets} unit\n\nApakah Anda yakin ingin memulihkan database dari file cadangan ini?`)) {
+            event.target.value = "";
+            return;
+          }
+
+          // Pulihkan ke LocalStorage
+          if (Array.isArray(data.bookings)) {
+            localStorage.setItem(STORAGE_BOOKING_HISTORY, JSON.stringify(data.bookings));
+          }
+          if (Array.isArray(data.assets)) {
+            localStorage.setItem(STORAGE_CUSTOM_ASET, JSON.stringify(data.assets));
+          }
+          if (data.settings) {
+            simpanPengaturanAdmin(data.settings);
+          }
+
+          // Sinkronkan ke server api.php
+          try {
+            await fetch((typeof dapatkanApiEndpoint === 'function' ? dapatkanApiEndpoint('action=restore_database') : 'api-service.php?action=restore_database'), {
+              method: 'POST',
+              headers: typeof ambilHeaderAdminAuth === "function" ? ambilHeaderAdminAuth() : { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+          } catch (err) {}
+
+          alert("Database berhasil dipulihkan secara penuh! Halaman akan dimuat ulang.");
+          window.location.reload();
+        } catch (err) {
+          alert("Gagal membaca file cadangan: " + err.message);
+          event.target.value = "";
+        }
+      };
+      reader.readAsText(file);
+    }
+  </script>
+</body>
+</html>

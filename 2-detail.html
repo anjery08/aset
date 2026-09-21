@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="./dist/css/adminlte.min.css" />
   <link rel="stylesheet" href="./css/custom.css" />
 </head>
-<<body class="ios-glass-theme">
+<body class="ios-glass-theme">
   <!-- Navbar iOS Frosted Glass -->
   <nav class="navbar navbar-expand-lg navbar-ios-glass sticky-top">
     <div class="container">
@@ -57,7 +57,7 @@
       <div class="d-flex align-items-center">
         <i class="bi bi-shield-exclamation fs-2 me-3" style="color: #d60099;"></i>
         <div>
-          <strong class="text-dark">Syarat Peminjam:</strong> Khusus santri Darul Falah Amtsilati, wajib bisa mengoperasikan alat (bukan untuk belajar), dan wajib menyerahkan <strong>KTP / KTS / KTM Asli</strong> saat pengambilan alat.
+          <strong class="text-dark">Syarat Peminjam:</strong> Khusus santri Darul Falah Amtsilati, bertanggung jawab menjaga keutuhan aset, dan wajib menyerahkan <strong>KTP / KTS / KTM Asli</strong> saat serah terima barang.
         </div>
       </div>
     </div>
@@ -66,7 +66,7 @@
       <!-- Kolom Kiri: Detail Aset & Kelengkapan (iOS Glass Card) -->
       <div class="col-lg-6">
         <div class="card card-ios-detail shadow-sm h-100">
-          <div class="asset-img-container" style="height: 270px;">
+          <div class="asset-img-container" style="aspect-ratio: 4 / 3; width: 100%; height: auto; max-height: 420px;">
             <img id="itemImg" src="" alt="Foto Alat" class="asset-img" onerror="this.style.display='none'; document.getElementById('itemIconFallback').style.display='flex';" />
             <div id="itemIconFallback" class="asset-icon-fallback" style="display: none;">
               <i class="bi" id="itemIcon"></i>
@@ -161,7 +161,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
   <script src="./dist/js/adminlte.min.js"></script>
-  <script src="./js/rental-logic.js?v=2.5"></script>
+  <script src="./js/rental-logic.js?v=3.0"></script>
 
   <script>
     let currentAsset = null;
@@ -181,6 +181,12 @@
       }
 
       currentAsset = cariAset(assetId);
+      if (!currentAsset && typeof sinkronisasiDataServerLatarBelakang === "function") {
+        try {
+          await sinkronisasiDataServerLatarBelakang();
+          currentAsset = cariAset(assetId);
+        } catch (e) {}
+      }
       if (!currentAsset) {
         alert("Aset tidak ditemukan. Kembali ke katalog.");
         window.location.href = "1-katalog.html";
@@ -201,7 +207,8 @@
         itemImg.style.display = "none";
         iconFallback.style.display = "flex";
       }
-      document.getElementById("itemIcon").className = `bi ${currentAsset.ikon}`;
+      const fallbackDetailIcon = currentAsset.ikon || ((currentAsset.kategori === 'sarana' || (currentAsset.kategoriLabel && currentAsset.kategoriLabel.toLowerCase().includes('sarana'))) ? 'bi-easel2' : ((currentAsset.kategori === 'audio') ? 'bi-soundwave' : 'bi-camera-fill'));
+      document.getElementById("itemIcon").className = `bi ${fallbackDetailIcon}`;
 
       const kelengkapanList = document.getElementById("kelengkapanList");
       kelengkapanList.innerHTML = "";

@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Status Hitung Mundur Sewa | Aset Ma'had Aly Amtsilati</title>
   <meta name="title" content="Status Hitung Mundur Sewa | Aset Ma'had Aly Amtsilati" />
-  <meta name="description" content="Pantau status hitung mundur durasi sewa alat multimedia Ma'had Aly Amtsilati secara real-time." />
+  <meta name="description" content="Pantau status hitung mundur durasi peminjaman & sewa aset Ma'had Aly Amtsilati secara real-time." />
   <link rel="icon" type="image/png" href="img/logo-metahati.png" />
 
   <!-- Open Graph / WhatsApp Preview -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Status Hitung Mundur Sewa - METAHATI" />
-  <meta property="og:description" content="Pantau sisa waktu sewa alat multimedia Ma'had Aly Amtsilati." />
+  <meta property="og:title" content="Status Peminjaman & Sewa Aset - Ma'had Aly Amtsilati" />
+  <meta property="og:description" content="Pantau sisa waktu sewa dan peminjaman aset Ma'had Aly Amtsilati secara real-time." />
   <meta property="og:image" content="https://aset.mahadalyamtsilati.ac.id/img/logo-metahati.png" />
   <meta property="og:site_name" content="METAHATI - Ma'had Aly Amtsilati" />
 
@@ -59,7 +59,7 @@
         </div>
         <h4 class="fw-bolder text-dark mb-2">Jazakumullahu Khairan Katsiran</h4>
         <p class="text-dark fs-6 mb-4 mx-auto" style="max-width: 650px; line-height: 1.65;">
-          Terima kasih kepada Saudara/i <strong id="selesaiNamaSantri">-</strong>. Unit multimedia <strong id="selesaiNamaBarang">-</strong> telah resmi dikembalikan dan diterima oleh pengurus inventaris <strong>METAHATI Ma'had Aly Amtsilati</strong> dalam kondisi baik dan lengkap.
+          Terima kasih kepada Saudara/i <strong id="selesaiNamaSantri">-</strong>. Unit <strong id="selesaiNamaBarang">-</strong> telah resmi dikembalikan dan diterima oleh pengurus inventaris <strong>Ma'had Aly Amtsilati</strong> dalam kondisi baik dan lengkap.
         </p>
 
         <!-- Rincian Bukti Pelunasan & Keuangan -->
@@ -179,7 +179,7 @@
             <i class="bi bi-exclamation-octagon-fill fs-3 text-danger"></i>
             <div>
               <strong class="d-block text-danger fs-6">WAKTU SEWA TELAH BERAKHIR!</strong>
-              <span class="small text-dark">Segera kembalikan alat ke kantor pengurus METAHATI untuk menghentikan akumulasi denda berjalan.</span>
+              <span class="small text-dark">Segera kembalikan alat ke kantor Ma'had Aly Amtsilati untuk menghentikan akumulasi denda berjalan.</span>
             </div>
           </div>
           <div class="mt-2">
@@ -206,7 +206,10 @@
 
         <!-- Tombol Aksi saat Countdown Berjalan -->
         <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center pt-3 mt-3 border-top" style="border-color: rgba(0, 102, 255, 0.1) !important;">
-          <a href="1-katalog.html" class="btn btn-back-ios py-2 px-4 fw-bold justify-content-center shadow-sm">
+          <button type="button" class="btn btn-primary py-2 px-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-1" id="btnBukaModalPerpanjang" onclick="bukaModalPerpanjang()">
+            <i class="bi bi-clock-history"></i> Ajukan Perpanjangan Waktu
+          </button>
+          <a href="1-katalog.html" class="btn btn-back-ios py-2 px-3 fw-bold justify-content-center shadow-sm">
             <i class="bi bi-house-door me-1"></i> Kembali ke Katalog
           </a>
         </div>
@@ -268,6 +271,103 @@
 
   </main>
 
+  <!-- Modal Ajukan Perpanjangan Waktu Sewa -->
+  <div class="modal fade" id="modalPerpanjangSewa" tabindex="-1" aria-labelledby="modalPerpanjangSewaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 1.25rem; overflow: hidden; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px);">
+        <div class="modal-header border-0 pb-0 pt-4 px-4">
+          <div class="d-flex align-items-center gap-2">
+            <div class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm flex-shrink-0" style="width: 44px; height: 44px; background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%); font-size: 1.25rem;">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <div>
+              <h5 class="modal-title fw-bolder text-dark mb-0" id="modalPerpanjangSewaLabel">Perpanjang Durasi Sewa</h5>
+              <small class="text-secondary">Ajukan penambahan jam pinjam sebelum batas waktu habis</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <!-- Info Aset & Batas Waktu Saat Ini -->
+          <div class="p-3 rounded-3 mb-3" style="background: rgba(241, 245, 249, 0.9); border: 1px solid #e2e8f0;">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <small class="text-secondary d-block fw-bold" style="font-size: 0.75rem;">ASET INVENTARIS:</small>
+                <strong class="text-dark fs-6" id="mpNamaBarang">-</strong>
+              </div>
+              <span class="badge bg-secondary font-monospace" id="mpBookingId">INV-0000</span>
+            </div>
+            <div class="border-top pt-2 mt-2">
+              <small class="text-secondary d-block fw-bold" style="font-size: 0.75rem;">BATAS PENGEMBALIAN SAAT INI:</small>
+              <strong class="text-danger fs-6" id="mpBatasSaatIni">-</strong>
+            </div>
+          </div>
+
+          <!-- Pilihan Tambahan Durasi -->
+          <div class="mb-3">
+            <label class="form-label fw-bold text-dark small mb-2">
+              <i class="bi bi-stopwatch text-primary me-1"></i> Pilih Tambahan Durasi Waktu:
+            </label>
+            <div class="row g-2" id="groupDurasiPerpanjang">
+              <div class="col-6 col-sm-3">
+                <input type="radio" class="btn-check" name="durasiTambahan" id="durasi_3" value="3" autocomplete="off" onchange="hitungPratinjauPerpanjangan()">
+                <label class="btn btn-outline-primary w-100 py-2 fw-bold" for="durasi_3">+3 Jam</label>
+              </div>
+              <div class="col-6 col-sm-3">
+                <input type="radio" class="btn-check" name="durasiTambahan" id="durasi_6" value="6" checked autocomplete="off" onchange="hitungPratinjauPerpanjangan()">
+                <label class="btn btn-outline-primary w-100 py-2 fw-bold" for="durasi_6">+6 Jam</label>
+              </div>
+              <div class="col-6 col-sm-3">
+                <input type="radio" class="btn-check" name="durasiTambahan" id="durasi_12" value="12" autocomplete="off" onchange="hitungPratinjauPerpanjangan()">
+                <label class="btn btn-outline-primary w-100 py-2 fw-bold" for="durasi_12">+12 Jam</label>
+              </div>
+              <div class="col-6 col-sm-3">
+                <input type="radio" class="btn-check" name="durasiTambahan" id="durasi_24" value="24" autocomplete="off" onchange="hitungPratinjauPerpanjangan()">
+                <label class="btn btn-outline-primary w-100 py-2 fw-bold" for="durasi_24">+24 Jam</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alasan / Catatan Perpanjangan (Opsional) -->
+          <div class="mb-3">
+            <label for="mpCatatanPerpanjang" class="form-label fw-bold text-dark small mb-1">
+              <i class="bi bi-chat-left-text me-1 text-primary"></i> Keperluan / Alasan Perpanjangan (Opsional):
+            </label>
+            <input type="text" class="form-control" id="mpCatatanPerpanjang" placeholder="Contoh: Agenda acara molor / liputan tambahan" />
+          </div>
+
+          <!-- Hasil Pratinjau Perpanjangan -->
+          <div class="p-3 rounded-3 mb-3" style="background: rgba(239, 246, 255, 0.95); border: 1.5px solid rgba(0, 102, 255, 0.25);">
+            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-color: rgba(0, 102, 255, 0.15) !important;">
+              <span class="small text-secondary fw-medium">Batas Waktu Baru:</span>
+              <strong class="text-primary fs-6" id="mpBatasBaru">-</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="small text-secondary fw-medium">Estimasi Biaya Tambahan:</span>
+              <strong class="text-dark fs-6" id="mpBiayaTambahan">Rp 0</strong>
+            </div>
+          </div>
+
+          <!-- Status Ketersediaan Jadwal (Real-Time Bentrok Check) -->
+          <div id="mpAlertKetersediaan" class="mb-3">
+            <!-- Diisi dinamis oleh hitungPratinjauPerpanjangan() -->
+          </div>
+
+          <!-- Tombol Eksekusi -->
+          <div class="d-grid gap-2">
+            <button type="button" id="mpBtnKirimWa" class="btn btn-success fw-bold py-2 shadow-sm" onclick="kirimPesanPerpanjangWhatsApp()">
+              <i class="bi bi-whatsapp me-1"></i> Kirim Permohonan ke Pengurus via WhatsApp
+            </button>
+            <button type="button" class="btn btn-light text-secondary fw-bold" data-bs-dismiss="modal">
+              Batal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer METAHATI Bersih iOS Glass -->
   <footer class="footer-simple navbar-ios-glass mt-5">
     <div class="container text-center">
@@ -279,7 +379,7 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
-  <script src="./js/rental-logic.js?v=2.5"></script>
+  <script src="./js/rental-logic.js?v=3.0"></script>
   <script>
     let activeBooking = null;
 
@@ -366,7 +466,7 @@
             const btnLapor = document.getElementById("btnLaporPengembalianWa");
             if (btnLapor && !btnLapor.href.includes("wa.me")) {
               const noAdmin = dapatkanNomorWaAdmin(activeBooking);
-              const pesan = `Assalamu'alaikum Admin METAHATI, saya ${activeBooking.nama} hendak mengembalikan alat ${activeBooking.namaBarang} (${bId}). Mohon arahan serah terima unitnya. Terima kasih.`;
+              const pesan = `Assalamu'alaikum Pengurus / Admin Ma'had Aly Amtsilati, saya ${activeBooking.nama} hendak mengembalikan aset ${activeBooking.namaBarang} (${bId}). Mohon arahan serah terima unitnya. Terima kasih.`;
               btnLapor.href = `https://wa.me/${noAdmin}?text=${encodeURIComponent(pesan)}`;
             }
           } else {
@@ -531,6 +631,16 @@
         }
       }
 
+      // Tombol perpanjang waktu hanya muncul jika status bukan pending / selesai / ditolak
+      const btnPerpanjang = document.getElementById("btnBukaModalPerpanjang");
+      if (btnPerpanjang) {
+        if (booking.status === "pending") {
+          btnPerpanjang.classList.add("d-none");
+        } else {
+          btnPerpanjang.classList.remove("d-none");
+        }
+      }
+
       // Tampilkan tarif dinas di rincian jika dinas
       const elTarif = document.getElementById("viewBiayaSewa");
       if (elTarif && (booking.isDinas || parseInt(booking.biayaSewa || 0) === 0)) {
@@ -545,6 +655,174 @@
       if (typeof jalankanCountdown === "function") {
         jalankanCountdown(wSelesai, "liveCountdownContainer", wAmbil, durLabel);
       }
+    }
+
+    // =========================================================
+    // FITUR PERPANJANGAN DURASI SEWA (EXTEND DURATION)
+    // =========================================================
+    let modalPerpanjangInstance = null;
+    let waktuSelesaiBaruCalculated = null;
+    let biayaTambahanCalculated = 0;
+    let statusKetersediaanPerpanjang = true;
+
+    function bukaModalPerpanjang() {
+      if (!activeBooking) return;
+      if (!modalPerpanjangInstance) {
+        modalPerpanjangInstance = new bootstrap.Modal(document.getElementById("modalPerpanjangSewa"));
+      }
+
+      document.getElementById("mpNamaBarang").innerText = activeBooking.namaBarang || "-";
+      document.getElementById("mpBookingId").innerText = activeBooking.bookingId || "INV-0000";
+
+      let batasSaatIniTeks = activeBooking.waktuSelesai;
+      if (!batasSaatIniTeks && activeBooking.waktuSelesaiRaw && typeof formatWaktuIndo === "function") {
+        batasSaatIniTeks = formatWaktuIndo(activeBooking.waktuSelesaiRaw) + " WIB";
+      }
+      document.getElementById("mpBatasSaatIni").innerText = batasSaatIniTeks || "-";
+
+      // Reset radio ke +6 Jam
+      const r6 = document.getElementById("durasi_6");
+      if (r6) r6.checked = true;
+
+      const elCatatan = document.getElementById("mpCatatanPerpanjang");
+      if (elCatatan) elCatatan.value = "";
+
+      hitungPratinjauPerpanjangan();
+      modalPerpanjangInstance.show();
+    }
+
+    function hitungPratinjauPerpanjangan() {
+      if (!activeBooking) return;
+
+      const selectedRadio = document.querySelector('input[name="durasiTambahan"]:checked');
+      const jamTambahan = selectedRadio ? parseInt(selectedRadio.value, 10) : 6;
+
+      // Waktu dasar: batas selesai sewa saat ini
+      const baseEnd = activeBooking.waktuSelesaiRaw ? new Date(activeBooking.waktuSelesaiRaw) : new Date();
+      const newEnd = new Date(baseEnd.getTime() + (jamTambahan * 3600 * 1000));
+      waktuSelesaiBaruCalculated = newEnd;
+
+      const batasBaruTeks = typeof formatWaktuIndo === "function" ? (formatWaktuIndo(newEnd) + " WIB") : newEnd.toLocaleString('id-ID');
+      document.getElementById("mpBatasBaru").innerText = batasBaruTeks;
+
+      // Hitung biaya tambahan (jika dinas resmi = Gratis)
+      if (activeBooking.isDinas || parseInt(activeBooking.biayaSewa || 0) === 0) {
+        biayaTambahanCalculated = 0;
+        document.getElementById("mpBiayaTambahan").innerHTML = '<span class="badge bg-primary text-white">Gratis (Dinas Resmi Pondok)</span>';
+      } else {
+        // Hitung pro-rata biaya tambahan berdasarkan aset
+        try {
+          const item = (typeof cariAset === "function") ? cariAset(activeBooking.asetId) : null;
+          if (item && item.paketOpsi && item.paketOpsi.length > 0) {
+            const paketCocok = item.paketOpsi.find(p => parseInt(p.jam, 10) === jamTambahan);
+            if (paketCocok) {
+              biayaTambahanCalculated = paketCocok.tarif;
+            } else {
+              const paketDasar = item.paketOpsi[0];
+              const rate = paketDasar.tarif / (parseInt(paketDasar.jam, 10) || 1);
+              biayaTambahanCalculated = Math.round(rate * jamTambahan);
+            }
+          } else if (activeBooking.biayaSewa && activeBooking.paketJam) {
+            const rate = parseInt(activeBooking.biayaSewa, 10) / (parseInt(activeBooking.paketJam, 10) || 1);
+            biayaTambahanCalculated = Math.round(rate * jamTambahan);
+          } else {
+            biayaTambahanCalculated = jamTambahan * 10000;
+          }
+        } catch (e) {
+          biayaTambahanCalculated = jamTambahan * 10000;
+        }
+        document.getElementById("mpBiayaTambahan").innerText = formatRupiah(biayaTambahanCalculated);
+      }
+
+      // Validasi Bentrok Jadwal Aset Real-Time (Conflict Check)
+      const alertWrap = document.getElementById("mpAlertKetersediaan");
+      const btnKirim = document.getElementById("mpBtnKirimWa");
+
+      if (typeof cekBentrokJadwalAset === "function" && activeBooking.asetId) {
+        const cek = cekBentrokJadwalAset(
+          activeBooking.asetId,
+          baseEnd.toISOString(),
+          newEnd.toISOString(),
+          activeBooking.bookingId
+        );
+
+        if (!cek.available) {
+          statusKetersediaanPerpanjang = false;
+          let infoBentrok = "Aset ini telah dipesan oleh peminjam lain pada rentang jam tersebut.";
+          if (cek.jadwalBentrok && cek.jadwalBentrok.length > 0) {
+            const b = cek.jadwalBentrok[0];
+            infoBentrok = `Aset sudah dibooking oleh <strong>${b.nama || 'Peminjam lain'}</strong> (${b.bookingId}) mulai ${b.waktuAmbil || '-'}.`;
+          }
+
+          alertWrap.innerHTML = `
+            <div class="alert alert-danger d-flex align-items-start gap-2 p-2 rounded-3 small mb-0">
+              <i class="bi bi-exclamation-triangle-fill fs-5 text-danger flex-shrink-0"></i>
+              <div>
+                <strong class="d-block">Jadwal Tidak Tersedia / Bentrok!</strong>
+                <span>${infoBentrok}</span>
+                <span class="d-block mt-1 fst-italic text-secondary">Silakan kembalikan aset tepat waktu atau pilih durasi yang lebih singkat.</span>
+              </div>
+            </div>
+          `;
+          btnKirim.disabled = true;
+          btnKirim.classList.add("disabled");
+        } else {
+          statusKetersediaanPerpanjang = true;
+          alertWrap.innerHTML = `
+            <div class="alert alert-success d-flex align-items-center gap-2 p-2 rounded-3 small mb-0">
+              <i class="bi bi-check-circle-fill fs-5 text-success flex-shrink-0"></i>
+              <div>
+                <strong class="d-block">Jadwal Tersedia & Aman!</strong>
+                <span>Tidak ada peminjam lain di rentang jam perpanjangan ini.</span>
+              </div>
+            </div>
+          `;
+          btnKirim.disabled = false;
+          btnKirim.classList.remove("disabled");
+        }
+      } else {
+        statusKetersediaanPerpanjang = true;
+        alertWrap.innerHTML = "";
+        btnKirim.disabled = false;
+        btnKirim.classList.remove("disabled");
+      }
+    }
+
+    function kirimPesanPerpanjangWhatsApp() {
+      if (!activeBooking || !statusKetersediaanPerpanjang) return;
+
+      const selectedRadio = document.querySelector('input[name="durasiTambahan"]:checked');
+      const jamTambahan = selectedRadio ? selectedRadio.value : "6";
+      const bId = activeBooking.bookingId || "INV-0000";
+      const batasLama = document.getElementById("mpBatasSaatIni").innerText;
+      const batasBaru = document.getElementById("mpBatasBaru").innerText;
+      const catatan = (document.getElementById("mpCatatanPerpanjang").value || "").trim();
+
+      const noAdmin = (typeof dapatkanNomorWaAdmin === "function") ? dapatkanNomorWaAdmin(activeBooking) : "6282328325983";
+
+      let biayaTeks = formatRupiah(biayaTambahanCalculated);
+      if (activeBooking.isDinas || parseInt(activeBooking.biayaSewa || 0) === 0) {
+        biayaTeks = "Rp 0 (Khusus tugas resmi kelembagaan Pondok Pesantren Darul Falah Amtsilati)";
+      }
+
+      let pesan = `Assalamu'alaikum Pengurus Ma'had Aly Amtsilati,\n\nSaya hendak mengajukan *PERPANJANGAN WAKTU SEWA / PEMINJAMAN ASET*:\n\n` +
+        `*ID Transaksi:* ${bId}\n` +
+        `*Nama Peminjam:* ${activeBooking.nama}\n` +
+        `*Aset Dipinjam:* ${activeBooking.namaBarang}\n` +
+        `*Batas Waktu Semula:* ${batasLama}\n` +
+        `*Tambahan Durasi:* +${jamTambahan} Jam\n` +
+        `*Batas Waktu Baru Yang Diajukan:* ${batasBaru}\n` +
+        `*Estimasi Biaya Tambahan:* ${biayaTeks}\n`;
+
+      if (catatan) {
+        pesan += `*Keperluan / Alasan:* ${catatan}\n`;
+      }
+
+      pesan += `\nMohon konfirmasi dan persetujuan dari Pengurus. Terima kasih.\n\nWassalamu'alaikum wr. wb.`;
+
+      window.open(`https://wa.me/${noAdmin}?text=${encodeURIComponent(pesan)}`, "_blank");
+
+      if (modalPerpanjangInstance) modalPerpanjangInstance.hide();
     }
   </script>
 </body>

@@ -10,6 +10,26 @@ try {
     document.documentElement.setAttribute('data-lte-color-mode', 'off');
 } catch (e) {}
 
+// Helper URL Endpoint API Backend (Mendukung mode offline file:// langsung terhubung ke localhost:8000 dan mode hosting cPanel)
+function dapatkanApiEndpoint(actionOrQuery = "") {
+    const file = "api-service.php";
+    let base = file;
+    if (typeof window !== "undefined" && window.location) {
+        if (window.location.protocol === "file:") {
+            base = "http://localhost:8000/" + file;
+        }
+    }
+    if (!actionOrQuery) return base;
+    if (actionOrQuery.startsWith("?")) {
+        return base + actionOrQuery;
+    }
+    if (actionOrQuery.startsWith("api")) {
+        const cleanQuery = actionOrQuery.replace(/^api(-service)?\.php\??/, "");
+        return base + (cleanQuery ? ("?" + cleanQuery) : "");
+    }
+    return base + "?" + actionOrQuery;
+}
+
 // ==========================================
 // PENGATURAN MULTI-ADMIN & NOMOR WHATSAPP
 // ==========================================
@@ -24,13 +44,27 @@ const DEFAULT_ADMIN_CONFIG = {
     password: "metahati2026",
     admin1: {
         id: "admin1",
-        label: "Admin 1",
+        label: "Admin 1 (Pengurus)",
         wa: "628812762520"
     },
     admin2: {
         id: "admin2",
-        label: "Admin 2",
+        label: "Mustaghfiri (Pengurus)",
         wa: "628812762520"
+    },
+    waGateway: {
+        enabled: true,
+        apiUrl: "https://wa-multi-session.amtsilatipusat.com/api/v1",
+        apiKey: "1fcea2a9-6c3d-4158-8280-76ccdb9d9f66",
+        sessionIdAdmin: "0ab9413c-aab1-4705-bd92-3e4b0a8c5426",
+        sessionName: "Admin Ma'had Aly Amtsilati",
+        phonePengantara: "6287748921490",
+        phoneAdmin: "6287748921490",
+        notifyAdminNewBooking: true,
+        notifySantriBooking: true,
+        notifySantriAcc: true,
+        notifySantriTolak: true,
+        notifySantriKembali: true
     }
 };
 
@@ -45,18 +79,28 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
+function ambilAdminToken() {
+    try {
+        if (typeof sessionStorage !== "undefined" && sessionStorage.getItem("admin_token")) {
+            return sessionStorage.getItem("admin_token");
+        }
+    } catch (e) {}
+    try {
+        const config = (typeof ambilPengaturanAdmin === "function") ? ambilPengaturanAdmin() : DEFAULT_ADMIN_CONFIG;
+        if (config && config.password) return config.password;
+    } catch (e) {}
+    return "metahati2026";
+}
+
 function ambilHeaderAdminAuth() {
+    const token = ambilAdminToken();
     const headers = {
         'Content-Type': 'application/json'
     };
-    try {
-        if (typeof sessionStorage !== "undefined") {
-            const savedToken = sessionStorage.getItem("admin_token");
-            if (savedToken) {
-                headers['X-Admin-Token'] = savedToken;
-            }
-        }
-    } catch (e) {}
+    if (token) {
+        headers['X-Admin-Token'] = token;
+        headers['Authorization'] = 'Bearer ' + token;
+    }
     return headers;
 }
 
@@ -65,22 +109,31 @@ function ambilPengaturanAdmin() {
         const raw = localStorage.getItem(STORAGE_ADMIN_CONFIG);
         if (raw) {
             const parsed = JSON.parse(raw);
-            return { ...DEFAULT_ADMIN_CONFIG, ...parsed };
+            return {
+                ...DEFAULT_ADMIN_CONFIG,
+                ...parsed,
+                waGateway: {
+                    ...DEFAULT_ADMIN_CONFIG.waGateway,
+                    ...(parsed.waGateway || {})
+                }
+            };
         }
     } catch (e) {}
     return DEFAULT_ADMIN_CONFIG;
 }
 
-function simpanPengaturanAdmin(config) {
+async function simpanPengaturanAdmin(config) {
     try {
         localStorage.setItem(STORAGE_ADMIN_CONFIG, JSON.stringify(config));
+        const token = ambilAdminToken();
         try {
-            fetch('api.php?action=simpan_pengaturan', {
+            const endpoint = dapatkanApiEndpoint(`action=simpan_pengaturan&token=${encodeURIComponent(token)}`);
+            await fetch(endpoint, {
                 method: 'POST',
                 headers: ambilHeaderAdminAuth(),
-                body: JSON.stringify(config),
+                body: JSON.stringify({ ...config, admin_token: token }),
                 keepalive: true
-            }).catch(() => {});
+            });
         } catch (err) {}
         return true;
     } catch (e) {
@@ -91,8 +144,12 @@ function simpanPengaturanAdmin(config) {
 // Mendapatkan Nomor WA Admin berdasarkan Aset (Fleksibel: Murni Admin 1 atau Admin 2)
 function dapatkanNomorWaAdmin(asetOrKategori = null) {
     const config = ambilPengaturanAdmin();
-    const wa1 = (config.admin1 && config.admin1.wa) ? config.admin1.wa : "628812762520";
-    const wa2 = (config.admin2 && config.admin2.wa) ? config.admin2.wa : wa1;
+    const botNo = (config.waGateway && (config.waGateway.phonePengantara || config.waGateway.phoneAdmin)) ? config.waGateway.phonePengantara || config.waGateway.phoneAdmin : "6287748921490";
+    let wa1 = (config.admin1 && config.admin1.wa) ? config.admin1.wa : "628812762520";
+    let wa2 = (config.admin2 && config.admin2.wa) ? config.admin2.wa : "628812762520";
+
+    if (wa1 === botNo && wa2 !== botNo) wa1 = wa2;
+    if (wa2 === botNo && wa1 !== botNo) wa2 = wa1;
 
     if (!asetOrKategori) return wa1;
 
@@ -128,58 +185,154 @@ const STORAGE_CATEGORIES = "rental_aset_custom_categories";
 
 const KATEGORI_DEFAULT = [
     { id: "kamera", label: "Kamera & Lensa" },
-    { id: "lighting", label: "Lighting & Flash" },
-    { id: "handycam", label: "Handycam & Video" }
+    { id: "audio", label: "Audio & Sound System" },
+    { id: "lighting", label: "Lighting & Studio" },
+    { id: "handycam", label: "Handycam & Video" },
+    { id: "sarana", label: "Sarana & Perlengkapan Acara" }
 ];
 
 function ambilDaftarKategori() {
-    let list = [...KATEGORI_DEFAULT];
     try {
         const raw = localStorage.getItem(STORAGE_CATEGORIES);
         if (raw) {
-            const custom = JSON.parse(raw);
-            if (Array.isArray(custom)) {
-                custom.forEach(c => {
-                    if (c && c.id && !list.some(x => x.id === c.id)) {
-                        list.push(c);
-                    }
-                });
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                return parsed;
             }
         }
     } catch (e) {}
-    return list;
+    return [...KATEGORI_DEFAULT];
 }
 
-function tambahKategoriBaru(namaLabel) {
+function simpanSemuaKategori(listKategori) {
+    if (!Array.isArray(listKategori)) return Promise.resolve(false);
+    try {
+        localStorage.setItem(STORAGE_CATEGORIES, JSON.stringify(listKategori));
+        
+        let token = "metahati2026";
+        try {
+            if (typeof sessionStorage !== "undefined" && sessionStorage.getItem("admin_token")) {
+                token = sessionStorage.getItem("admin_token");
+            } else if (typeof ambilPengaturanAdmin === "function") {
+                token = ambilPengaturanAdmin().password || "metahati2026";
+            }
+        } catch (e) {}
+
+        const endpoint = dapatkanApiEndpoint('action=simpan_kategori&token=' + encodeURIComponent(token));
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': token,
+            'Authorization': 'Bearer ' + token
+        };
+
+        const payload = {
+            categories: listKategori,
+            admin_token: token
+        };
+
+        return fetch(endpoint, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload),
+            keepalive: true
+        }).then(r => r.json()).then(res => {
+            return res && res.success;
+        }).catch(err => {
+            console.warn("Sinkronisasi kategori ke server:", err);
+            return false;
+        });
+    } catch (e) {
+        return Promise.resolve(false);
+    }
+}
+
+async function tambahKategoriBaru(namaLabel) {
     if (!namaLabel || typeof namaLabel !== "string") return null;
     const cleanLabel = namaLabel.trim();
     if (!cleanLabel) return null;
 
     const slug = cleanLabel.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || ('kat-' + Date.now().toString(36));
-    
-    let currentCustom = [];
-    try {
-        const raw = localStorage.getItem(STORAGE_CATEGORIES);
-        if (raw) currentCustom = JSON.parse(raw);
-    } catch (e) {}
+    let list = ambilDaftarKategori();
 
-    const existing = ambilDaftarKategori().find(x => x.id === slug || x.label.toLowerCase() === cleanLabel.toLowerCase());
+    const existing = list.find(x => x.id === slug || x.label.toLowerCase() === cleanLabel.toLowerCase());
     if (existing) return existing;
 
     const newCat = { id: slug, label: cleanLabel };
-    currentCustom.push(newCat);
+    list.push(newCat);
+    await simpanSemuaKategori(list);
+    return newCat;
+}
 
+async function perbaruiKategori(catId, namaLabelBaru) {
+    if (!catId || !namaLabelBaru || typeof namaLabelBaru !== "string") return false;
+    const cleanLabel = namaLabelBaru.trim();
+    if (!cleanLabel) return false;
+
+    let list = ambilDaftarKategori();
+    const targetIdx = list.findIndex(x => x.id === catId);
+    if (targetIdx < 0) return false;
+
+    const oldLabel = list[targetIdx].label;
+    list[targetIdx].label = cleanLabel;
+    
+    // Simpan ke storage dan server
+    await simpanSemuaKategori(list);
+
+    // Sinkronisasi kategoriLabel ke aset kustom & katalog lokal
     try {
-        localStorage.setItem(STORAGE_CATEGORIES, JSON.stringify(currentCustom));
-        fetch('api.php?action=simpan_kategori', {
-            method: 'POST',
-            headers: ambilHeaderAdminAuth(),
-            body: JSON.stringify(currentCustom),
-            keepalive: true
-        }).catch(() => {});
+        const customRaw = localStorage.getItem(STORAGE_CUSTOM_ASET);
+        if (customRaw) {
+            let customList = JSON.parse(customRaw);
+            let updated = false;
+            if (Array.isArray(customList)) {
+                customList.forEach(ast => {
+                    if (ast && (ast.kategori === catId || ast.kategoriLabel === oldLabel)) {
+                        ast.kategoriLabel = cleanLabel;
+                        updated = true;
+                    }
+                });
+                if (updated) {
+                    localStorage.setItem(STORAGE_CUSTOM_ASET, JSON.stringify(customList));
+                }
+            }
+        }
     } catch (e) {}
 
-    return newCat;
+    return true;
+}
+
+async function hapusKategori(catId) {
+    if (!catId) return false;
+    let list = ambilDaftarKategori();
+    const targetIdx = list.findIndex(x => x.id === catId);
+    if (targetIdx < 0) return false;
+
+    list.splice(targetIdx, 1);
+    await simpanSemuaKategori(list);
+
+    // Jika ada aset yang memakai kategori ini, alihkan ke kategori pertama yang tersisa
+    try {
+        const fallbackCat = list.length > 0 ? list[0] : { id: 'sarana', label: 'Sarana & Perlengkapan Acara' };
+        const customRaw = localStorage.getItem(STORAGE_CUSTOM_ASET);
+        if (customRaw) {
+            let customList = JSON.parse(customRaw);
+            let updated = false;
+            if (Array.isArray(customList)) {
+                customList.forEach(ast => {
+                    if (ast && ast.kategori === catId) {
+                        ast.kategori = fallbackCat.id;
+                        ast.kategoriLabel = fallbackCat.label;
+                        updated = true;
+                    }
+                });
+                if (updated) {
+                    localStorage.setItem(STORAGE_CUSTOM_ASET, JSON.stringify(customList));
+                }
+            }
+        }
+    } catch (e) {}
+
+    return true;
 }
 
 // ==========================================
@@ -267,6 +420,31 @@ const KATALOG_DEFAULT = [
         tarif: {
             "12": 50000
         }
+    },
+    {
+        id: "ast-kursi-lipat",
+        nama: "Kursi Lipat Acara (Chitose)",
+        kategori: "sarana",
+        kategoriLabel: "Sarana & Perlengkapan Acara",
+        adminPic: "admin2",
+        stokTotal: 50,
+        status: "available",
+        gambar: "",
+        ikon: "bi-easel2",
+        deskripsi: "Kursi lipat besi berkualitas untuk kegiatan rapat, seminar, kajian umum, pengajian asrama, maupun acara santri.",
+        kelengkapan: [
+            "Unit Kursi Lipat Besi Kokoh",
+            "Bantalan Dudukan Nyaman",
+            "Penyusunan Rapi Saat Pengambilan"
+        ],
+        paketOpsi: [
+            { id: "12", jam: 12, label: "12 Jam", tarif: 2000, desc: "Tarif sewa per unit untuk acara setengah hari" },
+            { id: "24", jam: 24, label: "1 Hari (24 Jam)", tarif: 3000, desc: "Tarif sewa per unit untuk acara satu hari penuh" }
+        ],
+        tarif: {
+            "12": 2000,
+            "24": 3000
+        }
     }
 ];
 
@@ -342,6 +520,24 @@ function ambilSemuaKatalog() {
         }
 
         list = Array.from(itemMap.values());
+
+        // Sinkronisasi dinamis kategori & label ke seluruh unit alat (Bawaan & Kustom)
+        const daftarKat = ambilDaftarKategori();
+        const mapKat = new Map();
+        daftarKat.forEach(k => {
+            if (k && k.id) mapKat.set(k.id, k.label);
+        });
+        const fallback = daftarKat.length > 0 ? daftarKat[0] : { id: 'sarana', label: 'Sarana & Perlengkapan Acara' };
+
+        list.forEach(ast => {
+            if (ast.kategori && mapKat.has(ast.kategori)) {
+                ast.kategoriLabel = mapKat.get(ast.kategori);
+            } else if (daftarKat.length > 0) {
+                // Jika kategori aset telah dihapus oleh admin, otomatis dialihkan ke kategori yang masih ada
+                ast.kategori = fallback.id;
+                ast.kategoriLabel = fallback.label;
+            }
+        });
     } catch (e) {
         console.error("Gagal memuat katalog lengkap:", e);
         list = [...KATALOG_DEFAULT];
@@ -353,7 +549,7 @@ function ambilSemuaKatalog() {
 }
 
 // Menyimpan atau Mengupdate Aset Kustom Admin
-function simpanAsetKustom(asetData) {
+async function simpanAsetKustom(asetData) {
     try {
         let customList = [];
         const customRaw = localStorage.getItem(STORAGE_CUSTOM_ASET);
@@ -385,17 +581,33 @@ function simpanAsetKustom(asetData) {
 
         localStorage.setItem(STORAGE_CUSTOM_ASET, JSON.stringify(uniqueCustom));
 
-        // Sinkronkan ke server api.php
-        try {
-            fetch('api.php?action=simpan_aset', {
-                method: 'POST',
-                headers: ambilHeaderAdminAuth(),
-                body: JSON.stringify(uniqueCustom),
-                keepalive: true
-            }).catch(() => {});
-        } catch (err) {}
+        // Ambil token admin untuk otorisasi server
+        const token = ambilAdminToken();
 
-        return true;
+        // Sinkronkan ke server api-service.php
+        let serverSuccess = false;
+        try {
+            const endpoint = dapatkanApiEndpoint(`action=simpan_aset&token=${encodeURIComponent(token)}`);
+            const headers = ambilHeaderAdminAuth();
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    assets: uniqueCustom,
+                    admin_token: token
+                })
+            });
+            if (res.ok) {
+                const resJson = await res.json();
+                serverSuccess = !!(resJson && resJson.success);
+            } else {
+                console.error("HTTP error simpan aset ke server:", res.status, res.statusText);
+            }
+        } catch (err) {
+            console.error("Gagal koneksi simpan aset ke server:", err);
+        }
+
+        return serverSuccess;
     } catch (e) {
         console.error("Gagal simpan aset:", e);
         return false;
@@ -403,7 +615,7 @@ function simpanAsetKustom(asetData) {
 }
 
 // Menghapus Aset
-function hapusAset(id) {
+async function hapusAset(id) {
     try {
         let customList = [];
         const customRaw = localStorage.getItem(STORAGE_CUSTOM_ASET);
@@ -414,13 +626,17 @@ function hapusAset(id) {
             customList.splice(customIdx, 1);
             localStorage.setItem(STORAGE_CUSTOM_ASET, JSON.stringify(customList));
 
+            const token = ambilAdminToken();
             try {
-                fetch('api.php?action=simpan_aset', {
+                const endpoint = dapatkanApiEndpoint(`action=simpan_aset&token=${encodeURIComponent(token)}`);
+                await fetch(endpoint, {
                     method: 'POST',
                     headers: ambilHeaderAdminAuth(),
-                    body: JSON.stringify(customList),
-                    keepalive: true
-                }).catch(() => {});
+                    body: JSON.stringify({
+                        assets: customList,
+                        admin_token: token
+                    })
+                });
             } catch (err) {}
 
             return true;
@@ -441,13 +657,13 @@ function hapusAset(id) {
 }
 
 // Mengubah status ketersediaan aset (available / booked)
-function ubahStatusAset(id, statusBaru) {
+async function ubahStatusAset(id, statusBaru) {
     try {
         const semua = ambilSemuaKatalog();
         const item = semua.find(x => x.id === id);
         if (item) {
             item.status = statusBaru;
-            simpanAsetKustom(item);
+            await simpanAsetKustom(item);
             return true;
         }
     } catch (e) {}
@@ -584,7 +800,7 @@ async function ambilStatusBookingTerbaru(bookingId) {
     // Cek server api.php terlebih dahulu
     try {
         const headers = (typeof ambilHeaderAdminAuth === "function") ? ambilHeaderAdminAuth() : {};
-        const res = await fetch(`api.php?action=ambil_booking&id=${encodeURIComponent(bIdClean)}`, { headers });
+        const res = await fetch(dapatkanApiEndpoint('action=ambil_booking&id=${encodeURIComponent(bIdClean)}'), { headers });
         if (res.ok) {
             const json = await res.json();
             if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
@@ -631,10 +847,11 @@ async function tolakBookingAdminAsync(bookingId, alasan = 'Unit tidak dapat dise
 
     // 2. Kirim ke server api.php
     try {
-        const res = await fetch('api.php?action=tolak_booking', {
+        const token = ambilAdminToken();
+        const res = await fetch(dapatkanApiEndpoint(`action=tolak_booking&token=${encodeURIComponent(token)}`), {
             method: 'POST',
             headers: ambilHeaderAdminAuth(),
-            body: JSON.stringify({ bookingId: bIdClean, alasan: alasan })
+            body: JSON.stringify({ bookingId: bIdClean, alasan: alasan, admin_token: token })
         });
         if (res.ok) {
             const json = await res.json();
@@ -723,7 +940,8 @@ async function accBookingAdminAsync(bookingId, opsi = {}) {
 
     // 2. Kirim ke server api.php
     try {
-        const res = await fetch('api.php?action=acc_booking', {
+        const token = ambilAdminToken();
+        const res = await fetch(dapatkanApiEndpoint(`action=acc_booking&token=${encodeURIComponent(token)}`), {
             method: 'POST',
             headers: ambilHeaderAdminAuth(),
             body: JSON.stringify({
@@ -732,7 +950,8 @@ async function accBookingAdminAsync(bookingId, opsi = {}) {
                 biayaFinal: opsi.biayaFinal,
                 catatanAcc: opsi.catatanAcc || '',
                 mulaiSekarang: !!opsi.mulaiSekarang,
-                jaminanIdentitas: opsi.jaminanIdentitas || ''
+                jaminanIdentitas: opsi.jaminanIdentitas || '',
+                admin_token: token
             })
         });
         if (res.ok) {
@@ -788,7 +1007,10 @@ async function kembalikanBookingAdminAsync(bookingId, returnData = {}) {
         };
         if (returnData.buktiFoto) payload.buktiFoto = returnData.buktiFoto;
 
-        const res = await fetch('api.php?action=kembalikan_booking', {
+        const token = ambilAdminToken();
+        payload.admin_token = token;
+
+        const res = await fetch(dapatkanApiEndpoint(`action=kembalikan_booking&token=${encodeURIComponent(token)}`), {
             method: 'POST',
             headers: ambilHeaderAdminAuth(),
             body: JSON.stringify(payload)
@@ -895,7 +1117,7 @@ function catatRiwayatBooking(booking) {
 
     // Kirim sinkronisasi otomatis ke backend cPanel (api.php)
     try {
-        fetch('api.php?action=simpan_booking', {
+        fetch(dapatkanApiEndpoint('action=simpan_booking'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(booking),
@@ -940,7 +1162,8 @@ function ambilRiwayatBooking() {
 async function ambilRiwayatBookingAsync() {
     try {
         const headers = (typeof ambilHeaderAdminAuth === "function") ? ambilHeaderAdminAuth() : { 'Content-Type': 'application/json' };
-        const res = await fetch('api.php?action=ambil_booking', { headers });
+        const token = headers['X-Admin-Token'] || 'metahati2026';
+        const res = await fetch(dapatkanApiEndpoint(`action=ambil_booking&token=${encodeURIComponent(token)}`), { headers });
         if (res.ok) {
             const resJson = await res.json();
             if (resJson && resJson.success && Array.isArray(resJson.data)) {
@@ -973,10 +1196,11 @@ async function hapusBookingServer(bookingId) {
         history = history.filter(b => (b.bookingId || '') !== bookingId);
         localStorage.setItem(STORAGE_BOOKING_HISTORY, JSON.stringify(history));
 
-        await fetch('api.php?action=hapus_booking', {
+        const token = ambilAdminToken();
+        await fetch(dapatkanApiEndpoint(`action=hapus_booking&token=${encodeURIComponent(token)}`), {
             method: 'POST',
             headers: ambilHeaderAdminAuth(),
-            body: JSON.stringify({ bookingId: bookingId }),
+            body: JSON.stringify({ bookingId: bookingId, admin_token: token }),
             keepalive: true
         });
         return true;
@@ -1158,7 +1382,7 @@ async function muatBookingDariQuery() {
             // Prioritaskan ambil data paling segar langsung dari server api.php
             try {
                 const headers = (typeof ambilHeaderAdminAuth === "function") ? ambilHeaderAdminAuth() : {};
-                const res = await fetch(`api.php?action=ambil_booking&id=${encodeURIComponent(idClean)}`, { headers });
+                const res = await fetch(dapatkanApiEndpoint('action=ambil_booking&id=${encodeURIComponent(idClean)}'), { headers });
                 if (res.ok) {
                     const json = await res.json();
                     if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
@@ -1227,7 +1451,7 @@ async function muatBookingDariQuery() {
                 const targetId = (decoded.bookingId || '').trim().toUpperCase();
                 if (targetId) {
                     try {
-                        const res = await fetch(`api.php?action=ambil_booking&id=${encodeURIComponent(targetId)}`);
+                        const res = await fetch(dapatkanApiEndpoint('action=ambil_booking&id=${encodeURIComponent(targetId)}'));
                         if (res.ok) {
                             const json = await res.json();
                             if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
@@ -1266,16 +1490,17 @@ function buatPesanWhatsApp(dataSewa, baseUrl = null) {
     const bId = dataSewa.bookingId || ('INV-' + Math.floor(1000 + Math.random() * 9000));
 
     const keperluanTeks = dataSewa.keperluan ? `\nTujuan/Keperluan: ${dataSewa.keperluan}` : '';
+    const tipeDinasTeks = dataSewa.isDinas ? `\nTipe Peminjaman: *TUGAS RESMI PONDOK (Bebas Biaya / Rp 0)*` : '';
 
-    let teks = `*FORMAT BOOKING SEWA ALAT MULTIMEDIA MA'HAD ALY AMTSILATI*
-(Mohon konfirmasi persetujuan / ACC Pengurus)
+    let teks = `*FORMAT BOOKING PEMINJAMAN & SEWA ASET MA'HAD ALY AMTSILATI*
+(Mohon konfirmasi persetujuan / ACC Pengurus Ma'had Aly Amtsilati)
 
 Nama Lengkap: ${dataSewa.nama}
 Asal Media/Komunitas: ${dataSewa.komunitas}
 Asrama/Departemen: ${dataSewa.departemen}
-Alamat: ${dataSewa.alamat}${keperluanTeks}
+Alamat: ${dataSewa.alamat}${keperluanTeks}${tipeDinasTeks}
 No HP Aktif: ${dataSewa.noWa}
-Barang yang Disewa: ${dataSewa.namaBarang}
+Barang yang Dipinjam/Disewa: ${dataSewa.namaBarang}
 Lama Sewa: ${lamaSewaTeks}
 Waktu Ambil: ${dataSewa.waktuAmbil}
 Waktu Kembali: ${dataSewa.waktuSelesai}
@@ -1582,7 +1807,7 @@ function toDatetimeLocalString(date) {
 async function sinkronisasiDataServerLatarBelakang() {
     try {
         // 1. Sinkronisasi Pengaturan Admin WA
-        const resPengaturan = await fetch('api.php?action=ambil_pengaturan');
+        const resPengaturan = await fetch(dapatkanApiEndpoint('action=ambil_pengaturan'));
         if (resPengaturan.ok) {
             const jsonP = await resPengaturan.json();
             if (jsonP && jsonP.success && jsonP.data) {
@@ -1593,7 +1818,7 @@ async function sinkronisasiDataServerLatarBelakang() {
 
     try {
         // 2. Sinkronisasi Aset Tambahan dari Admin
-        const resAset = await fetch('api.php?action=ambil_aset');
+        const resAset = await fetch(dapatkanApiEndpoint('action=ambil_aset'));
         if (resAset.ok) {
             const jsonA = await resAset.json();
             if (jsonA && jsonA.success && Array.isArray(jsonA.data)) {
@@ -1612,14 +1837,47 @@ async function sinkronisasiDataServerLatarBelakang() {
                     }
                     cleanServer.push(item);
                 });
-                localStorage.setItem(STORAGE_CUSTOM_ASET, JSON.stringify(cleanServer));
+
+                // SMART MERGE: Gabungkan data server dengan data lokal agar aset baru tidak pernah hilang saat refresh
+                const localRaw = localStorage.getItem(STORAGE_CUSTOM_ASET);
+                let localList = [];
+                try { localList = localRaw ? JSON.parse(localRaw) : []; } catch(e) {}
+
+                const mapAssets = new Map();
+                // 1. Masukkan data server
+                cleanServer.forEach(item => {
+                    if (item && item.id) mapAssets.set(item.id, item);
+                });
+                // 2. Jika ada aset lokal yang belum tersimpan di server, pertahankan!
+                let adaAsetLokalTertinggal = false;
+                if (Array.isArray(localList)) {
+                    localList.forEach(item => {
+                        if (item && item.id && !mapAssets.has(item.id)) {
+                            mapAssets.set(item.id, item);
+                            adaAsetLokalTertinggal = true;
+                        }
+                    });
+                }
+
+                const mergedAssets = Array.from(mapAssets.values());
+                localStorage.setItem(STORAGE_CUSTOM_ASET, JSON.stringify(mergedAssets));
+
+                // Jika ada aset lokal yang belum tersimpan di database server dan admin sedang login, auto-sinkron ke server sekarang!
+                if (adaAsetLokalTertinggal && typeof sessionStorage !== 'undefined' && sessionStorage.getItem('admin_auth') === 'true') {
+                    const token = ambilAdminToken();
+                    fetch(dapatkanApiEndpoint(`action=simpan_aset&token=${encodeURIComponent(token)}`), {
+                        method: 'POST',
+                        headers: ambilHeaderAdminAuth(),
+                        body: JSON.stringify({ assets: mergedAssets, admin_token: token })
+                    }).catch(() => {});
+                }
             }
         }
     } catch (e) {}
 
     try {
         // 3. Sinkronisasi Kategori Dinamis
-        const resKat = await fetch('api.php?action=ambil_kategori');
+        const resKat = await fetch(dapatkanApiEndpoint('action=ambil_kategori'));
         if (resKat.ok) {
             const jsonK = await resKat.json();
             if (jsonK && jsonK.success && Array.isArray(jsonK.data) && jsonK.data.length > 0) {
@@ -1627,9 +1885,110 @@ async function sinkronisasiDataServerLatarBelakang() {
             }
         }
     } catch (e) {}
+
+    // Beritahukan ke seluruh antarmuka UI bahwa sinkronisasi data server telah selesai
+    try {
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('sinkronisasi-selesai'));
+        }
+    } catch (e) {}
 }
 
 if (typeof window !== 'undefined') {
     sinkronisasiDataServerLatarBelakang();
+}
+
+// =========================================================
+// PENGIRIMAN PESAN WHATSAPP MULTI SESSION OTOMATIS (DUAL-MODE)
+// =========================================================
+async function kirimWaGatewayOtomatis(nomorTujuan, pesan, customSessionId = null) {
+    if (!nomorTujuan || !pesan) return false;
+
+    const cfg = ambilPengaturanAdmin();
+    const gw = cfg.waGateway || {};
+    if (gw.enabled === false) return false;
+
+    const apiUrl = (gw.apiUrl || "https://wa-multi-session.amtsilatipusat.com/api/v1").replace(/\/+$/, "");
+    const apiKey = gw.apiKey || "1fcea2a9-6c3d-4158-8280-76ccdb9d9f66";
+    const sessionId = customSessionId || gw.sessionIdAdmin || "0ab9413c-aab1-4705-bd92-3e4b0a8c5426";
+
+    let cleanNo = String(nomorTujuan).replace(/[^0-9]/g, "");
+    if (cleanNo.startsWith("0")) cleanNo = "62" + cleanNo.slice(1);
+    else if (cleanNo.startsWith("8")) cleanNo = "62" + cleanNo;
+    if (!cleanNo) return false;
+
+    try {
+        const res = await fetch(`${apiUrl}/sessions/${encodeURIComponent(sessionId)}/send`, {
+            method: "POST",
+            headers: {
+                "X-API-Key": apiKey,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                to: cleanNo,
+                message: pesan
+            })
+        });
+        return res.ok;
+    } catch (e) {
+        console.warn("[WA Gateway Client] Gagal mengirim langsung dari browser:", e);
+        return false;
+    }
+}
+
+async function kirimNotifikasiBookingOtomatis(booking) {
+    if (!booking) return;
+    const cfg = ambilPengaturanAdmin();
+    const gw = cfg.waGateway || {};
+
+    const bId = booking.bookingId || "INV-0000";
+    const nama = booking.nama || "Santri";
+    const noWa = booking.noWa || "";
+    const namaBarang = booking.namaBarang || "Aset";
+    const waktuAmbil = booking.waktuAmbil || "-";
+    const waktuKembali = booking.waktuSelesai || "-";
+    const komunitas = booking.komunitas || (booking.departemen || "-");
+
+    const isDinas = booking.isDinas || (parseInt(booking.biayaSewa || 0) === 0 && !!booking.biayaSewaAsli);
+    const biayaTeks = isDinas ? "Gratis (Khusus Tugas Resmi Pondok)" : formatRupiah(booking.biayaSewa || 0);
+
+    const baseUrl = (typeof dapatkanBaseUrl === "function" && dapatkanBaseUrl()) ? dapatkanBaseUrl() : window.location.origin;
+    // 1. Pesan Otomatis ke Santri / Peminjam (MENUNGGU KONFIRMASI & MURNI TANPA LINK)
+    if (noWa && gw.notifySantriBooking !== false) {
+        const pesanSantri = `Assalamu'alaikum wr. wb. Saudara/i *${nama}*,\n\n` +
+            `Alhamdulillah, pengajuan sewa aset *${namaBarang}* (*${bId}*) telah kami terima di sistem dan saat ini sedang *MENUNGGU KONFIRMASI (ACC)* dari Pengurus Ma'had Aly Amtsilati.\n\n` +
+            `*Rincian Peminjaman:*\n` +
+            `- No. Transaksi: *${bId}*\n` +
+            `- Aset: *${namaBarang}*\n` +
+            `- Jadwal Pengambilan: *${waktuAmbil}*\n` +
+            `- Batas Pengembalian: *${waktuKembali}*\n` +
+            `- Biaya Sewa: *${biayaTeks}*\n\n` +
+            `_Mohon menunggu konfirmasi persetujuan resmi (ACC) via WhatsApp sebelum mengambil unit ke Kantor Ma'had Aly Amtsilati._\n\n` +
+            `Wassalamu'alaikum wr. wb.\n` +
+            `*Pengurus Ma'had Aly Amtsilati*`;
+        await kirimWaGatewayOtomatis(noWa, pesanSantri);
+    }
+
+    // Jeda 3 detik
+    await new Promise(r => setTimeout(r, 3000));
+
+    // 2. Pesan Otomatis ke Admin Pengurus (Mas Ganteng untuk Admin 1 / Mbak Cantik untuk Admin 2)
+    const isAdm2 = (booking && (booking.adminPic === "admin2" || booking.adminPic === "2"));
+    const sapaanAdmin = isAdm2 ? "Mbak Cantik" : "Mas Ganteng";
+    const adminPhone = (typeof dapatkanNomorWaAdmin === "function") ? dapatkanNomorWaAdmin(booking) : (gw.phonePengantara || "628812762520");
+    if (adminPhone && gw.notifyAdminNewBooking !== false) {
+        const pesanAdmin = `🔔 *PERMOHONAN SEWA / PINJAM ASET BARU*\n\n` +
+            `Assalamu'alaikum ${sapaanAdmin},\n` +
+            `Terdapat pengajuan sewa unit baru masuk ke sistem yang memerlukan konfirmasi & persetujuan (ACC / Tolak):\n\n` +
+            `- No. Transaksi: *${bId}*\n` +
+            `- Peminjam: *${nama}* (${noWa})\n` +
+            `- Asrama/Dept: *${komunitas}*\n` +
+            `- Aset: *${namaBarang}*\n` +
+            `- Jadwal: *${waktuAmbil}* s.d *${waktuKembali}*\n` +
+            `- Biaya: *${biayaTeks}*\n\n` +
+            `👉 *Buka Dashboard Admin untuk Verifikasi & ACC / Tolak:*\n` +
+            `${baseUrl}/admin-dashboard.html`;
+        await kirimWaGatewayOtomatis(adminPhone, pesanAdmin);
+    }
 }
 

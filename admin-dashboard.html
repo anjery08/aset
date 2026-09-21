@@ -186,7 +186,7 @@
                   <img id="dropdownAdminAvatarImg" src="" class="rounded-circle d-none" style="width: 100%; height: 100%; object-fit: cover;" alt="Foto Admin" />
                   <i class="bi bi-person-fill fs-3" id="dropdownAdminAvatarIcon"></i>
                 </div>
-                <strong class="d-block text-dark" id="dropdownAdminName">Admin METAHATI</strong>
+                <strong class="d-block text-dark" id="dropdownAdminName">Admin Ma'had Aly Amtsilati</strong>
                 <small class="text-secondary">Ma'had Aly Amtsilati</small>
               </li>
               <li class="p-2">
@@ -415,12 +415,17 @@
       <section id="view-aset" class="admin-view d-none">
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
           <div>
-            <h4 class="fw-bolder text-dark mb-1">Manajemen Aset Multimedia</h4>
-            <p class="text-secondary small mb-0">Kelola unit alat, atur tarif paket, upload foto, dan tambah kategori baru.</p>
+            <h4 class="fw-bolder text-dark mb-1">Manajemen Aset & Inventaris</h4>
+            <p class="text-secondary small mb-0">Kelola unit aset & inventaris, atur tarif paket, upload foto, dan kelola kategori.</p>
           </div>
-          <button type="button" class="btn btn-primary fw-bold shadow-sm" onclick="bukaModalAsetBaru()">
-            <i class="bi bi-plus-lg me-1"></i> Tambah Aset Baru
-          </button>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-primary fw-bold shadow-sm" onclick="bukaModalKelolaKategori()">
+              <i class="bi bi-tags-fill me-1"></i> Kelola Kategori
+            </button>
+            <button type="button" class="btn btn-primary fw-bold shadow-sm" onclick="bukaModalAsetBaru()">
+              <i class="bi bi-plus-lg me-1"></i> Tambah Aset Baru
+            </button>
+          </div>
         </div>
 
         <!-- Toolbar Pencarian & Filter Kategori Aset -->
@@ -629,7 +634,7 @@
                 <i class="bi bi-whatsapp me-2" style="color: #25d366;"></i>Nomor WhatsApp Admin
               </h5>
               <p class="text-secondary small mb-4">
-                Pemesanan alat oleh santri akan otomatis diarahkan ke nomor WhatsApp <strong>Admin 1</strong> atau <strong>Admin 2</strong> sesuai PIC yang Anda tentukan pada masing-masing aset.
+                Pemesanan alat oleh santri akan dikirimkan otomatis oleh <strong>Bot Pengantara</strong> ke nomor WhatsApp <strong>Admin 1</strong> atau <strong>Admin 2 (Pengurus)</strong> sesuai PIC aset, agar pengurus dapat langsung meninjau & mengklik tombol <strong>ACC / Setujui</strong>.
               </p>
 
               <form onsubmit="simpanPengaturanWaAdmin(event)">
@@ -637,30 +642,30 @@
                 <div class="mb-3 p-3 rounded bg-white border" style="border: 1.5px solid rgba(0, 102, 255, 0.2) !important;">
                   <label class="form-label fw-bold text-dark d-flex align-items-center">
                     <span class="badge text-white me-2 px-2 py-1" style="background-color: #0066ff;">Admin 1</span>
-                    Nomor WhatsApp Admin 1:
+                    Nomor WhatsApp Pengurus 1 (Penerima Notif & Yang Klik ACC):
                   </label>
                   <div class="input-group">
                     <span class="input-group-text bg-white fw-bold"><i class="bi bi-whatsapp" style="color: #0066ff;"></i></span>
                     <input type="text" id="settingWaAdmin1" class="form-control fw-bold bg-white" placeholder="628xxxxxxxxxx" required />
                   </div>
-                  <small class="text-muted" style="font-size: 0.78rem;">Contoh: 628812762520 (Gunakan kode negara 62 tanpa spasi atau tanda +)</small>
+                  <small class="text-muted" style="font-size: 0.78rem;">Nomor HP pengurus yang bertugas memverifikasi/ACC pemesanan (format: 628...)</small>
                 </div>
 
                 <!-- Admin 2 -->
                 <div class="mb-4 p-3 rounded bg-white border" style="border: 1.5px solid rgba(214, 0, 153, 0.2) !important;">
                   <label class="form-label fw-bold text-dark d-flex align-items-center">
                     <span class="badge text-white me-2 px-2 py-1" style="background-color: #d60099;">Admin 2</span>
-                    Nomor WhatsApp Admin 2:
+                    Nomor WhatsApp Pengurus 2 (Penerima Notif & Yang Klik ACC - Mustaghfiri):
                   </label>
                   <div class="input-group">
                     <span class="input-group-text bg-white fw-bold"><i class="bi bi-whatsapp" style="color: #d60099;"></i></span>
                     <input type="text" id="settingWaAdmin2" class="form-control fw-bold bg-white" placeholder="628xxxxxxxxxx" required />
                   </div>
-                  <small class="text-muted" style="font-size: 0.78rem;">Contoh: 628812762520</small>
+                  <small class="text-muted" style="font-size: 0.78rem;">Nomor HP pengurus 2 (contoh: 628812762520)</small>
                 </div>
 
                 <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
-                  <i class="bi bi-check2-circle me-1"></i> Simpan Nomor WhatsApp
+                  <i class="bi bi-check2-circle me-1"></i> Simpan Nomor Pengurus
                 </button>
               </form>
             </div>
@@ -713,6 +718,80 @@
                 <button type="submit" class="btn btn-metahati fw-bold px-4 py-2 w-100">
                   <i class="bi bi-check2-circle me-1"></i> Simpan Profil Admin
                 </button>
+              </form>
+            <!-- Box Integrasi WhatsApp Gateway Otomatis (WA Multi Session) -->
+          <div class="col-12">
+            <div class="card shadow-sm border-0 p-4 bg-white" style="border-radius: 1rem; border: 2px solid #25D366 !important;">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+                <div>
+                  <h5 class="fw-bolder text-dark mb-1 d-flex align-items-center gap-2 flex-wrap">
+                    <i class="bi bi-whatsapp text-success fs-4"></i>
+                    Integrasi WhatsApp Otomatis (WA Multi Session)
+                    <span class="badge bg-success-subtle text-success border border-success px-2 py-1 rounded-pill small">
+                      <i class="bi bi-patch-check-fill me-1"></i> Sesi: Admin Ma'had Aly Amtsilati
+                    </span>
+                  </h5>
+                  <p class="text-secondary small mb-0">
+                    Notifikasi konfirmasi booking santri, persetujuan (ACC), penolakan, dan tanda terima pengembalian akan terkirim secara otomatis via nomor <strong>Admin Ma'had Aly Amtsilati</strong> (<span id="txtDisplayAdminPhone">6287748921490</span>).
+                  </p>
+                </div>
+                <div>
+                  <button type="button" class="btn btn-outline-success fw-bold px-3 py-2 shadow-sm" id="btnTestWaGw" onclick="lakukanTestKirimWaGateway()">
+                    <i class="bi bi-send-check me-1"></i> Test Kirim WA Sekarang
+                  </button>
+                </div>
+              </div>
+
+              <form onsubmit="simpanPengaturanWaGateway(event)">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold text-dark small mb-1">Base URL Gateway API:</label>
+                    <input type="text" id="gwApiUrl" class="form-control font-monospace small" value="https://wa-multi-session.amtsilatipusat.com/api/v1" required />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold text-dark small mb-1">API Key Gateway:</label>
+                    <div class="input-group">
+                      <input type="password" id="gwApiKey" class="form-control font-monospace small" value="1fcea2a9-6c3d-4158-8280-76ccdb9d9f66" required />
+                      <button class="btn btn-outline-secondary" type="button" onclick="toggleLihatApiKey()">
+                        <i class="bi bi-eye" id="iconToggleApiKey"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="col-md-5">
+                    <label class="form-label fw-bold text-dark small mb-1">Session ID (Admin Ma'had Aly Amtsilati):</label>
+                    <input type="text" id="gwSessionId" class="form-control font-monospace small" value="0ab9413c-aab1-4705-bd92-3e4b0a8c5426" required />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-bold text-dark small mb-1">Nama Sesi:</label>
+                    <input type="text" id="gwSessionName" class="form-control small" value="Admin Ma'had Aly Amtsilati" readonly />
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label fw-bold text-dark small mb-1">No. WA Pengantara (Bot Pengirim):</label>
+                    <input type="text" id="gwPhoneAdmin" class="form-control font-monospace small" value="6287748921490" required />
+                    <small class="text-muted d-block" style="font-size: 0.72rem;">Sesi pengirim bot (bukan admin yang klik ACC)</small>
+                  </div>
+                </div>
+
+                <div class="mt-3 p-3 rounded-3 bg-light border d-flex flex-wrap gap-4 align-items-center">
+                  <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="gwEnabled" checked>
+                    <label class="form-check-label fw-bold small text-dark" for="gwEnabled">Aktifkan Notifikasi WhatsApp Otomatis</label>
+                  </div>
+                  <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="gwNotifyAdmin" checked>
+                    <label class="form-check-label small text-secondary" for="gwNotifyAdmin">Notif booking baru ke Admin</label>
+                  </div>
+                  <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="gwNotifySantri" checked>
+                    <label class="form-check-label small text-secondary" for="gwNotifySantri">Notif update status & invoice ke Santri</label>
+                  </div>
+                </div>
+
+                <div class="mt-3">
+                  <button type="submit" class="btn btn-success fw-bold px-4 py-2 shadow-sm">
+                    <i class="bi bi-check2-circle me-1"></i> Simpan Pengaturan WA Gateway
+                  </button>
+                </div>
               </form>
             </div>
           </div>
@@ -868,7 +947,45 @@
     </div>
   </div>
 
-  <!-- Modal Konfirmasi Terima Pengembalian Alat (Tanpa Confirm Berantai) -->
+  <!-- Modal Kelola Kategori Aset -->
+  <div class="modal fade" id="modalKelolaKategori" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg bg-white" style="border-radius: 1rem;">
+        <div class="modal-header text-white" style="background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%);">
+          <h5 class="modal-title fw-bold">
+            <i class="bi bi-tags-fill me-2"></i> Kelola Kategori Aset
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4 bg-white text-dark">
+          <!-- Form Tambah Kategori Cepat -->
+          <label class="form-label fw-bold small text-secondary">Tambah Kategori Baru:</label>
+          <div class="input-group mb-3">
+            <input type="text" id="inputTambahKategoriBaruModal" class="form-control" placeholder="Contoh: Drone & Gimbal" onkeydown="if(event.key==='Enter'){event.preventDefault();aksiTambahKategoriModal();}">
+            <button class="btn btn-primary fw-bold px-3" type="button" onclick="aksiTambahKategoriModal()">
+              <i class="bi bi-plus-lg me-1"></i> Tambah
+            </button>
+          </div>
+
+          <hr class="my-3">
+
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <label class="form-label fw-bold small text-secondary mb-0">Daftar Kategori Tersedia:</label>
+            <span class="small text-muted fw-bold" id="totalKategoriBadge">0 Kategori</span>
+          </div>
+
+          <!-- List Kategori -->
+          <div id="containerListKategoriModal" class="d-flex flex-column gap-2" style="max-height: 320px; overflow-y: auto;">
+            <!-- Diisi via JS -->
+          </div>
+        </div>
+        <div class="modal-footer bg-light border-top">
+          <button type="button" class="btn btn-secondary fw-bold px-4" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal ACC / Setujui Permohonan Sewa -->
   <div class="modal fade" id="modalAccBooking" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -1167,7 +1284,7 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
   <script src="./dist/js/adminlte.min.js"></script>
-  <script src="./js/rental-logic.js?v=2.5"></script>
+  <script src="./js/rental-logic.js?v=3.0"></script>
 
   <script>
     let modalAsetInstance = null;
@@ -1183,7 +1300,7 @@
 
       modalAsetInstance = new bootstrap.Modal(document.getElementById("modalAset"));
       
-      const adminUser = sessionStorage.getItem("admin_user") || "Admin METAHATI";
+      const adminUser = sessionStorage.getItem("admin_user") || "Admin Ma'had Aly Amtsilati";
       document.getElementById("navAdminName").innerText = adminUser;
       const sidebarName = document.getElementById("sidebarAdminName");
       if (sidebarName) sidebarName.innerText = adminUser;
@@ -1196,6 +1313,12 @@
       // Muat Data Awal
       muatPengaturanForm();
       segarkanSemuaData();
+
+      // Dengarkan event selesai sinkronisasi latar belakang
+      window.addEventListener("sinkronisasi-selesai", () => {
+        renderDashboardView();
+        renderTabelAsetAdmin();
+      });
 
       // Auto sinkronisasi background berkala tiap 20 detik
       setInterval(() => {
@@ -1232,6 +1355,12 @@
     // SINKRONISASI & AMBIL DATA SERVER
     // ========================================================
     async function segarkanSemuaData() {
+      if (typeof sinkronisasiDataServerLatarBelakang === "function") {
+        try {
+          await sinkronisasiDataServerLatarBelakang();
+        } catch (e) {}
+      }
+
       try {
         if (typeof ambilRiwayatBookingAsync === "function") {
           daftarRiwayatAktif = await ambilRiwayatBookingAsync();
@@ -1257,6 +1386,12 @@
     }
 
     async function segarkanDataLatarBelakang() {
+      if (typeof sinkronisasiDataServerLatarBelakang === "function") {
+        try {
+          await sinkronisasiDataServerLatarBelakang();
+        } catch (e) {}
+      }
+
       try {
         if (typeof ambilRiwayatBookingAsync === "function") {
           const fresh = await ambilRiwayatBookingAsync();
@@ -1271,6 +1406,7 @@
             if (activeView) {
               if (activeView.id === "view-dashboard") renderDashboardView();
               if (activeView.id === "view-monitoring") renderMonitoringView();
+              if (activeView.id === "view-aset") renderTabelAsetAdmin();
               if (activeView.id === "view-riwayat") renderTabelRiwayatAdmin();
             }
           }
@@ -1583,21 +1719,22 @@
       });
     }
 
-    function toggleStatusOperasionalAset(id, statusBaru) {
+    async function toggleStatusOperasionalAset(id, statusBaru) {
       if (typeof ubahStatusAset === "function") {
-        ubahStatusAset(id, statusBaru);
+        await ubahStatusAset(id, statusBaru);
       }
       renderTabelAsetAdmin();
       renderDashboardView();
     }
 
-    function hapusAsetItem(id, nama) {
+    async function hapusAsetItem(id, nama) {
       if (!confirm(`Apakah Anda yakin ingin menghapus aset "${nama}"?`)) return;
       if (typeof hapusAset === "function") {
-        hapusAset(id);
+        await hapusAset(id);
       }
       renderTabelAsetAdmin();
       renderDashboardView();
+      alert(`Aset "${nama}" berhasil dihapus.`);
     }
 
     // Modal Form Tambah / Edit Aset dengan Kategori Dinamis
@@ -1639,6 +1776,166 @@
         wrapper.classList.add("d-none");
         input.value = "";
       }
+    }
+
+    // ========================================================
+    // MODAL KELOLA KATEGORI ASET (TAMBAH, EDIT, HAPUS)
+    // ========================================================
+    let modalKelolaKategoriInstance = null;
+    let kategoriSedangDiedit = null;
+
+    function bukaModalKelolaKategori() {
+      const el = document.getElementById("modalKelolaKategori");
+      if (!el) return;
+      if (!modalKelolaKategoriInstance) {
+        modalKelolaKategoriInstance = new bootstrap.Modal(el);
+      }
+      kategoriSedangDiedit = null;
+      const inp = document.getElementById("inputTambahKategoriBaruModal");
+      if (inp) inp.value = "";
+      renderDaftarKategoriModal();
+      modalKelolaKategoriInstance.show();
+    }
+
+    function renderDaftarKategoriModal() {
+      const container = document.getElementById("containerListKategoriModal");
+      const badge = document.getElementById("totalKategoriBadge");
+      if (!container) return;
+
+      const cats = typeof ambilDaftarKategori === "function" ? ambilDaftarKategori() : [];
+      if (badge) badge.innerText = `${cats.length} Kategori`;
+
+      if (cats.length === 0) {
+        container.innerHTML = `<div class="text-center text-muted p-3">Belum ada kategori terdaftar.</div>`;
+        return;
+      }
+
+      // Hitung aset per kategori
+      const semuaAset = typeof ambilSemuaKatalog === "function" ? ambilSemuaKatalog() : [];
+      const countMap = {};
+      semuaAset.forEach(ast => {
+        const k = ast.kategori || "";
+        countMap[k] = (countMap[k] || 0) + 1;
+      });
+
+      container.innerHTML = cats.map(c => {
+        const count = countMap[c.id] || 0;
+        const isEditing = (kategoriSedangDiedit === c.id);
+
+        if (isEditing) {
+          return `
+            <div class="p-2 rounded-3 border bg-light shadow-sm">
+              <div class="input-group input-group-sm">
+                <input type="text" class="form-control fw-bold" id="inputEditKat_${c.id}" value="${c.label}" onkeydown="if(event.key==='Enter'){event.preventDefault();aksiSimpanEditKategoriModal('${c.id}');}">
+                <button class="btn btn-success btn-sm px-3 fw-bold" onclick="aksiSimpanEditKategoriModal('${c.id}')" title="Simpan Perubahan">
+                  <i class="bi bi-check-lg me-1"></i> Simpan
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="batalEditKategoriModal()" title="Batal">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="d-flex align-items-center justify-content-between p-2 rounded-3 border bg-light">
+            <div>
+              <span class="fw-bold text-dark d-block">${c.label}</span>
+              <span class="text-muted small" style="font-size: 0.78rem;">
+                <code class="text-secondary">${c.id}</code> &bull; <span class="badge bg-primary-subtle text-primary border border-primary-subtle">${count} Aset</span>
+              </span>
+            </div>
+            <div class="d-flex gap-1">
+              <button class="btn btn-sm btn-outline-primary py-1 px-2" onclick="mulaiEditKategoriModal('${c.id}')" title="Ganti Nama Kategori">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger py-1 px-2" onclick="aksiHapusKategoriModal('${c.id}')" title="Hapus Kategori">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function aksiTambahKategoriModal() {
+      const inp = document.getElementById("inputTambahKategoriBaruModal");
+      if (!inp) return;
+      const nama = inp.value.trim();
+      if (!nama) {
+        alert("Silakan ketik nama kategori baru terlebih dahulu!");
+        inp.focus();
+        return;
+      }
+      if (typeof tambahKategoriBaru === "function") {
+        await tambahKategoriBaru(nama);
+        inp.value = "";
+        renderDaftarKategoriModal();
+        if (typeof muatPilihanKategoriModal === "function") muatPilihanKategoriModal();
+        if (typeof renderTabelAsetAdmin === "function") renderTabelAsetAdmin();
+        alert(`Kategori baru "${nama}" berhasil ditambahkan.`);
+      }
+    }
+
+    function mulaiEditKategoriModal(catId) {
+      kategoriSedangDiedit = catId;
+      renderDaftarKategoriModal();
+      setTimeout(() => {
+        const inp = document.getElementById(`inputEditKat_${catId}`);
+        if (inp) {
+          inp.focus();
+          inp.select();
+        }
+      }, 50);
+    }
+
+    function batalEditKategoriModal() {
+      kategoriSedangDiedit = null;
+      renderDaftarKategoriModal();
+    }
+
+    async function aksiSimpanEditKategoriModal(catId) {
+      const inp = document.getElementById(`inputEditKat_${catId}`);
+      if (!inp) return;
+      const namaBaru = inp.value.trim();
+      if (!namaBaru) {
+        alert("Nama kategori tidak boleh kosong!");
+        inp.focus();
+        return;
+      }
+      if (typeof perbaruiKategori === "function") {
+        await perbaruiKategori(catId, namaBaru);
+      }
+      kategoriSedangDiedit = null;
+      renderDaftarKategoriModal();
+      if (typeof muatPilihanKategoriModal === "function") muatPilihanKategoriModal();
+      if (typeof renderTabelAsetAdmin === "function") renderTabelAsetAdmin();
+      alert(`Nama kategori berhasil diubah menjadi "${namaBaru}".`);
+    }
+
+    async function aksiHapusKategoriModal(catId) {
+      const cats = typeof ambilDaftarKategori === "function" ? ambilDaftarKategori() : [];
+      const target = cats.find(c => c.id === catId);
+      if (!target) return;
+      const catLabel = target.label;
+      const semuaAset = typeof ambilSemuaKatalog === "function" ? ambilSemuaKatalog() : [];
+      const countAset = semuaAset.filter(a => a.kategori === catId).length;
+
+      let pesan = `Apakah Anda yakin ingin menghapus kategori "${catLabel}"?`;
+      if (countAset > 0) {
+        pesan += `\n\nPerhatian: Terdapat ${countAset} unit aset dalam kategori ini. Aset-aset tersebut akan otomatis dialihkan ke kategori lain.`;
+      }
+      if (!confirm(pesan)) return;
+
+      if (typeof hapusKategori === "function") {
+        await hapusKategori(catId);
+      }
+      kategoriSedangDiedit = null;
+      renderDaftarKategoriModal();
+      if (typeof muatPilihanKategoriModal === "function") muatPilihanKategoriModal();
+      if (typeof renderTabelAsetAdmin === "function") renderTabelAsetAdmin();
+      alert(`Kategori "${catLabel}" berhasil dihapus.`);
     }
 
     function bukaModalAsetBaru() {
@@ -1792,80 +2089,102 @@
       reader.readAsDataURL(file);
     }
 
-    function simpanFormAset(e) {
+    async function simpanFormAset(e) {
       e.preventDefault();
-      const id = document.getElementById("formAsetId").value;
-      const nama = document.getElementById("formNama").value.trim();
-      const adminPic = document.getElementById("formAdminPic").value;
-      const stokTotal = Math.max(1, parseInt(document.getElementById("formStokTotal").value, 10) || 1);
-      const status = document.getElementById("formStatus").value;
-      const gambar = document.getElementById("formGambarBase64").value;
-      const deskripsi = document.getElementById("formDeskripsi").value.trim();
-      const kelengkapanRaw = document.getElementById("formKelengkapan").value.trim();
-      const kelengkapan = kelengkapanRaw ? kelengkapanRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
-
-      let katVal = document.getElementById("formKategoriSelect").value;
-      let katLabel = "";
-
-      // Jika admin membuat kategori baru
-      if (katVal === "__TAMBAH_BARU__") {
-        const customInput = document.getElementById("formKategoriBaruInput").value.trim();
-        if (!customInput) {
-          alert("Silakan masukkan nama kategori baru!");
-          document.getElementById("formKategoriBaruInput").focus();
-          return;
-        }
-        const createdCat = tambahKategoriBaru(customInput);
-        if (createdCat) {
-          katVal = createdCat.id;
-          katLabel = createdCat.label;
-        } else {
-          katVal = "kustom";
-          katLabel = customInput;
-        }
-      } else {
-        const catObj = ambilDaftarKategori().find(c => c.id === katVal);
-        katLabel = catObj ? catObj.label : katVal;
+      const submitBtn = e.target.querySelector("button[type='submit']");
+      const origBtnHtml = submitBtn ? submitBtn.innerHTML : "";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Menyimpan ke Server...';
       }
 
-      // Kumpulkan paket opsi
-      const paketOpsi = [];
-      const tarifObj = {};
-      const rows = document.querySelectorAll(".paket-row");
-      rows.forEach(r => {
-        const jam = parseInt(r.querySelector(".paket-jam").value, 10) || 12;
-        const label = r.querySelector(".paket-label").value.trim() || (jam + " Jam");
-        const tarif = parseInt(r.querySelector(".paket-tarif").value, 10) || 0;
-        paketOpsi.push({
-          id: String(jam),
-          jam: jam,
-          label: label,
-          tarif: tarif,
-          desc: "Paket sewa " + label
+      try {
+        const id = document.getElementById("formAsetId").value;
+        const nama = document.getElementById("formNama").value.trim();
+        const adminPic = document.getElementById("formAdminPic").value;
+        const stokTotal = Math.max(1, parseInt(document.getElementById("formStokTotal").value, 10) || 1);
+        const status = document.getElementById("formStatus").value;
+        const gambar = document.getElementById("formGambarBase64").value;
+        const deskripsi = document.getElementById("formDeskripsi").value.trim();
+        const kelengkapanRaw = document.getElementById("formKelengkapan").value.trim();
+        const kelengkapan = kelengkapanRaw ? kelengkapanRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
+
+        let katVal = document.getElementById("formKategoriSelect").value;
+        let katLabel = "";
+
+        // Jika admin membuat kategori baru
+        if (katVal === "__TAMBAH_BARU__") {
+          const customInput = document.getElementById("formKategoriBaruInput").value.trim();
+          if (!customInput) {
+            alert("Silakan masukkan nama kategori baru!");
+            document.getElementById("formKategoriBaruInput").focus();
+            return;
+          }
+          const createdCat = await tambahKategoriBaru(customInput);
+          if (createdCat) {
+            katVal = createdCat.id;
+            katLabel = createdCat.label;
+          } else {
+            katVal = "kustom";
+            katLabel = customInput;
+          }
+        } else {
+          const catObj = ambilDaftarKategori().find(c => c.id === katVal);
+          katLabel = catObj ? catObj.label : katVal;
+        }
+
+        // Kumpulkan paket opsi
+        const paketOpsi = [];
+        const tarifObj = {};
+        const rows = document.querySelectorAll(".paket-row");
+        rows.forEach(r => {
+          const jam = parseInt(r.querySelector(".paket-jam").value, 10) || 12;
+          const label = r.querySelector(".paket-label").value.trim() || (jam + " Jam");
+          const tarif = parseInt(r.querySelector(".paket-tarif").value, 10) || 0;
+          paketOpsi.push({
+            id: String(jam),
+            jam: jam,
+            label: label,
+            tarif: tarif,
+            desc: "Paket sewa " + label
+          });
+          tarifObj[String(jam)] = tarif;
         });
-        tarifObj[String(jam)] = tarif;
-      });
 
-      const assetObj = {
-        id: id || ("ast-" + Date.now().toString(36)),
-        nama: nama,
-        kategori: katVal,
-        kategoriLabel: katLabel,
-        adminPic: adminPic,
-        stokTotal: stokTotal,
-        status: status,
-        gambar: gambar,
-        deskripsi: deskripsi,
-        kelengkapan: kelengkapan,
-        paketOpsi: paketOpsi,
-        tarif: tarifObj
-      };
+        const assetObj = {
+          id: id || ("ast-" + Date.now().toString(36)),
+          nama: nama,
+          kategori: katVal,
+          kategoriLabel: katLabel,
+          adminPic: adminPic,
+          stokTotal: stokTotal,
+          status: status,
+          gambar: gambar,
+          deskripsi: deskripsi,
+          kelengkapan: kelengkapan,
+          paketOpsi: paketOpsi,
+          tarif: tarifObj
+        };
 
-      simpanAsetKustom(assetObj);
-      modalAsetInstance.hide();
-      renderTabelAsetAdmin();
-      renderDashboardView();
-      alert(`Aset "${nama}" (${stokTotal} Unit) berhasil disimpan dan langsung sinkron ke seluruh santri!`);
+        const serverOk = await simpanAsetKustom(assetObj);
+        modalAsetInstance.hide();
+        renderTabelAsetAdmin();
+        renderDashboardView();
+
+        if (serverOk) {
+          alert(`Aset "${nama}" (${stokTotal} Unit) berhasil disimpan permanen ke server database dan langsung aktif di katalog publik!`);
+        } else {
+          alert(`Aset "${nama}" disimpan di penyimpanan lokal, namun respon server hosting gagal. Pastikan file data/assets.json di hosting memiliki hak akses tulis (chmod 666)!`);
+        }
+      } catch (err) {
+        console.error("Gagal simpan form aset:", err);
+        alert("Terjadi kesalahan saat menyimpan aset: " + err.message);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = origBtnHtml;
+        }
+      }
     }
 
     // ========================================================
@@ -2526,10 +2845,7 @@
 ${catatanRiil}
 Silakan datang ke kantor Ma'had Aly Amtsilati saat jadwal pengambilan tiba.\n\n*Pantau Countdown & Durasi Pemakaian:*
 ${linkCountdown}\n\nTerima kasih.`);
-        const kirimWa = confirm(`Pengajuan sewa ${targetBookingAcc.nama} (${bId}) berhasil DISETUJUI (ACC)!\n\nKirim pesan WhatsApp konfirmasi ke santri sekarang?`);
-        if (kirimWa) {
-          window.open(`https://wa.me/${noTujuan}?text=${pesanAcc}`, "_blank");
-        }
+        alert(`Pengajuan sewa ${targetBookingAcc.nama} (${bId}) berhasil DISETUJUI (ACC)!\n\nNotifikasi WhatsApp otomatis berisi rincian pengambilan dan link countdown telah dikirim ke santri via Bot Gateway.`);
       } else {
         alert(`Pengajuan sewa ${targetBookingAcc.nama} (${bId}) berhasil DISETUJUI!`);
       }
@@ -2733,18 +3049,15 @@ ${linkCountdown}\n\nTerima kasih.`);
       const baseUrl = (typeof dapatkanBaseUrl === "function" && dapatkanBaseUrl()) ? dapatkanBaseUrl() : "https://aset.mahadalyamtsilati.ac.id";
       const linkInvoice = `${baseUrl}/invoice.html?id=${encodeURIComponent(bId)}&download=1`;
 
-      const pesanKembali = `Assalamu'alaikum wr. wb. Saudara/i *${targetBookingTerima.nama}*,\n\nAlhamdulillah, serah terima pengembalian aset multimedia *${targetBookingTerima.namaBarang}* (${bId}) telah *SELESAI DITERIMA* oleh pengurus inventaris.\n\n*Rincian Pengembalian:*
+      const pesanKembali = `Assalamu'alaikum wr. wb. Saudara/i *${targetBookingTerima.nama}*,\n\nAlhamdulillah, serah terima pengembalian aset *${targetBookingTerima.namaBarang}* (${bId}) telah *SELESAI DITERIMA* oleh pengurus inventaris.\n\n*Rincian Pengembalian:*
 - Waktu Kembali: *${typeof formatWaktuIndo === 'function' ? formatWaktuIndo(new Date()) : new Date().toLocaleString('id-ID')}*
 - Kondisi Fisik: *${infoKondisi}*
 - Denda Keterlambatan: *${formatRupiah(dendaTelat)}*
 - Total Pelunasan: *${statusPelunasan}*\n\n*Unduh Bukti Sewa & Tanda Terima Resmi (PDF/Invoice):*
-${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat peralatan Ma'had Aly Amtsilati dengan baik. Semoga berkah dan bermanfaat.\n\nWassalamu'alaikum wr. wb.\n*Pengurus Inventaris METAHATI*`;
+${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'had Aly Amtsilati dengan baik. Semoga berkah dan bermanfaat.\n\nWassalamu'alaikum wr. wb.\n*Pengurus Inventaris Ma'had Aly Amtsilati*`;
 
       if (noTujuan) {
-        const kirimWa = confirm(`Penerimaan fisik aset "${targetBookingTerima.namaBarang}" dari ${targetBookingTerima.nama} (${bId}) berhasil diselesaikan!\n\nKirim pesan WhatsApp tanda terima pengembalian & ucapan terima kasih ke santri sekarang?`);
-        if (kirimWa) {
-          window.open(`https://wa.me/${noTujuan}?text=${encodeURIComponent(pesanKembali)}`, "_blank");
-        }
+        alert(`Penerimaan fisik aset "${targetBookingTerima.namaBarang}" dari ${targetBookingTerima.nama} (${bId}) berhasil diselesaikan!\n\nNotifikasi WhatsApp tanda terima & bukti invoice resmi telah dikirim ke santri via Bot Gateway.`);
       } else {
         alert(`Penerimaan fisik aset "${targetBookingTerima.namaBarang}" dari ${targetBookingTerima.nama} (${bId}) berhasil diselesaikan!`);
       }
@@ -2825,11 +3138,7 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat peralatan
       // Buka WhatsApp untuk notifikasi santri
       const noTujuan = typeof formatNomorWa === "function" ? formatNomorWa(targetBookingTolak.noWa) : (targetBookingTolak.noWa || '').replace(/[^0-9]/g, '');
       if (noTujuan) {
-        const pesanTolak = encodeURIComponent(`Assalamu'alaikum wr. wb. Saudara/i *${targetBookingTolak.nama}*,\n\nKami dari Admin Multimedia Ma'had Aly menginfokan terkait permohonan sewa alat *${targetBookingTolak.namaBarang}* (${bId}).\n\nMohon maaf, permohonan sewa pada jadwal tersebut *belum dapat kami proses / dibatalkan* karena:\n*"${alasanFinal}"*.\n\nAnda dapat memilih jadwal lain atau alat multimedia lainnya di katalog. Terima kasih.`);
-        const kirimWa = confirm(`Booking berhasil ditolak dan slot jadwal langsung dibebaskan!\n\nApakah Anda ingin mengirimkan pesan penjelasan penolakan ini ke WhatsApp santri (${targetBookingTolak.nama}) sekarang?`);
-        if (kirimWa) {
-          window.open(`https://wa.me/${noTujuan}?text=${pesanTolak}`, "_blank");
-        }
+        alert(`Booking ${targetBookingTolak.nama} (${bId}) berhasil DITOLAK dan jadwal unit telah dibebaskan.\n\nNotifikasi WhatsApp penolakan telah dikirim ke santri via Bot Gateway.`);
       } else {
         alert("Booking berhasil ditolak dan jadwal alat telah dibebaskan.");
       }
@@ -2882,7 +3191,7 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat peralatan
       }
 
       try {
-        await fetch('api.php?action=simpan_booking', {
+        await fetch((typeof dapatkanApiEndpoint === 'function' ? dapatkanApiEndpoint('action=simpan_booking') : 'api-service.php?action=simpan_booking'), {
           method: 'POST',
           headers: typeof ambilHeaderAdminAuth === "function" ? ambilHeaderAdminAuth() : { 'Content-Type': 'application/json' },
           body: JSON.stringify(targetBooking)
@@ -3038,10 +3347,13 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat peralatan
 
     async function bersihkanSemuaRiwayat() {
       if (!confirm("PERINGATAN: Apakah Anda yakin ingin mengosongkan seluruh arsip riwayat sewa di server?")) return;
+      const token = typeof ambilAdminToken === "function" ? ambilAdminToken() : (sessionStorage.getItem("admin_token") || "metahati2026");
       try {
-        await fetch('api.php?action=bersihkan_booking', {
+        const endpoint = (typeof dapatkanApiEndpoint === 'function') ? dapatkanApiEndpoint(`action=bersihkan_booking&token=${encodeURIComponent(token)}`) : `api-service.php?action=bersihkan_booking&token=${encodeURIComponent(token)}`;
+        await fetch(endpoint, {
           method: 'POST',
-          headers: typeof ambilHeaderAdminAuth === "function" ? ambilHeaderAdminAuth() : { 'Content-Type': 'application/json' }
+          headers: typeof ambilHeaderAdminAuth === "function" ? ambilHeaderAdminAuth() : { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ admin_token: token })
         });
       } catch (e) {}
       localStorage.removeItem(STORAGE_BOOKING_HISTORY);
@@ -3049,7 +3361,8 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat peralatan
     }
 
     // ========================================================
-    // 5. PENGATURAN VIEW (FLEKSIBEL ADMIN 1 & 2 + AKUN)
+    // ========================================================
+    // 5. PENGATURAN VIEW (FLEKSIBEL ADMIN 1 & 2 + WA GATEWAY + AKUN)
     // ========================================================
     function muatPengaturanForm() {
       const config = ambilPengaturanAdmin();
@@ -3057,7 +3370,117 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat peralatan
       document.getElementById("settingWaAdmin2").value = (config.admin2 && config.admin2.wa) ? config.admin2.wa : "628812762520";
       document.getElementById("settingUsername").value = config.username || "admin";
       document.getElementById("settingPassword").value = config.password || "metahati2026";
+      
+      // Muat data WA Gateway Multi Session
+      const gw = config.waGateway || {};
+      const elUrl = document.getElementById("gwApiUrl");
+      if (elUrl) elUrl.value = gw.apiUrl || "https://wa-multi-session.amtsilatipusat.com/api/v1";
+      const elKey = document.getElementById("gwApiKey");
+      if (elKey) elKey.value = gw.apiKey || "1fcea2a9-6c3d-4158-8280-76ccdb9d9f66";
+      const elSess = document.getElementById("gwSessionId");
+      if (elSess) elSess.value = gw.sessionIdAdmin || "0ab9413c-aab1-4705-bd92-3e4b0a8c5426";
+      const elSessName = document.getElementById("gwSessionName");
+      if (elSessName) elSessName.value = gw.sessionName || "Admin Ma'had Aly Amtsilati";
+      const elPhone = document.getElementById("gwPhoneAdmin");
+      if (elPhone) elPhone.value = gw.phonePengantara || gw.phoneAdmin || "6287748921490";
+      const txtDispPhone = document.getElementById("txtDisplayAdminPhone");
+      if (txtDispPhone) txtDispPhone.innerText = (config.admin2 && config.admin2.wa) ? config.admin2.wa : ((config.admin1 && config.admin1.wa) ? config.admin1.wa : "628812762520");
+
+      const elEnabled = document.getElementById("gwEnabled");
+      if (elEnabled) elEnabled.checked = (gw.enabled !== false);
+      const elNotifAdmin = document.getElementById("gwNotifyAdmin");
+      if (elNotifAdmin) elNotifAdmin.checked = (gw.notifyAdminNewBooking !== false);
+      const elNotifSantri = document.getElementById("gwNotifySantri");
+      if (elNotifSantri) elNotifSantri.checked = (gw.notifySantriBooking !== false);
+
       muatFotoProfilAdminSaatIni();
+    }
+
+    function toggleLihatApiKey() {
+      const inp = document.getElementById("gwApiKey");
+      const ico = document.getElementById("iconToggleApiKey");
+      if (inp.type === "password") {
+        inp.type = "text";
+        ico.className = "bi bi-eye-slash";
+      } else {
+        inp.type = "password";
+        ico.className = "bi bi-eye";
+      }
+    }
+
+    function simpanPengaturanWaGateway(e) {
+      e.preventDefault();
+      const apiUrl = document.getElementById("gwApiUrl").value.trim();
+      const apiKey = document.getElementById("gwApiKey").value.trim();
+      const sessionId = document.getElementById("gwSessionId").value.trim();
+      const phoneAdmin = document.getElementById("gwPhoneAdmin").value.trim().replace(/[^0-9]/g, '');
+      const enabled = document.getElementById("gwEnabled").checked;
+      const notifyAdmin = document.getElementById("gwNotifyAdmin").checked;
+      const notifySantri = document.getElementById("gwNotifySantri").checked;
+
+      if (!apiUrl || !apiKey || !sessionId || !phoneAdmin) {
+        alert("Semua kolom pengaturan WhatsApp Gateway wajib diisi!");
+        return;
+      }
+
+      const cfg = ambilPengaturanAdmin();
+      cfg.waGateway = {
+        enabled: enabled,
+        apiUrl: apiUrl,
+        apiKey: apiKey,
+        sessionIdAdmin: sessionId,
+        sessionName: "Admin Ma'had Aly Amtsilati",
+        phonePengantara: phoneAdmin,
+        phoneAdmin: phoneAdmin,
+        notifyAdminNewBooking: notifyAdmin,
+        notifySantriBooking: notifySantri,
+        notifySantriAcc: notifySantri,
+        notifySantriTolak: notifySantri,
+        notifySantriKembali: notifySantri
+      };
+
+      simpanPengaturanAdmin(cfg);
+      alert("Pengaturan WhatsApp Gateway Multi Session berhasil disimpan dan aktif di server!");
+    }
+
+    async function lakukanTestKirimWaGateway() {
+      const defaultNo = document.getElementById("gwPhoneAdmin") ? document.getElementById("gwPhoneAdmin").value : "6287748921490";
+      const targetNo = prompt("Masukkan nomor WhatsApp tujuan tes (gunakan format 628...):", defaultNo);
+      if (!targetNo) return;
+
+      const btn = document.getElementById("btnTestWaGw");
+      const originalHtml = btn ? btn.innerHTML : "";
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Mengirim tes...';
+      }
+
+      try {
+        const token = typeof ambilAdminToken === "function" ? ambilAdminToken() : (sessionStorage.getItem("admin_token") || "metahati2026");
+        const endpoint = (typeof dapatkanApiEndpoint === 'function') ? dapatkanApiEndpoint(`action=test_kirim_wa&token=${encodeURIComponent(token)}`) : `api-service.php?action=test_kirim_wa&token=${encodeURIComponent(token)}`;
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Admin-Token": token,
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify({ target: targetNo, admin_token: token })
+        });
+        const json = await res.json();
+        if (json.success) {
+          alert("🎉 ALHAMDULILLAH BERHASIL!\n\nPesan tes WhatsApp berhasil terkirim melalui sesi Admin Ma'had Aly Amtsilati ke nomor " + targetNo + ".\n\nSistem notifikasi otomatis kini 100% aktif!");
+        } else {
+          alert("⚠️ Gagal mengirim: " + (json.message || "Pastikan sesi WhatsApp di dashboard WA Multi berstatus Connected"));
+        }
+      } catch (err) {
+        alert("Gagal menghubungi api.php: " + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+        }
+      }
     }
 
     function simpanPengaturanWaAdmin(e) {
@@ -3279,7 +3702,10 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat peralatan
 
           // Sinkronkan ke server api.php
           try {
-            await fetch('api.php?action=restore_database', {
+            const token = typeof ambilAdminToken === "function" ? ambilAdminToken() : (sessionStorage.getItem("admin_token") || "metahati2026");
+            const endpoint = (typeof dapatkanApiEndpoint === 'function') ? dapatkanApiEndpoint(`action=restore_database&token=${encodeURIComponent(token)}`) : `api-service.php?action=restore_database&token=${encodeURIComponent(token)}`;
+            data.admin_token = token;
+            await fetch(endpoint, {
               method: 'POST',
               headers: typeof ambilHeaderAdminAuth === "function" ? ambilHeaderAdminAuth() : { 'Content-Type': 'application/json' },
               body: JSON.stringify(data)

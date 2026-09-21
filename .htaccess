@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Teruskan Authorization & Custom Header ke PHP FastCGI/PHP-FPM
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteRule .* - [E=HTTP_X_ADMIN_TOKEN:%{HTTP:X-Admin-Token}]
+
+# Alias api.php ke api-service.php
+RewriteRule ^api\.php$ api-service.php [L,QSA]
+</IfModule>

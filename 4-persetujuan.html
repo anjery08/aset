@@ -47,6 +47,17 @@
       </div>
     </div>
 
+    <!-- Peringatan jika membuka lewat file:/// (Bukan Web Server Lokal) -->
+    <div id="fileProtocolAlert" class="alert alert-warning border border-warning-subtle shadow-sm rounded-4 mb-4 d-none" style="background: rgba(254, 243, 199, 0.95);">
+      <div class="d-flex align-items-start gap-3">
+        <i class="bi bi-exclamation-triangle-fill fs-3 text-warning flex-shrink-0 mt-1"></i>
+        <div class="small">
+          <strong class="d-block text-dark fs-6 mb-1">Mode Buka File Langsung (file://) Terdeteksi:</strong>
+          <span>Browser membuka halaman ini langsung dari file Explorer. Agar fitur <strong>WhatsApp Otomatis</strong> & database aktif sempurna di komputer sebelum dihosting, silakan buka via server lokal: <a href="http://localhost:8000/1-katalog.html" class="fw-bold text-primary text-decoration-underline">http://localhost:8000</a> (klik 2x file <code>jalankan-server-lokal.bat</code> di folder aset).</span>
+        </div>
+      </div>
+    </div>
+
     <div class="row g-4 justify-content-center">
       <!-- Kolom Kiri: Ringkasan Pengajuan Booking & Simulator Denda -->
       <div class="col-lg-6">
@@ -172,10 +183,10 @@
               </label>
             </div>
 
-            <!-- Tombol Kirim WhatsApp (Tactile Spring Feedback) -->
+            <!-- Tombol Ajukan Permohonan Otomatis -->
             <div class="d-grid gap-2">
-              <button type="button" class="btn btn-whatsapp-solid btn-lg py-3 shadow-sm" id="btnSubmitWa" disabled onclick="kirimPengajuanWhatsApp()">
-                <i class="bi bi-whatsapp fs-4 me-2"></i> Kirim Pemesanan via WhatsApp
+              <button type="button" class="btn btn-lg py-3 shadow text-white fw-bold" id="btnSubmitWa" disabled onclick="kirimPengajuanWhatsApp()" style="background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%); border: none; border-radius: 14px;">
+                <i class="bi bi-send-check-fill fs-4 me-2"></i> Ajukan Permohonan Peminjaman
               </button>
               <a href="3-datadiri.html" class="btn btn-back-ios justify-content-center py-2 mt-1">
                 <i class="bi bi-pencil-square me-1"></i> Ubah Data Peminjam
@@ -183,8 +194,8 @@
             </div>
 
             <div class="p-3 rounded-3 text-center small text-secondary fw-medium mt-3" style="background: rgba(248, 250, 252, 0.8); border: 1px solid rgba(0, 102, 255, 0.1);">
-              <i class="bi bi-info-circle-fill text-primary me-1"></i>
-              Format pesan otomatis akan diarahkan ke WhatsApp Admin pengurus multimedia.
+              <i class="bi bi-robot text-primary me-1"></i>
+              Notifikasi WhatsApp otomatis akan dikirim ke nomor HP Anda dan Admin Ma'had Aly Amtsilati.
             </div>
           </div>
         </div>
@@ -193,49 +204,49 @@
   </main>
 
   <!-- Modal Konfirmasi Sukses (iOS Glass Modal) -->
-  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg card-ios-detail">
         <div class="modal-header text-white" style="background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%);">
           <h5 class="modal-title fw-bold" id="successModalLabel">
-            <i class="bi bi-check-circle-fill me-2"></i> WhatsApp Terbuka
+            <i class="bi bi-check-circle-fill me-2"></i> Permohonan Berhasil Terkirim!
           </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close btn-close-white" onclick="selesaiDanKembaliKatalog()" aria-label="Close"></button>
         </div>
         <div class="modal-body p-4 text-center">
           <div class="display-3 text-success mb-3">
             <i class="bi bi-patch-check-fill"></i>
           </div>
-          <h5 class="fw-bold mb-2 text-dark">Permohonan Sewa Telah Dibuat!</h5>
+          <h5 class="fw-bold mb-2 text-dark">Pengajuan Sewa Aset Berhasil!</h5>
           
+          <div class="alert alert-success border border-success-subtle text-dark small text-start p-3 mb-3 rounded-3" style="background: rgba(220, 252, 231, 0.9);">
+            <div class="d-flex align-items-start gap-2">
+              <i class="bi bi-whatsapp fs-5 text-success flex-shrink-0 mt-1"></i>
+              <div>
+                <strong class="d-block text-dark">Pesan WhatsApp Terkirim Otomatis:</strong>
+                <span>Rincian peminjaman telah dikirim otomatis via WhatsApp ke nomor Anda dan Admin Ma'had Aly Amtsilati.</span>
+              </div>
+            </div>
+          </div>
+
           <div class="alert alert-warning border border-warning-subtle text-dark small text-start p-3 mb-3 rounded-3" style="background: rgba(254, 243, 199, 0.9);">
             <div class="d-flex align-items-start gap-2">
               <i class="bi bi-hourglass-split fs-5 text-warning flex-shrink-0 mt-1"></i>
               <div>
-                <strong class="d-block text-dark">Status: Menunggu Konfirmasi Pengurus</strong>
-                <span>Pesan format sewa telah dialihkan ke WhatsApp Admin. <strong>Harap tunggu balasan/konfirmasi dari admin</strong> sebelum datang ke kantor mengambil alat fisik.</span>
+                <strong class="d-block text-dark">Status: Menunggu Persetujuan (ACC) Admin</strong>
+                <span>Pengurus sedang memverifikasi permohonan Anda. Notifikasi ACC dan link countdown akan dikirimkan otomatis ke WhatsApp Anda setelah disetujui.</span>
               </div>
             </div>
           </div>
 
           <div class="d-grid gap-2 mb-3">
-            <a href="#" id="modalBtnBukaUlangWa" target="_blank" class="btn btn-whatsapp-solid fw-bold py-2 shadow-sm">
-              <i class="bi bi-whatsapp fs-5 me-1"></i> Buka Ulang WhatsApp Admin
-            </a>
-            <div>
-              <a href="status.html" id="modalBtnStatus" class="btn btn-back-ios w-100 justify-content-center py-2 fw-bold shadow-sm">
-                <i class="bi bi-clock-history me-1"></i> Pantau Status Sewa & Countdown
-              </a>
-            </div>
+            <button type="button" class="btn btn-primary fw-bold py-3 shadow-sm" style="background: linear-gradient(135deg, #0055ff, #7928ca); border:none; border-radius: 12px;" onclick="selesaiDanKembaliKatalog()">
+              <i class="bi bi-arrow-left-circle me-1"></i> Selesai & Kembali ke Katalog
+            </button>
           </div>
           <div class="p-3 rounded-3 text-start small text-dark" style="background: rgba(240, 247, 255, 0.9); border: 1.5px solid rgba(0, 102, 255, 0.2) !important;">
-            <i class="bi bi-card-heading text-primary me-1"></i> <strong>Syarat Pengambilan:</strong> Siapkan <strong>KTP / KTS / KTM Asli</strong> saat serah terima barang ke pengurus.
+            <i class="bi bi-card-heading text-primary me-1"></i> <strong>Syarat Pengambilan:</strong> Siapkan <strong>KTP / KTS / KTM Asli</strong> saat serah terima barang di <strong>Kantor Ma'had Aly Amtsilati</strong>.
           </div>
-        </div>
-        <div class="modal-footer justify-content-center border-top-0 pt-0">
-          <a href="1-katalog.html" class="btn btn-back-ios px-4 py-2 small fw-bold" onclick="bersihkanDataBooking()">
-            <i class="bi bi-house-door me-1"></i> Selesai & Kembali ke Beranda
-          </a>
         </div>
       </div>
     </div>
@@ -254,7 +265,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
   <script src="./dist/js/adminlte.min.js"></script>
-  <script src="./js/rental-logic.js?v=2.5"></script>
+  <script src="./js/rental-logic.js?v=3.0"></script>
 
   <script>
     let currentBooking = null;
@@ -273,9 +284,11 @@
         simpanDataBooking(currentBooking);
       }
 
-      document.getElementById("sumNamaBarang").innerText = currentBooking.namaBarang;
-      document.getElementById("sumPaketJam").innerText = currentBooking.paketLabel || (currentBooking.paketJam + " Jam");
-      document.getElementById("sumBiayaSewa").innerText = formatRupiah(currentBooking.biayaSewa || 0);
+      if (currentBooking.isDinas || currentBooking.biayaSewa === 0) {
+        document.getElementById("sumBiayaSewa").innerHTML = `<span class="badge bg-success text-white px-2 py-1">Gratis (Tugas Resmi Pondok)</span>`;
+      } else {
+        document.getElementById("sumBiayaSewa").innerText = formatRupiah(currentBooking.biayaSewa || 0);
+      }
       document.getElementById("sumNama").innerText = currentBooking.nama;
       document.getElementById("sumNoWa").innerText = currentBooking.noWa;
       document.getElementById("sumKomunitas").innerText = currentBooking.komunitas;
@@ -285,6 +298,11 @@
       if (elKep) elKep.innerText = currentBooking.keperluan || "Sewa Umum / Kegiatan Santri";
       document.getElementById("sumWaktuAmbil").innerText = currentBooking.waktuAmbil;
       document.getElementById("sumWaktuSelesai").innerText = currentBooking.waktuSelesai;
+
+      if (window.location.protocol === 'file:') {
+        const fileAlert = document.getElementById("fileProtocolAlert");
+        if (fileAlert) fileAlert.classList.remove("d-none");
+      }
     });
 
     function toggleTombolSubmit() {
@@ -293,12 +311,22 @@
     }
 
     async function kirimPengajuanWhatsApp() {
-      if (!currentBooking) return;
+      if (!currentBooking) {
+        alert("Data sewa belum lengkap!");
+        window.location.href = "1-katalog.html";
+        return;
+      }
+
+      const checkSetuju = document.getElementById("checkSetuju");
+      if (!checkSetuju || !checkSetuju.checked) {
+        alert("Harap centang persetujuan terlebih dahulu!");
+        return;
+      }
 
       const btnSubmit = document.getElementById("btnSubmitWa");
       if (btnSubmit) {
         btnSubmit.disabled = true;
-        btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Memeriksa ketersediaan jadwal...`;
+        btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Memeriksa jadwal & mengirim pengajuan...`;
       }
 
       // Re-check ke server untuk menjamin tidak ada santri lain yang booking di jam yang sama (anti race condition)
@@ -314,7 +342,7 @@
           alert("MOHON MAAF: Jadwal sewa ini baru saja dibooking oleh santri lain beberapa saat yang lalu!\n\nSilakan kembali dan pilih jam sewa atau tanggal lain.");
           if (btnSubmit) {
             btnSubmit.disabled = false;
-            btnSubmit.innerHTML = `<i class="bi bi-whatsapp fs-4 me-2"></i> Kirim Pemesanan via WhatsApp`;
+            btnSubmit.innerHTML = `<i class="bi bi-send-check-fill fs-4 me-2"></i> Ajukan Permohonan Peminjaman`;
           }
           window.location.href = "3-datadiri.html";
           return;
@@ -334,30 +362,67 @@
         simpanProfilPenyewa(currentBooking);
       }
 
-      const modalBtnBukaUlangWa = document.getElementById("modalBtnBukaUlangWa");
-      const modalBtnStatus = document.getElementById("modalBtnStatus");
-      const modalBtnInvoice = document.getElementById("modalBtnInvoice");
-      if (modalBtnBukaUlangWa) modalBtnBukaUlangWa.href = waUrl;
-      if (modalBtnStatus) modalBtnStatus.href = `status.html?id=${encodeURIComponent(bId)}`;
-      if (modalBtnInvoice) modalBtnInvoice.href = `invoice.html?id=${encodeURIComponent(bId)}`;
-
+      // 1. Simpan ke database lokal browser
       catatRiwayatBooking(currentBooking);
       if (typeof sinkronkanStatusSemuaAset === "function") {
         sinkronkanStatusSemuaAset();
       }
 
-      // Buka WA (jika diblokir browser, santri punya tombol buka ulang di modal)
+      // 2. Kirim ke Server Backend untuk memicu pengiriman WhatsApp Otomatis ke Santri & Admin
+      let terkirimServer = false;
       try {
-        window.open(waUrl, "_blank");
-      } catch (err) {}
+        const targetApi = (typeof dapatkanApiEndpoint === "function") ? dapatkanApiEndpoint("action=simpan_booking") : "api-service.php?action=simpan_booking";
+        const res = await fetch(targetApi, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(currentBooking)
+        });
+        if (res.ok) {
+          const jsonRes = await res.json();
+          if (jsonRes.success) {
+            terkirimServer = true;
+          }
+        }
+      } catch (errServer) {
+        console.warn("Backend server belum merespons:", errServer);
+      }
 
+      // 3. Fallback Client: Jika dibuka langsung via file:// tanpa server lokal, kirim langsung via browser jika diizinkan
+      if (!terkirimServer && typeof kirimNotifikasiBookingOtomatis === "function") {
+        try {
+          await kirimNotifikasiBookingOtomatis(currentBooking);
+        } catch (errClient) {
+          console.warn("Fallback pengiriman pesan client gagal:", errClient);
+        }
+      }
+
+      // 4. Kunci tombol dan formulir agar tidak bisa dikirim ulang
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = `<i class="bi bi-check-circle-fill fs-4 me-2"></i> Permohonan Berhasil Terkirim`;
+      }
+
+      // 5. Tampilkan Modal Konfirmasi Berhasil
       const modal = new bootstrap.Modal(document.getElementById("successModal"));
       modal.show();
-
-      if (btnSubmit) {
-        btnSubmit.innerHTML = `<i class="bi bi-check-circle-fill fs-4 me-2"></i> Pengajuan Terkirim`;
-      }
     }
+
+    // Fungsi otomatis redirect ke katalog saat modal selesai / ditutup (X)
+    function selesaiDanKembaliKatalog() {
+      if (typeof bersihkanDataBooking === "function") {
+        bersihkanDataBooking();
+      }
+      window.location.href = "1-katalog.html";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const successModalEl = document.getElementById("successModal");
+      if (successModalEl) {
+        successModalEl.addEventListener("hidden.bs.modal", () => {
+          selesaiDanKembaliKatalog();
+        });
+      }
+    });
   </script>
 </body>
 </html>

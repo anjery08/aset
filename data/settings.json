@@ -1,0 +1,26 @@
+{
+  "username": "admin",
+  "password": "metahati2026",
+  "admin1": {
+    "nama": "Admin 1 (Pengurus)",
+    "wa": "628812762520"
+  },
+  "admin2": {
+    "nama": "Mustaghfiri (Pengurus)",
+    "wa": "628812762520"
+  },
+  "waGateway": {
+    "enabled": true,
+    "apiUrl": "https://wa-multi-session.amtsilatipusat.com/api/v1",
+    "apiKey": "1fcea2a9-6c3d-4158-8280-76ccdb9d9f66",
+    "sessionIdAdmin": "0ab9413c-aab1-4705-bd92-3e4b0a8c5426",
+    "sessionName": "Admin Ma'had Aly Amtsilati",
+    "phonePengantara": "6287748921490",
+    "phoneAdmin": "6287748921490",
+    "notifyAdminNewBooking": true,
+    "notifySantriBooking": true,
+    "notifySantriAcc": true,
+    "notifySantriTolak": true,
+    "notifySantriKembali": true
+  }
+}

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="id" data-bs-theme="light" data-lte-color-mode="off">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Admin | Aset Ma'had Aly Amtsilati</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+  
+  <!-- AdminLTE & Custom CSS -->
+  <link rel="stylesheet" href="./dist/css/adminlte.min.css" />
+  <link rel="stylesheet" href="./css/custom.css" />
+
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .login-box-custom {
+      width: 100%;
+      max-width: 440px;
+      padding: 1.25rem;
+    }
+    .login-card-glass {
+      background: rgba(255, 255, 255, 0.88) !important;
+      backdrop-filter: blur(24px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.9) !important;
+      border-radius: 1.6rem !important;
+      box-shadow: 0 16px 40px rgba(0, 102, 255, 0.08), inset 0 1px 2px #ffffff !important;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-card-glass::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-metahati);
+    }
+  </style>
+</head>
+<body class="ios-glass-theme">
+
+  <div class="login-box-custom">
+    <!-- Card Login iOS Glass -->
+    <div class="card login-card-glass shadow-lg border-0 p-3">
+      <div class="card-body p-4 text-center">
+        
+        <!-- Logo -->
+        <div class="mb-3">
+          <img src="img/logo-metahati.png" alt="METAHATI" style="height: 54px; object-fit: contain;" />
+        </div>
+
+        <h4 class="fw-bolder text-dark mb-1">Panel Login Admin</h4>
+        <p class="text-secondary small mb-4">
+          Kelola inventaris aset, pantau ketersediaan stok, dan kontrol sewa Ma'had Aly Amtsilati.
+        </p>
+
+        <!-- Alert Error -->
+        <div id="loginAlert" class="alert alert-danger py-2 small d-none rounded-3" role="alert" style="background: rgba(254, 242, 242, 0.95); border: 1.5px solid #f87171;">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i> Username atau password salah!
+        </div>
+
+        <!-- Form Login -->
+        <form id="formLogin" onsubmit="prosesLogin(event)">
+          <div class="text-start mb-3">
+            <label class="form-label small fw-bold text-dark">Username:</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0" style="border-radius: 0.8rem 0 0 0.8rem; border-color: rgba(0, 102, 255, 0.2);"><i class="bi bi-person text-primary"></i></span>
+              <input type="text" class="form-control border-start-0" id="inputUsername" placeholder="Masukkan username" style="border-radius: 0 0.8rem 0.8rem 0; border-color: rgba(0, 102, 255, 0.2);" required autofocus />
+            </div>
+          </div>
+
+          <div class="text-start mb-4">
+            <label class="form-label small fw-bold text-dark">Password:</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0" style="border-radius: 0.8rem 0 0 0.8rem; border-color: rgba(0, 102, 255, 0.2);"><i class="bi bi-lock text-primary"></i></span>
+              <input type="password" class="form-control border-start-0 border-end-0" id="inputPassword" placeholder="Masukkan password" style="border-color: rgba(0, 102, 255, 0.2);" required />
+              <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()" style="border-radius: 0 0.8rem 0.8rem 0; border-color: rgba(0, 102, 255, 0.2);">
+                <i class="bi bi-eye" id="togglePassIcon"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-ios-primary py-3 fw-bold shadow-sm">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Masuk ke Dashboard
+            </button>
+            <a href="1-katalog.html" class="btn btn-back-ios justify-content-center py-2 mt-2">
+              <i class="bi bi-arrow-left me-1"></i> Kembali ke Katalog Publik
+            </a>
+          </div>
+        </form>
+
+        <div class="mt-4 pt-3 border-top text-muted" style="font-size: 0.78rem; border-color: rgba(0, 102, 255, 0.1) !important;">
+          <i class="bi bi-shield-lock me-1 text-primary"></i> Akses terbatas hanya untuk Admin Inventaris Ma'had Aly Amtsilati.
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+  <script src="./js/rental-logic.js?v=2.5"></script>
+  <script>
+    // Cek jika sudah login sebelumnya
+    document.addEventListener("DOMContentLoaded", () => {
+      if (sessionStorage.getItem("admin_auth") === "true") {
+        window.location.href = "admin-dashboard.html";
+      }
+    });
+
+    function togglePassword() {
+      const inputPass = document.getElementById("inputPassword");
+      const icon = document.getElementById("togglePassIcon");
+      if (inputPass.type === "password") {
+        inputPass.type = "text";
+        icon.className = "bi bi-eye-slash";
+      } else {
+        inputPass.type = "password";
+        icon.className = "bi bi-eye";
+      }
+    }
+
+    function prosesLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById("inputUsername").value.trim();
+      const p = document.getElementById("inputPassword").value;
+      const alertEl = document.getElementById("loginAlert");
+
+      const config = ambilPengaturanAdmin();
+      const validUser = config.username || "admin";
+      const validPass = config.password || "metahati2026";
+
+      if (u === validUser && p === validPass) {
+        sessionStorage.setItem("admin_auth", "true");
+        sessionStorage.setItem("admin_user", u);
+        sessionStorage.setItem("admin_token", p);
+        window.location.href = "admin-dashboard.html";
+      } else {
+        alertEl.classList.remove("d-none");
+      }
+    }
+  </script>
+</body>
+</html>
+

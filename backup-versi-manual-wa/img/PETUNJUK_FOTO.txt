@@ -1,0 +1,23 @@
+TEMPAT MENYIMPAN GAMBAR / FOTO ALAT
+===================================
+
+Anda dapat memasukkan foto barang ke dalam folder ini (img/).
+Gunakan format nama file berikut agar langsung otomatis tampil di web:
+
+1. canon-rp.jpg
+   -> Foto untuk Kamera Canon RP + Lensa RF 50mm
+
+2. flash-godox.jpg
+   -> Foto untuk Flash Godox TT680
+
+3. handycam-sony.jpg
+   -> Foto untuk Handycam Sony
+
+4. logo.png
+   -> Foto logo tim / media (jika ingin dipasang di navbar)
+
+Format yang didukung: .jpg, .jpeg, .png, .webp
+
+Catatan:
+Jika Anda belum memasukkan file foto, sistem secara otomatis akan menampilkan ikon kamera sebagai gantinya, jadi tampilan web tidak akan rusak.
+
