@@ -136,10 +136,14 @@
               </div>
             </div>
 
-            <!-- Tombol Aksi iOS Royal Blue (Single Action Button) -->
-            <div class="d-grid gap-2">
+            <!-- Tombol Aksi Sewa & Keranjang -->
+            <div class="d-flex flex-column gap-2">
               <button type="button" class="btn btn-ios-primary btn-lg py-3 shadow-sm fw-bold" id="btnAjukanSewa">
-                Lanjut Isi Data Diri <i class="bi bi-arrow-right ms-1"></i>
+                Sewa Sekarang (Lanjut Data Diri) <i class="bi bi-arrow-right ms-1"></i>
+              </button>
+              <button type="button" class="btn btn-outline-primary py-2 fw-bold rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2" id="btnTambahKeranjangDetail" style="background: rgba(0, 102, 255, 0.06); border-color: rgba(0, 102, 255, 0.3);">
+                <i class="bi bi-cart-plus-fill fs-5"></i>
+                <span>+ Masukkan ke Keranjang Sewa</span>
               </button>
             </div>
           </div>
@@ -161,7 +165,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
   <script src="./dist/js/adminlte.min.js"></script>
-  <script src="./js/rental-logic.js?v=3.0"></script>
+  <script src="./dist/js/sweetalert2.all.min.js"></script>
+  <script>
+    if (typeof window !== 'undefined') {
+      window.Swal = window.Swal || window.Sweetalert2;
+      window.SweetAlert = window.SweetAlert || window.Sweetalert2;
+    }
+    if (typeof Swal === 'undefined' && typeof Sweetalert2 === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"><\/script>');
+    }
+  </script>
+  <script src="./js/rental-logic.js?v=4.0"></script>
 
   <script>
     let currentAsset = null;
@@ -247,9 +261,20 @@
       const allRiwayat = (typeof ambilRiwayatBooking === "function" ? ambilRiwayatBooking() : []);
       const nowMs = Date.now();
       const activeBookings = allRiwayat.filter(b => {
-        if (b.asetId !== currentAsset.id) return false;
-        if (b.status !== "active" && b.status !== "booked") return false;
-        const bEndRaw = b.waktuSelesaiRaw || b.waktuSelesai;
+        let matchAsset = (b.asetId === currentAsset.id);
+        let bEndRaw = b.waktuSelesaiRaw || b.waktuSelesai;
+        if (b.items && Array.isArray(b.items)) {
+          const found = b.items.find(it => it.asetId === currentAsset.id);
+          if (found) {
+            matchAsset = true;
+            if (found.waktuSelesaiRaw || found.waktuSelesai) {
+              bEndRaw = found.waktuSelesaiRaw || found.waktuSelesai;
+            }
+          }
+        }
+        if (!matchAsset) return false;
+        // Termasuk status 'pending' (menunggu ACC pengurus) agar calon penyewa tidak memilih jam yang sudah didaftarkan santri lain
+        if (b.status !== "active" && b.status !== "booked" && b.status !== "pending") return false;
         if (!bEndRaw) return true;
         const bEnd = new Date(bEndRaw).getTime();
         if (isNaN(bEnd)) return true;
@@ -266,9 +291,10 @@
             const readyTime = !isNaN(bEnd)
               ? new Date(bEnd + 30 * 60 * 1000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':') + ' WIB'
               : 'Selesai';
+            const badgePending = (b.status === 'pending') ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill me-1">Menunggu ACC</span>` : '';
             listHtml += `
               <li class="py-1 border-bottom border-danger-subtle d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
-                <span><i class="bi bi-clock-fill text-danger me-1"></i> Terpakai: <strong>${b.waktuAmbil || '-'}</strong> s/d <strong>${b.waktuSelesai || '-'}</strong></span>
+                <span>${badgePending}<i class="bi bi-clock-fill text-danger me-1"></i> Terpakai: <strong>${b.waktuAmbil || '-'}</strong> s/d <strong>${b.waktuSelesai || '-'}</strong></span>
                 <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill mt-1 mt-sm-0">Tersedia kembali: ${readyTime}</span>
               </li>`;
           });
@@ -307,7 +333,7 @@
       const btnAjukan = document.getElementById("btnAjukanSewa");
       if (btnAjukan) {
         btnAjukan.disabled = false;
-        btnAjukan.innerHTML = `Lanjut Isi Data Diri <i class="bi bi-arrow-right ms-1"></i>`;
+        btnAjukan.innerHTML = `Sewa Sekarang (Lanjut Data Diri) <i class="bi bi-arrow-right ms-1"></i>`;
         btnAjukan.classList.remove("opacity-75");
       }
 
@@ -333,6 +359,21 @@
 
         window.location.href = "3-datadiri.html";
       });
+
+      const btnTambahKeranjang = document.getElementById("btnTambahKeranjangDetail");
+      if (btnTambahKeranjang) {
+        btnTambahKeranjang.addEventListener("click", () => {
+          if (!selectedPaket) {
+            alert("Silakan pilih paket durasi sewa terlebih dahulu.");
+            return;
+          }
+          if (typeof tambahKeKeranjang === "function") {
+            tambahKeKeranjang(currentAsset, selectedPaket);
+            alert(`✅ ${currentAsset.nama} (${selectedPaket.label}) berhasil dimasukkan ke keranjang sewa!`);
+            window.location.href = "1-katalog.html";
+          }
+        });
+      }
     });
 
     function renderPaketOpsi() {

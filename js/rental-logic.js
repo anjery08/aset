@@ -49,7 +49,7 @@ const DEFAULT_ADMIN_CONFIG = {
     },
     admin2: {
         id: "admin2",
-        label: "Mustaghfiri (Pengurus)",
+        label: "Admin 2 (Pengurus)",
         wa: "628812762520"
     },
     waGateway: {
@@ -65,6 +65,10 @@ const DEFAULT_ADMIN_CONFIG = {
         notifySantriAcc: true,
         notifySantriTolak: true,
         notifySantriKembali: true
+    },
+    opsiPerpanjangan: {
+        mode: "katalog", // "katalog" (default: ikuti paket durasi asli aset di katalog) | "kustom" (ditentukan admin)
+        jamKustom: [3, 6, 12, 24]
     }
 };
 
@@ -115,6 +119,10 @@ function ambilPengaturanAdmin() {
                 waGateway: {
                     ...DEFAULT_ADMIN_CONFIG.waGateway,
                     ...(parsed.waGateway || {})
+                },
+                opsiPerpanjangan: {
+                    ...DEFAULT_ADMIN_CONFIG.opsiPerpanjangan,
+                    ...(parsed.opsiPerpanjangan || {})
                 }
             };
         }
@@ -678,15 +686,23 @@ function hitungSisaStokAset(asetId) {
         const semua = ambilSemuaKatalog();
         const item = semua.find(x => x.id === asetId);
         if (!item) return 0;
+        // Jika unit sedang dalam perbaikan/servis atau dinonaktifkan, stok riil langsung 0
+        if (item.status === "maintenance" || item.status === "inactive") return 0;
+
         const total = Math.max(1, parseInt(item.stokTotal || 1));
         const riwayat = ambilRiwayatBooking();
         const now = Date.now();
         const countBookedNow = riwayat.filter(b => {
-            if (b.asetId !== asetId) return false;
             // HANYA booking yang SUDAH DISETUJUI / DI-ACC (status 'active' atau 'booked') yang mengurangi stok fisik saat ini.
-            // Booking dengan status 'pending' (menunggu persetujuan pengurus) BELUM disetujui, unit fisik masih ada di tempat,
-            // dan TIDAK boleh terhitung sebagai 'Aset Disewa' di dashboard sampai benar-benar di-ACC.
             if (b.status !== "active" && b.status !== "booked") return false;
+
+            // Cek apakah booking ini menyewa aset terkait (baik single item maupun multi-item)
+            let match = (b.asetId === asetId);
+            if (!match && b.items && Array.isArray(b.items)) {
+                match = b.items.some(it => it.asetId === asetId);
+            }
+            if (!match) return false;
+
             const bStartRaw = b.waktuAmbilRaw || b.waktuAmbil;
             if (!bStartRaw) return true;
             const bStart = new Date(bStartRaw).getTime();
@@ -734,12 +750,30 @@ function cekBentrokJadwalAset(asetId, mulaiBaruStrOrDate, selesaiBaruStrOrDate, 
         const bufferMs = JEDA_PERSIAPAN_MENIT * 60 * 1000;
 
         riwayat.forEach(b => {
-            if (b.asetId !== asetId) return;
             if (b.status === "completed" || b.status === "rejected" || b.status === "cancelled") return; // Jika selesai/ditolak/dibatalkan, tidak bentrok
             if (excludeBookingId && ((b.bookingId || '').toUpperCase() === (excludeBookingId || '').toUpperCase() || (b.id || '').toUpperCase() === (excludeBookingId || '').toUpperCase())) return;
 
-            const bStartRaw = b.waktuAmbilRaw || b.waktuAmbil;
-            const bEndRaw = b.waktuSelesaiRaw || b.waktuSelesai;
+            // Periksa apakah booking b mencakup aset ini (single item ataupun multi-item)
+            let involvesAsset = false;
+            let bStartRaw = b.waktuAmbilRaw || b.waktuAmbil;
+            let bEndRaw = b.waktuSelesaiRaw || b.waktuSelesai;
+            if (b.asetId === asetId) {
+                involvesAsset = true;
+            }
+            if (b.items && Array.isArray(b.items)) {
+                const foundItem = b.items.find(it => it.asetId === asetId);
+                if (foundItem) {
+                    involvesAsset = true;
+                    if (foundItem.waktuAmbilRaw || foundItem.waktuAmbil) {
+                        bStartRaw = foundItem.waktuAmbilRaw || foundItem.waktuAmbil;
+                    }
+                    if (foundItem.waktuSelesaiRaw || foundItem.waktuSelesai) {
+                        bEndRaw = foundItem.waktuSelesaiRaw || foundItem.waktuSelesai;
+                    }
+                }
+            }
+            if (!involvesAsset) return;
+
             if (!bStartRaw || !bEndRaw) return;
 
             const bStart = new Date(bStartRaw).getTime();
@@ -782,6 +816,125 @@ function cekBentrokJadwalAset(asetId, mulaiBaruStrOrDate, selesaiBaruStrOrDate, 
     }
 }
 
+// Memeriksa bentrok paralel untuk kumpulan aset di keranjang sewa (Multi-Asset Conflict Check)
+function cekBentrokMultiAset(items, waktuAmbilRaw, excludeBookingId = null) {
+    if (!Array.isArray(items) || items.length === 0 || !waktuAmbilRaw) {
+        return { available: true, bentrokItems: [] };
+    }
+    const bentrokItems = [];
+    for (const it of items) {
+        const jam = parseInt(it.paketJam || 12);
+        const tAmbil = new Date(waktuAmbilRaw);
+        if (isNaN(tAmbil.getTime())) continue;
+        const tSelesai = new Date(tAmbil.getTime() + (jam * 3600 * 1000));
+        const res = cekBentrokJadwalAset(it.asetId, waktuAmbilRaw, tSelesai.toISOString(), excludeBookingId);
+        if (!res.available) {
+            bentrokItems.push({
+                item: it,
+                asetId: it.asetId,
+                namaBarang: it.namaBarang || it.nama,
+                hasil: res
+            });
+        }
+    }
+    return {
+        available: bentrokItems.length === 0,
+        bentrokItems: bentrokItems
+    };
+}
+
+// ==========================================
+// 2B. KERANJANG SEWA MULTI-ASET (RENTAL CART)
+// ==========================================
+const STORAGE_CART = "rental_aset_cart_items";
+
+function ambilKeranjang() {
+    try {
+        const raw = localStorage.getItem(STORAGE_CART);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function simpanKeranjang(items) {
+    try {
+        const clean = Array.isArray(items) ? items : [];
+        localStorage.setItem(STORAGE_CART, JSON.stringify(clean));
+        if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent("keranjang-diperbarui", { detail: clean }));
+        }
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+function tambahKeKeranjang(aset, paket) {
+    if (!aset || !aset.id) return false;
+    const cart = ambilKeranjang();
+    const existingIdx = cart.findIndex(c => c.asetId === aset.id);
+
+    const tarif = paket && paket.tarif !== undefined ? parseInt(paket.tarif) : (parseInt(aset.tarif) || 0);
+    const jam = paket && paket.jam ? parseInt(paket.jam) : 12;
+    const paketLabel = paket && paket.label ? paket.label : `${jam} Jam`;
+    const paketId = paket && paket.id ? String(paket.id) : `${jam}`;
+
+    const cartItem = {
+        cartItemId: 'item_' + aset.id + '_' + Date.now().toString(36),
+        asetId: aset.id,
+        namaBarang: aset.nama,
+        kategori: aset.kategoriLabel || aset.kategori || 'Multimedia',
+        kategoriKey: aset.kategori || 'kamera',
+        adminPic: aset.adminPic || 'admin1',
+        gambar: aset.gambar || '',
+        ikon: aset.ikon || 'bi-camera-fill',
+        paketId: paketId,
+        paketJam: jam,
+        paketLabel: paketLabel,
+        biaya: tarif,
+        biayaAsli: tarif,
+        stokTotal: parseInt(aset.stokTotal || 1)
+    };
+
+    if (existingIdx >= 0) {
+        // Jika sudah ada di keranjang, perbarui paket durasi yang dipilih
+        cart[existingIdx] = { ...cart[existingIdx], ...cartItem, cartItemId: cart[existingIdx].cartItemId };
+    } else {
+        cart.push(cartItem);
+    }
+
+    simpanKeranjang(cart);
+    return true;
+}
+
+function hapusDariKeranjang(asetIdOrCartItemId) {
+    const cart = ambilKeranjang();
+    const filtered = cart.filter(c => c.asetId !== asetIdOrCartItemId && c.cartItemId !== asetIdOrCartItemId);
+    simpanKeranjang(filtered);
+    return filtered;
+}
+
+function kosongkanKeranjang() {
+    simpanKeranjang([]);
+}
+
+function hitungTotalKeranjang() {
+    const cart = ambilKeranjang();
+    const totalItem = cart.length;
+    let totalBiaya = 0;
+    cart.forEach(c => {
+        totalBiaya += parseInt(c.biaya || 0);
+    });
+    return {
+        totalItem: totalItem,
+        totalBiaya: totalBiaya,
+        items: cart
+    };
+}
+
 // Mendapatkan jadwal peminjaman aktif aset tertentu untuk ditampilkan informatif
 function ambilJadwalBookingAset(asetId) {
     try {
@@ -800,7 +953,7 @@ async function ambilStatusBookingTerbaru(bookingId) {
     // Cek server api.php terlebih dahulu
     try {
         const headers = (typeof ambilHeaderAdminAuth === "function") ? ambilHeaderAdminAuth() : {};
-        const res = await fetch(dapatkanApiEndpoint('action=ambil_booking&id=${encodeURIComponent(bIdClean)}'), { headers });
+        const res = await fetch(dapatkanApiEndpoint(`action=ambil_booking&id=${encodeURIComponent(bIdClean)}`), { headers });
         if (res.ok) {
             const json = await res.json();
             if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
@@ -1230,7 +1383,7 @@ function hitungWaktuSelesai(waktuMulaiStr, paketJam) {
 // ==========================================
 // 2. FUNGSI HITUNG DENDA KETERLAMBATAN
 // ==========================================
-function hitungDenda(waktuSelesaiStr, waktuPengembalianStr) {
+function hitungDenda(waktuSelesaiStr, waktuPengembalianStr, isDinas = false) {
     const selesai = new Date(waktuSelesaiStr);
     const kembali = new Date(waktuPengembalianStr);
     
@@ -1245,6 +1398,19 @@ function hitungDenda(waktuSelesaiStr, waktuPengembalianStr) {
     }
 
     const selisihMenit = Math.floor((kembali - selesai) / (1000 * 60));
+
+    // Jika peminjaman dinas resmi / organisasi pesantren -> Bebas Denda Keterlambatan
+    if (isDinas) {
+        return {
+            terlambat: selisihMenit > 15,
+            menitTerlambat: Math.max(0, selisihMenit),
+            jamDihitung: 0,
+            totalDenda: 0,
+            pesan: selisihMenit <= 15
+                ? "Pengembalian tepat waktu (Dinas resmi pesantren)."
+                : `Terlambat ${selisihMenit} menit (Bebas denda karena peminjaman dinas resmi pondok).`
+        };
+    }
     
     // Toleransi keterlambatan maksimal 15 menit
     if (selisihMenit <= 15) {
@@ -1382,7 +1548,7 @@ async function muatBookingDariQuery() {
             // Prioritaskan ambil data paling segar langsung dari server api.php
             try {
                 const headers = (typeof ambilHeaderAdminAuth === "function") ? ambilHeaderAdminAuth() : {};
-                const res = await fetch(dapatkanApiEndpoint('action=ambil_booking&id=${encodeURIComponent(idClean)}'), { headers });
+                const res = await fetch(dapatkanApiEndpoint(`action=ambil_booking&id=${encodeURIComponent(idClean)}`), { headers });
                 if (res.ok) {
                     const json = await res.json();
                     if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
@@ -1451,7 +1617,7 @@ async function muatBookingDariQuery() {
                 const targetId = (decoded.bookingId || '').trim().toUpperCase();
                 if (targetId) {
                     try {
-                        const res = await fetch(dapatkanApiEndpoint('action=ambil_booking&id=${encodeURIComponent(targetId)}'));
+                        const res = await fetch(dapatkanApiEndpoint(`action=ambil_booking&id=${encodeURIComponent(targetId)}`));
                         if (res.ok) {
                             const json = await res.json();
                             if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
@@ -1481,13 +1647,40 @@ async function muatBookingDariQuery() {
     }
 }
 
+// Helper status autentikasi admin di seluruh antarmuka
+function cekSudahLoginAdmin() {
+    try {
+        if (typeof sessionStorage !== "undefined") {
+            return sessionStorage.getItem("admin_auth") === "true";
+        }
+    } catch (e) {}
+    return false;
+}
+
 // ==========================================
 // 3. GENERATOR FORMAT PESAN WHATSAPP RESMI
 // ==========================================
 function buatPesanWhatsApp(dataSewa, baseUrl = null) {
-    const lamaSewaTeks = dataSewa.paketLabel || (dataSewa.paketJam + " Jam");
     const domainUrl = baseUrl || dapatkanBaseUrl();
     const bId = dataSewa.bookingId || ('INV-' + Math.floor(1000 + Math.random() * 9000));
+
+    let barangTeks = dataSewa.namaBarang;
+    let lamaSewaTeks = dataSewa.paketLabel || (dataSewa.paketJam ? (dataSewa.paketJam + " Jam") : "-");
+
+    const isMulti = dataSewa.items && Array.isArray(dataSewa.items) && dataSewa.items.length > 1;
+    if (isMulti) {
+        const itemLines = dataSewa.items.map((it, idx) => {
+            const n = it.namaBarang || it.nama || 'Aset';
+            const j = it.paketJam ? ` (${it.paketJam} Jam)` : '';
+            const b = (typeof it.biaya !== 'undefined') ? ` - Rp ${Number(it.biaya).toLocaleString('id-ID')}` : '';
+            return `  ${idx + 1}. *${n}*${j}${b}`;
+        }).join('\n');
+        barangTeks = `Paket Multi-Aset (${dataSewa.items.length} Alat):\n${itemLines}`;
+        lamaSewaTeks = `Sesuai rincian masing-masing alat di atas`;
+    }
+
+    const totalBiaya = parseInt(dataSewa.biayaSewa || 0);
+    const biayaTeks = dataSewa.isDinas ? "Gratis (Khusus Tugas Resmi Pondok)" : `Rp ${totalBiaya.toLocaleString('id-ID')}`;
 
     const keperluanTeks = dataSewa.keperluan ? `\nTujuan/Keperluan: ${dataSewa.keperluan}` : '';
     const tipeDinasTeks = dataSewa.isDinas ? `\nTipe Peminjaman: *TUGAS RESMI PONDOK (Bebas Biaya / Rp 0)*` : '';
@@ -1500,8 +1693,10 @@ Asal Media/Komunitas: ${dataSewa.komunitas}
 Asrama/Departemen: ${dataSewa.departemen}
 Alamat: ${dataSewa.alamat}${keperluanTeks}${tipeDinasTeks}
 No HP Aktif: ${dataSewa.noWa}
-Barang yang Dipinjam/Disewa: ${dataSewa.namaBarang}
+Barang yang Dipinjam/Disewa:
+${barangTeks}
 Lama Sewa: ${lamaSewaTeks}
+Total Biaya: ${biayaTeks}
 Waktu Ambil: ${dataSewa.waktuAmbil}
 Waktu Kembali: ${dataSewa.waktuSelesai}
 Status: *MENUNGGU KONFIRMASI (ACC) PENGURUS*
@@ -1524,37 +1719,77 @@ ${domainUrl}/status.html?id=${bId}`;
 // ==========================================
 // 4. HITUNG MUNDUR (COUNTDOWN TIMER) CERDAS
 // ==========================================
-let _activeCountdownInterval = null;
+let _activeCountdownIntervals = {};
 
-function hentikanCountdown() {
-    if (_activeCountdownInterval) {
-        clearInterval(_activeCountdownInterval);
-        _activeCountdownInterval = null;
+function hentikanCountdown(elementId = null) {
+    if (elementId) {
+        if (_activeCountdownIntervals[elementId]) {
+            clearInterval(_activeCountdownIntervals[elementId]);
+            delete _activeCountdownIntervals[elementId];
+        }
+    } else {
+        Object.keys(_activeCountdownIntervals).forEach(key => {
+            if (_activeCountdownIntervals[key]) {
+                clearInterval(_activeCountdownIntervals[key]);
+            }
+        });
+        _activeCountdownIntervals = {};
     }
 }
 
 function parseTanggalKeMillis(val) {
     if (!val) return null;
     if (typeof val === 'number') return isNaN(val) ? null : val;
-    let d = new Date(val);
-    if (!isNaN(d.getTime())) return d.getTime();
-    
-    if (typeof val === 'string') {
-        const cleanIso = val.trim().replace(' ', 'T');
-        d = new Date(cleanIso);
-        if (!isNaN(d.getTime())) return d.getTime();
-
-        const parts = val.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})[ T](\d{1,2}):(\d{1,2})/);
-        if (parts) {
-            d = new Date(parts[1], parts[2] - 1, parts[3], parts[4], parts[5]);
-            if (!isNaN(d.getTime())) return d.getTime();
-        }
+    if (typeof val !== 'string') {
+        const d = new Date(val);
+        return isNaN(d.getTime()) ? null : d.getTime();
     }
+    
+    let clean = val.trim();
+    // Bersihkan timezone teks lokal seperti "WIB", "WITA", "WIT"
+    clean = clean.replace(/\s*(WIB|WITA|WIT)$/i, '').trim();
+
+    // 1. Coba parse native Date (ISO 8601 dsb)
+    let d = new Date(clean);
+    if (!isNaN(d.getTime())) return d.getTime();
+
+    // 2. Coba ganti spasi dengan T (2026-09-27 14:00:00 -> 2026-09-27T14:00:00)
+    d = new Date(clean.replace(' ', 'T'));
+    if (!isNaN(d.getTime())) return d.getTime();
+
+    // 3. Format YYYY-MM-DD atau YYYY/MM/DD HH:mm(:ss)
+    const ymd = clean.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+    if (ymd) {
+        d = new Date(
+            parseInt(ymd[1], 10),
+            parseInt(ymd[2], 10) - 1,
+            parseInt(ymd[3], 10),
+            parseInt(ymd[4] || 0, 10),
+            parseInt(ymd[5] || 0, 10),
+            parseInt(ymd[6] || 0, 10)
+        );
+        if (!isNaN(d.getTime())) return d.getTime();
+    }
+
+    // 4. Format Indonesia: DD/MM/YYYY atau DD-MM-YYYY HH:mm(:ss)
+    const dmy = clean.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+    if (dmy) {
+        d = new Date(
+            parseInt(dmy[3], 10),
+            parseInt(dmy[2], 10) - 1,
+            parseInt(dmy[1], 10),
+            parseInt(dmy[4] || 0, 10),
+            parseInt(dmy[5] || 0, 10),
+            parseInt(dmy[6] || 0, 10)
+        );
+        if (!isNaN(d.getTime())) return d.getTime();
+    }
+
     return null;
 }
 
 function jalankanCountdown(waktuSelesaiStr, elementId, waktuAmbilStr = null, paketDurasiLabel = null) {
-    hentikanCountdown();
+    hentikanCountdown(elementId);
 
     let selesaiTime = parseTanggalKeMillis(waktuSelesaiStr);
     let ambilTime = parseTanggalKeMillis(waktuAmbilStr);
@@ -1602,7 +1837,7 @@ function jalankanCountdown(waktuSelesaiStr, elementId, waktuAmbilStr = null, pak
     function perbaruiTimer() {
         const el = document.getElementById(elementId);
         if (!el) {
-            if (_activeCountdownInterval) clearInterval(_activeCountdownInterval);
+            hentikanCountdown(elementId);
             return;
         }
 
@@ -1684,7 +1919,7 @@ function jalankanCountdown(waktuSelesaiStr, elementId, waktuAmbilStr = null, pak
     }
 
     perbaruiTimer();
-    _activeCountdownInterval = setInterval(perbaruiTimer, 1000);
+    _activeCountdownIntervals[elementId] = setInterval(perbaruiTimer, 1000);
 }
 
 // ==========================================
@@ -1992,3 +2227,403 @@ async function kirimNotifikasiBookingOtomatis(booking) {
     }
 }
 
+// =========================================================
+// FITUR PERPANJANGAN WAKTU SEWA (DINAMIS KATALOG & WA BOT)
+// =========================================================
+
+/**
+ * Mengambil daftar opsi durasi perpanjangan untuk booking tertentu.
+ * Default: Mengikuti paket durasi yang dimiliki aset tersebut di katalog.
+ * Jika Admin memilih mode "kustom": Mengikuti daftar jam kustom dari pengaturan Admin.
+ */
+function ambilOpsiDurasiPerpanjangan(target) {
+    const cfg = (typeof ambilPengaturanAdmin === "function") ? ambilPengaturanAdmin() : {};
+    const setting = (cfg && cfg.opsiPerpanjangan) ? cfg.opsiPerpanjangan : { mode: "katalog", jamKustom: [3, 6, 12, 24] };
+
+    // 1. Jika Admin menyetel mode Kustom Global
+    if (setting.mode === "kustom" && Array.isArray(setting.jamKustom) && setting.jamKustom.length > 0) {
+        return setting.jamKustom.map(j => {
+            const jamNum = parseInt(j, 10);
+            return {
+                jam: jamNum,
+                label: `+${jamNum} Jam`,
+                tarif: null,
+                desc: `Tambahan waktu ${jamNum} Jam`
+            };
+        });
+    }
+
+    // 2. Mode Default ("katalog"): Baca dari paket khusus perpanjangan aset atau paket sewa pokoknya
+    let asetObj = null;
+    let targetAsetId = null;
+
+    if (typeof target === 'string') {
+        targetAsetId = target;
+    } else if (target && typeof target === 'object') {
+        if (target.paketPerpanjangan || target.paketOpsi) {
+            asetObj = target;
+        } else {
+            targetAsetId = target.asetId || (target.items && target.items[0] ? target.items[0].asetId : null);
+        }
+    }
+
+    if (!asetObj && targetAsetId) {
+        if (typeof cariAset === "function") {
+            asetObj = cariAset(targetAsetId);
+        }
+        if (!asetObj && typeof ambilSemuaKatalog === "function") {
+            const listKatalog = ambilSemuaKatalog();
+            asetObj = listKatalog.find(a => (a.id === targetAsetId || a.asetId === targetAsetId));
+        }
+    }
+
+    let options = [];
+    if (asetObj) {
+        // A. Prioritas 1: Jika admin mengisi Paket Khusus Perpanjangan untuk aset ini
+        if (Array.isArray(asetObj.paketPerpanjangan) && asetObj.paketPerpanjangan.length > 0) {
+            options = asetObj.paketPerpanjangan.map(p => {
+                const jamNum = parseInt(p.jam, 10) || 1;
+                return {
+                    jam: jamNum,
+                    label: p.label || `+${jamNum} Jam`,
+                    tarif: p.tarif,
+                    desc: p.label || (typeof formatRupiah === "function" ? formatRupiah(p.tarif) : `Rp ${p.tarif}`)
+                };
+            });
+        } 
+        // B. Prioritas 2: Gunakan Paket Sewa Pokok reguler aset di katalog
+        else if (Array.isArray(asetObj.paketOpsi) && asetObj.paketOpsi.length > 0) {
+            options = asetObj.paketOpsi.map(p => {
+                const jamNum = parseInt(p.jam, 10) || 1;
+                return {
+                    jam: jamNum,
+                    label: `+${jamNum} Jam`,
+                    tarif: p.tarif,
+                    desc: p.label || p.desc || (typeof formatRupiah === "function" ? formatRupiah(p.tarif) : `Rp ${p.tarif}`)
+                };
+            });
+        }
+    }
+
+    // 3. Fallback jika aset belum memiliki paket opsi khusus
+    if (!options || options.length === 0) {
+        const defaultHours = [3, 6, 12, 24];
+        options = defaultHours.map(j => ({
+            jam: j,
+            label: `+${j} Jam`,
+            tarif: null,
+            desc: `Tambahan waktu ${j} Jam`
+        }));
+    }
+
+    return options;
+}
+
+/**
+ * Mengirim notifikasi permohonan perpanjangan waktu sewa secara otomatis via Bot WhatsApp Gateway
+ * Mendukung Single-Asset maupun Multi-Asset dengan Perpanjangan Selektif
+ */
+async function kirimNotifikasiPerpanjanganOtomatis(booking, param2, param3, param4, param5 = '') {
+    if (!booking) return { success: false, message: "Data booking tidak valid" };
+
+    // Normalisasi parameter (mendukung format objek atau multi-parameter legacy)
+    let jamTambahan = 0;
+    let batasBaruTeks = "-";
+    let biayaTambahanTeks = "Rp 0";
+    let catatan = "";
+    let itemsTerpilih = null;
+
+    if (typeof param2 === "object" && param2 !== null) {
+        jamTambahan = param2.jamTambahan || 0;
+        batasBaruTeks = param2.batasBaruTeks || param2.waktuSelesaiBaru || "-";
+        biayaTambahanTeks = param2.biayaTambahanTeks || "Rp 0";
+        catatan = param2.catatan || (typeof param3 === "string" ? param3 : "");
+        itemsTerpilih = Array.isArray(param2.itemsTerpilih) ? param2.itemsTerpilih : null;
+    } else {
+        jamTambahan = parseInt(param2, 10) || 0;
+        batasBaruTeks = param3 || "-";
+        biayaTambahanTeks = param4 || "Rp 0";
+        catatan = param5 || "";
+    }
+
+    const cfg = (typeof ambilPengaturanAdmin === "function") ? ambilPengaturanAdmin() : {};
+    const gw = cfg.waGateway || {};
+
+    const bId = booking.bookingId || "INV-0000";
+    const nama = booking.nama || "Santri";
+    const noWa = booking.noWa || "";
+    const namaBarang = booking.namaBarang || "Aset";
+    const batasLama = booking.waktuSelesai || "-";
+    const baseUrl = (typeof dapatkanBaseUrl === "function" && dapatkanBaseUrl()) ? dapatkanBaseUrl() : (typeof window !== "undefined" ? window.location.origin : "");
+
+    // Susun Rincian Alat yang Diperpanjang
+    const isSelektif = Array.isArray(itemsTerpilih) && itemsTerpilih.length > 0;
+    let rincianAsetWa = "";
+    if (isSelektif) {
+        rincianAsetWa = itemsTerpilih.map(it => {
+            const tarifTeks = it.biayaTambahanTeks || (typeof formatRupiah === "function" ? formatRupiah(it.biayaTambahan || 0) : `Rp ${it.biayaTambahan || 0}`);
+            return `  • *${it.namaBarang}* : +${it.jamTambahan} Jam (s.d ${it.waktuSelesaiBaru}) [${tarifTeks}]`;
+        }).join("\n");
+        if (booking.items && booking.items.length > itemsTerpilih.length) {
+            rincianAsetWa += `\n  _(Unit lain tidak diperpanjang, tetap dikembalikan sesuai jadwal awal)_`;
+        }
+    } else {
+        rincianAsetWa = `  • *${namaBarang}* : +${jamTambahan} Jam (s.d ${batasBaruTeks})`;
+    }
+
+    // 1. Pesan Otomatis ke WhatsApp Admin Pengurus
+    const isAdm2 = (booking && (booking.adminPic === "admin2" || booking.adminPic === "2"));
+    const sapaanAdmin = isAdm2 ? "Mbak Cantik" : "Mas Ganteng";
+    const adminPhone = (typeof dapatkanNomorWaAdmin === "function") ? dapatkanNomorWaAdmin(booking) : (gw.phonePengantara || "628812762520");
+
+    const pesanAdmin = `🔔 *PENGAJUAN PERPANJANGAN SEWA ASET${isSelektif ? ' (SELEKTIF)' : ''}*\n\n` +
+        `Assalamu'alaikum ${sapaanAdmin},\n` +
+        `Terdapat permohonan *Perpanjangan Durasi Sewa* yang diajukan oleh santri peminjam:\n\n` +
+        `- No. Transaksi: *${bId}*\n` +
+        `- Peminjam: *${nama}* (${noWa || '-'})\n` +
+        `- Batas Semula: ${batasLama}\n` +
+        `- Rincian Perpanjangan Unit:\n${rincianAsetWa}\n` +
+        `- Total Biaya Tambahan: *${biayaTambahanTeks}*\n` +
+        (catatan ? `- Alasan/Keperluan: _"${catatan}"_\n\n` : `\n`) +
+        `👉 *Buka Dashboard Admin untuk Menyetujui (ACC) / Menolak:*\n` +
+        `${baseUrl}/admin-dashboard.html`;
+
+    let adminSent = false;
+    if (adminPhone && typeof kirimWaGatewayOtomatis === "function") {
+        adminSent = await kirimWaGatewayOtomatis(adminPhone, pesanAdmin);
+    }
+
+    // 2. Pesan Konfirmasi Otomatis ke WhatsApp Santri
+    let santriSent = false;
+    if (noWa && typeof kirimWaGatewayOtomatis === "function") {
+        const pesanSantri = `Assalamu'alaikum wr. wb. Saudara/i *${nama}*,\n\n` +
+            `Alhamdulillah, permohonan *Perpanjangan Waktu Sewa* (${bId}) telah kami terima secara otomatis di sistem:\n\n` +
+            `*Rincian Unit yang Diajukan:*\n${rincianAsetWa}\n` +
+            `- Total Estimasi Biaya Tambahan: *${biayaTambahanTeks}*\n\n` +
+            `_Pengajuan Anda saat ini sedang ditinjau oleh Pengurus Ma'had Aly Amtsilati. Notifikasi persetujuan (ACC) akan dikirimkan otomatis via WhatsApp._\n\n` +
+            `Wassalamu'alaikum wr. wb.\n` +
+            `*Pengurus Ma'had Aly Amtsilati*`;
+
+        santriSent = await kirimWaGatewayOtomatis(noWa, pesanSantri);
+    }
+
+    // 3. Sinkronisasi data perpanjangan ke server PHP backend jika online
+    try {
+        const endpoint = (typeof dapatkanApiEndpoint === "function") ? dapatkanApiEndpoint("action=ajukan_perpanjangan") : "api-service.php?action=ajukan_perpanjangan";
+        await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                bookingId: bId,
+                jamTambahan: jamTambahan,
+                batasBaruTeks: batasBaruTeks,
+                biayaTambahanTeks: biayaTambahanTeks,
+                catatan: catatan,
+                itemsTerpilih: itemsTerpilih
+            })
+        });
+    } catch (e) {
+        console.warn("[Perpanjangan] Gagal sinkronisasi backend PHP (mode standalone):", e);
+    }
+
+    return {
+        success: adminSent || santriSent,
+        adminSent: adminSent,
+        santriSent: santriSent,
+        pesanAdmin: pesanAdmin,
+        adminPhone: adminPhone
+    };
+}
+
+// =========================================================
+// SISTEM NOTIFIKASI MODERN (SWEETALERT2 & ADAPTER METAHATI)
+// =========================================================
+
+// Standarisasi akses global Swal / Sweetalert2
+if (typeof window !== 'undefined') {
+    window.Swal = window.Swal || window.Sweetalert2;
+    window.SweetAlert = window.SweetAlert || window.Sweetalert2;
+}
+
+function dapatkanSwal() {
+    if (typeof Swal !== 'undefined' && typeof Swal.fire === 'function') return Swal;
+    if (typeof Sweetalert2 !== 'undefined' && typeof Sweetalert2.fire === 'function') return Sweetalert2;
+    if (typeof window !== 'undefined') {
+        if (window.Swal && typeof window.Swal.fire === 'function') return window.Swal;
+        if (window.Sweetalert2 && typeof window.Sweetalert2.fire === 'function') return window.Sweetalert2;
+    }
+    return null;
+}
+
+/**
+ * Menampilkan Modal Alert Modern berbasis SweetAlert2 dengan Tema iOS Glass METAHATI
+ */
+function modalNotif(options = {}) {
+    const {
+        title = '',
+        html = '',
+        text = '',
+        icon = 'info', // 'success' | 'error' | 'warning' | 'info' | 'question'
+        confirmText = 'Oke, Mengerti',
+        cancelText = null,
+        timer = null,
+        onConfirm = null,
+        onCancel = null
+    } = options;
+
+    const swalApi = dapatkanSwal();
+    if (swalApi) {
+        const swalConfig = {
+            title: title || (icon === 'error' ? 'Terjadi Kesalahan' : (icon === 'success' ? 'Alhamdulillah, Berhasil!' : 'Pemberitahuan')),
+            icon: icon,
+            customClass: {
+                popup: 'swal2-metahati',
+                confirmButton: 'swal2-confirm',
+                cancelButton: 'swal2-cancel'
+            },
+            buttonsStyling: false,
+            confirmButtonText: confirmText,
+            showCancelButton: !!cancelText,
+            cancelButtonText: cancelText || 'Batal',
+            timer: timer,
+            timerProgressBar: !!timer,
+            reverseButtons: true,
+            allowOutsideClick: icon !== 'warning' && !cancelText
+        };
+
+        if (html) {
+            swalConfig.html = html;
+        } else if (text) {
+            swalConfig.html = `<span style="display:inline-block; text-align:center;">${escapeHtml(text).replace(/\n/g, '<br>')}</span>`;
+        }
+
+        return swalApi.fire(swalConfig).then((result) => {
+            if (result.isConfirmed && typeof onConfirm === 'function') {
+                onConfirm(result);
+            } else if (result.isDismissed && typeof onCancel === 'function') {
+                onCancel(result);
+            }
+            return result;
+        });
+    } else {
+        // Fallback jika SweetAlert2 belum termuat
+        alert((title ? (title + "\n\n") : "") + (text || (typeof html === 'string' ? html.replace(/<[^>]*>?/gm, '') : "")));
+        if (typeof onConfirm === 'function') onConfirm({ isConfirmed: true });
+        return Promise.resolve({ isConfirmed: true });
+    }
+}
+
+function notifSuccess(title, message, timer = 2500) {
+    return modalNotif({ title: title || 'Alhamdulillah, Berhasil!', text: message, icon: 'success', timer });
+}
+
+function notifError(title, message, html = null) {
+    return modalNotif({ title: title || 'Permohonan Gagal', text: message, html: html, icon: 'error' });
+}
+
+function notifWarning(title, message) {
+    return modalNotif({ title: title || 'Perhatian', text: message, icon: 'warning' });
+}
+
+function notifConfirm(title, message, confirmText = 'Ya, Lanjutkan', cancelText = 'Batal', icon = 'warning') {
+    return modalNotif({ title, text: message, icon, confirmText, cancelText });
+}
+
+function notifToast(message, icon = 'success') {
+    const swalApi = dapatkanSwal();
+    if (swalApi) {
+        return swalApi.fire({
+            toast: true,
+            position: 'top-end',
+            icon: icon,
+            title: message,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            customClass: {
+                popup: 'swal2-metahati-toast'
+            }
+        });
+    }
+}
+
+// Global Override window.alert agar seluruh alert() otomatis tampil via SweetAlert2
+if (typeof window !== 'undefined') {
+    const originalBrowserAlert = window.alert;
+    window.alert = function (rawMsg) {
+        const swalApi = dapatkanSwal();
+        if (!swalApi) {
+            return originalBrowserAlert(rawMsg);
+        }
+
+        const msgStr = String(rawMsg || '');
+        const lower = msgStr.toLowerCase();
+
+        let icon = 'info';
+        let defaultTitle = 'Pemberitahuan';
+
+        // Deteksi Error
+        if (lower.includes('gagal') || lower.includes('error') || lower.includes('ditolak') || lower.includes('mohon maaf')) {
+            icon = 'error';
+            defaultTitle = 'Permohonan Gagal';
+        }
+        // Deteksi Peringatan / Validasi
+        else if (lower.includes('harap') || lower.includes('wajib') || lower.includes('belum') || lower.includes('perhatian') || lower.includes('peringatan') || lower.includes('tidak boleh') || lower.includes('bentrok') || lower.includes('minimal')) {
+            icon = 'warning';
+            defaultTitle = 'Perhatian';
+        }
+        // Deteksi Berhasil
+        else if (lower.includes('berhasil') || lower.includes('alhamdulillah') || lower.includes('sukses') || lower.includes('disimpan')) {
+            icon = 'success';
+            defaultTitle = 'Alhamdulillah, Berhasil!';
+        }
+
+        let title = defaultTitle;
+        let content = msgStr;
+        if (msgStr.includes('\n\n')) {
+            const parts = msgStr.split('\n\n');
+            const firstPart = parts[0].trim();
+            if (firstPart.length > 0 && firstPart.length < 50) {
+                title = firstPart.replace(/[:!]+$/, '').trim();
+                content = parts.slice(1).join('\n\n');
+            }
+        }
+
+        return modalNotif({
+            title: title,
+            text: content,
+            icon: icon,
+            confirmText: 'Oke, Mengerti'
+        });
+    };
+}
+
+// Ekspor modul untuk lingkungan pengujian otomatis (Node.js / Vitest / Test Runner)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        cekBentrokJadwalAset,
+        cekBentrokMultiAset,
+        hitungWaktuSelesai,
+        hitungDenda,
+        hitungTotalKeranjang,
+        tambahKeKeranjang,
+        hapusDariKeranjang,
+        kosongkanKeranjang,
+        ambilKeranjang,
+        simpanKeranjang,
+        ambilSemuaKatalog,
+        formatNomorWaLokal,
+        formatRupiah,
+        formatWaktuIndo,
+        escapeHtml,
+        modalNotif,
+        notifSuccess,
+        notifError,
+        notifWarning,
+        notifConfirm,
+        notifToast,
+        ambilOpsiDurasiPerpanjangan,
+        kirimNotifikasiPerpanjanganOtomatis,
+        JEDA_PERSIAPAN_MENIT
+    };
+}

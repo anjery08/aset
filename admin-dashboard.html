@@ -20,7 +20,7 @@
 
   <!-- AdminLTE & Custom CSS -->
   <link rel="stylesheet" href="./dist/css/adminlte.min.css" />
-  <link rel="stylesheet" href="./css/custom.css" />
+  <link rel="stylesheet" href="./css/custom.css?v=4.0" />
 
   <style>
     /* Header (Top Navbar) - Gradasi Deep Royal Navy ke Violet METAHATI dengan Garis Cyan */
@@ -640,28 +640,46 @@
               <form onsubmit="simpanPengaturanWaAdmin(event)">
                 <!-- Admin 1 -->
                 <div class="mb-3 p-3 rounded bg-white border" style="border: 1.5px solid rgba(0, 102, 255, 0.2) !important;">
-                  <label class="form-label fw-bold text-dark d-flex align-items-center">
-                    <span class="badge text-white me-2 px-2 py-1" style="background-color: #0066ff;">Admin 1</span>
-                    Nomor WhatsApp Pengurus 1 (Penerima Notif & Yang Klik ACC):
-                  </label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-white fw-bold"><i class="bi bi-whatsapp" style="color: #0066ff;"></i></span>
-                    <input type="text" id="settingWaAdmin1" class="form-control fw-bold bg-white" placeholder="628xxxxxxxxxx" required />
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="badge text-white px-2 py-1" style="background-color: #0066ff;">Admin 1</span>
+                    <small class="text-secondary fw-semibold">Penerima Notif & ACC</small>
                   </div>
-                  <small class="text-muted" style="font-size: 0.78rem;">Nomor HP pengurus yang bertugas memverifikasi/ACC pemesanan (format: 628...)</small>
+                  <div class="row g-2">
+                    <div class="col-md-5">
+                      <label class="form-label fw-bold text-dark small mb-1">Nama / Label Pengurus 1:</label>
+                      <input type="text" id="settingNamaAdmin1" class="form-control fw-semibold" placeholder="Contoh: Admin 1 (Pengurus)" required />
+                    </div>
+                    <div class="col-md-7">
+                      <label class="form-label fw-bold text-dark small mb-1">Nomor WhatsApp Pengurus 1:</label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-white fw-bold"><i class="bi bi-whatsapp" style="color: #0066ff;"></i></span>
+                        <input type="text" id="settingWaAdmin1" class="form-control fw-bold bg-white" placeholder="628xxxxxxxxxx" required />
+                      </div>
+                    </div>
+                  </div>
+                  <small class="text-muted d-block mt-1" style="font-size: 0.78rem;">Nomor HP pengurus yang bertugas memverifikasi/ACC pemesanan (format: 628...)</small>
                 </div>
 
                 <!-- Admin 2 -->
                 <div class="mb-4 p-3 rounded bg-white border" style="border: 1.5px solid rgba(214, 0, 153, 0.2) !important;">
-                  <label class="form-label fw-bold text-dark d-flex align-items-center">
-                    <span class="badge text-white me-2 px-2 py-1" style="background-color: #d60099;">Admin 2</span>
-                    Nomor WhatsApp Pengurus 2 (Penerima Notif & Yang Klik ACC - Mustaghfiri):
-                  </label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-white fw-bold"><i class="bi bi-whatsapp" style="color: #d60099;"></i></span>
-                    <input type="text" id="settingWaAdmin2" class="form-control fw-bold bg-white" placeholder="628xxxxxxxxxx" required />
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="badge text-white px-2 py-1" style="background-color: #d60099;">Admin 2</span>
+                    <small class="text-secondary fw-semibold">Penerima Notif & ACC</small>
                   </div>
-                  <small class="text-muted" style="font-size: 0.78rem;">Nomor HP pengurus 2 (contoh: 628812762520)</small>
+                  <div class="row g-2">
+                    <div class="col-md-5">
+                      <label class="form-label fw-bold text-dark small mb-1">Nama / Label Pengurus 2:</label>
+                      <input type="text" id="settingNamaAdmin2" class="form-control fw-semibold" placeholder="Contoh: Pengurus Inventaris" required />
+                    </div>
+                    <div class="col-md-7">
+                      <label class="form-label fw-bold text-dark small mb-1">Nomor WhatsApp Pengurus 2:</label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-white fw-bold"><i class="bi bi-whatsapp" style="color: #d60099;"></i></span>
+                        <input type="text" id="settingWaAdmin2" class="form-control fw-bold bg-white" placeholder="628xxxxxxxxxx" required />
+                      </div>
+                    </div>
+                  </div>
+                  <small class="text-muted d-block mt-1" style="font-size: 0.78rem;">Nomor HP pengurus 2 (contoh: 628812762520)</small>
                 </div>
 
                 <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
@@ -719,10 +737,13 @@
                   <i class="bi bi-check2-circle me-1"></i> Simpan Profil Admin
                 </button>
               </form>
-            <!-- Box Integrasi WhatsApp Gateway Otomatis (WA Multi Session) -->
-          <div class="col-12">
+            </div>
+          </div>
+
+          <!-- Box Integrasi WhatsApp Gateway Otomatis (WA Multi Session) -->
+          <div class="col-12 mt-2">
             <div class="card shadow-sm border-0 p-4 bg-white" style="border-radius: 1rem; border: 2px solid #25D366 !important;">
-              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+              <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
                 <div>
                   <h5 class="fw-bolder text-dark mb-1 d-flex align-items-center gap-2 flex-wrap">
                     <i class="bi bi-whatsapp text-success fs-4"></i>
@@ -735,8 +756,8 @@
                     Notifikasi konfirmasi booking santri, persetujuan (ACC), penolakan, dan tanda terima pengembalian akan terkirim secara otomatis via nomor <strong>Admin Ma'had Aly Amtsilati</strong> (<span id="txtDisplayAdminPhone">6287748921490</span>).
                   </p>
                 </div>
-                <div>
-                  <button type="button" class="btn btn-outline-success fw-bold px-3 py-2 shadow-sm" id="btnTestWaGw" onclick="lakukanTestKirimWaGateway()">
+                <div class="flex-shrink-0">
+                  <button type="button" class="btn btn-outline-success fw-bold px-3 py-2 shadow-sm text-nowrap" id="btnTestWaGw" onclick="lakukanTestKirimWaGateway()">
                     <i class="bi bi-send-check me-1"></i> Test Kirim WA Sekarang
                   </button>
                 </div>
@@ -790,6 +811,49 @@
                 <div class="mt-3">
                   <button type="submit" class="btn btn-success fw-bold px-4 py-2 shadow-sm">
                     <i class="bi bi-check2-circle me-1"></i> Simpan Pengaturan WA Gateway
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Box Pengaturan Opsi Durasi Perpanjangan Sewa -->
+          <div class="col-12">
+            <div class="card shadow-sm border-0 p-4 bg-white" style="border-radius: 1rem; border: 1.5px solid #0066ff !important;">
+              <h5 class="fw-bolder text-dark mb-1">
+                <i class="bi bi-clock-history me-2" style="color: #0066ff;"></i>Pengaturan Opsi Durasi Perpanjangan Sewa
+              </h5>
+              <p class="text-secondary small mb-3">
+                Tentukan bagaimana pilihan tambahan jam sewa ditampilkan kepada santri di halaman status pemantauan sewa.
+              </p>
+              <form id="formOpsiPerpanjangan" onsubmit="simpanPengaturanPerpanjangan(event)">
+                <div class="row g-3">
+                  <div class="col-md-7">
+                    <label class="form-label fw-bold text-dark small mb-2">Mode Pilihan Durasi Perpanjangan:</label>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="radio" name="modePerpanjangan" id="modePerpanjanganKatalog" value="katalog" checked onchange="toggleFormPerpanjanganKustom()">
+                      <label class="form-check-label fw-bold small text-dark" for="modePerpanjanganKatalog">
+                        Otomatis Ikuti Paket Katalog Aset (Default Direkomendasikan)
+                      </label>
+                      <small class="text-muted d-block ms-1">Pilihan jam perpanjangan santri akan otomatis mengikuti paket durasi yang terdaftar pada masing-masing aset di katalog.</small>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="modePerpanjangan" id="modePerpanjanganKustom" value="kustom" onchange="toggleFormPerpanjanganKustom()">
+                      <label class="form-check-label fw-bold small text-dark" for="modePerpanjanganKustom">
+                        Kustom Pilihan Jam Sendiri oleh Admin
+                      </label>
+                      <small class="text-muted d-block ms-1">Admin menentukan sendiri opsi jam tambahan perpanjangan secara seragam.</small>
+                    </div>
+                  </div>
+                  <div class="col-md-5" id="boxInputJamKustom" style="display: none;">
+                    <label class="form-label fw-bold text-dark small mb-1">Daftar Jam Tambahan (Pisahkan Koma):</label>
+                    <input type="text" id="inputJamKustomPerpanjang" class="form-control font-monospace" placeholder="Contoh: 3, 6, 12, 24" value="3, 6, 12, 24">
+                    <small class="text-muted d-block mt-1">Masukkan angka durasi jam yang diizinkan, contoh: <code>2, 4, 8, 12, 24</code></small>
+                  </div>
+                </div>
+                <div class="mt-3">
+                  <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm" style="background: #0066ff;">
+                    <i class="bi bi-check2-circle me-1"></i> Simpan Pengaturan Perpanjangan
                   </button>
                 </div>
               </form>
@@ -934,6 +998,29 @@
                   <i class="bi bi-plus-circle me-1"></i> Tambah Opsi Paket Durasi
                 </button>
               </div>
+
+              <!-- Paket Khusus Perpanjangan Waktu (Opsional per Barang) -->
+              <div class="col-12 mt-3 pt-3 border-top">
+                <div class="form-check form-switch mb-2">
+                  <input class="form-check-input" type="checkbox" id="checkKustomPaketPerpanjang" onchange="toggleFormPaketPerpanjangAset()">
+                  <label class="form-check-label fw-bold text-dark small" for="checkKustomPaketPerpanjang">
+                    <i class="bi bi-clock-history text-primary me-1"></i> Tentukan Paket Khusus Perpanjangan Waktu Aset Ini
+                  </label>
+                </div>
+                <small class="text-muted d-block mb-2" style="font-size: 0.78rem;">
+                  Jika tidak diaktifkan, opsi jam dan tarif perpanjangan akan otomatis mengikuti Paket Sewa Pokok di atas.
+                </small>
+
+                <div id="wrapPaketPerpanjangAset" class="p-3 rounded-3 bg-light border d-none">
+                  <label class="form-label fw-bold text-dark small mb-1">Daftar Opsi Paket Perpanjangan Khusus:</label>
+                  <div id="formPaketPerpanjangContainer" class="d-flex flex-column gap-2 mb-2">
+                    <!-- Diisi dinamis -->
+                  </div>
+                  <button type="button" class="btn btn-outline-primary btn-sm fw-bold" onclick="tambahBarisPaketPerpanjang()">
+                    <i class="bi bi-plus-circle me-1"></i> Tambah Opsi Perpanjangan
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           <div class="modal-footer bg-white border-top">
@@ -951,7 +1038,7 @@
   <div class="modal fade" id="modalKelolaKategori" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg bg-white" style="border-radius: 1rem;">
-        <div class="modal-header text-white" style="background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%);">
+        <div class="modal-header text-white" style="background: #0066ff;">
           <h5 class="modal-title fw-bold">
             <i class="bi bi-tags-fill me-2"></i> Kelola Kategori Aset
           </h5>
@@ -990,7 +1077,7 @@
   <div class="modal fade" id="modalAccBooking" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
-        <div class="modal-header text-white" style="background: linear-gradient(135deg, #0055ff 0%, #00a8ff 100%);">
+        <div class="modal-header text-white" style="background: #0066ff;">
           <h5 class="modal-title fw-bold">
             <i class="bi bi-patch-check-fill me-2"></i> Konfirmasi & ACC Pengajuan Sewa
           </h5>
@@ -1284,7 +1371,17 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
   <script src="./dist/js/adminlte.min.js"></script>
-  <script src="./js/rental-logic.js?v=3.0"></script>
+  <script src="./dist/js/sweetalert2.all.min.js"></script>
+  <script>
+    if (typeof window !== 'undefined') {
+      window.Swal = window.Swal || window.Sweetalert2;
+      window.SweetAlert = window.SweetAlert || window.Sweetalert2;
+    }
+    if (typeof Swal === 'undefined' && typeof Sweetalert2 === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"><\/script>');
+    }
+  </script>
+  <script src="./js/rental-logic.js?v=4.0"></script>
 
   <script>
     let modalAsetInstance = null;
@@ -1503,6 +1600,17 @@
         const safePaket = typeof escapeHtml === "function" ? escapeHtml(b.paketLabel || (b.paketJam + ' Jam')) : (b.paketLabel || (b.paketJam + ' Jam'));
         const safeKomunitas = typeof escapeHtml === "function" ? escapeHtml(b.komunitas || '-') : (b.komunitas || '-');
 
+        let barangDisplayHtml = `<strong class="text-dark d-block">${safeBarang}</strong><span class="badge bg-white text-dark border">${safePaket}</span>`;
+        if (b.isMultiItem && b.items && b.items.length > 1) {
+          const itemPills = b.items.map(it => `<span class="badge bg-light text-dark border me-1 mb-1" style="font-size:0.75rem;"><i class="bi bi-box-seam me-1 text-primary"></i>${escapeHtml(it.namaBarang)} (${it.paketJam}j)</span>`).join("");
+          barangDisplayHtml = `
+            <div class="mb-1">
+              <span class="badge bg-primary text-white"><i class="bi bi-basket3 me-1"></i>${b.items.length} Aset (Multi-Booking)</span>
+            </div>
+            <div class="d-flex flex-wrap">${itemPills}</div>
+          `;
+        }
+
         const noTujuan = typeof formatNomorWa === "function" ? formatNomorWa(b.noWa) : (b.noWa || '').replace(/[^0-9]/g, '');
         const pesanWa = encodeURIComponent(`Assalamu'alaikum wr. wb. Saudara/i *${b.nama}*,\n\nAdmin Multimedia Ma'had Aly terkait pengajuan peminjaman aset *${b.namaBarang}* (${bId}).\nJadwal pengambilan: *${b.waktuAmbil || '-'}*.\n\nApakah data sewa sudah sesuai? Terima kasih.`);
 
@@ -1521,8 +1629,7 @@
               <small class="text-secondary">${typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(b.noWa) : safeNoWa} &bull; ${safeKomunitas}</small>
             </td>
             <td>
-              <strong class="text-dark d-block">${safeBarang}</strong>
-              <span class="badge bg-white text-dark border">${safePaket}</span>
+              ${barangDisplayHtml}
             </td>
             <td>
               <small class="d-block text-secondary">Pinjam: <strong>${b.waktuAmbil || '-'}</strong></small>
@@ -1561,7 +1668,7 @@
             <div class="p-2 rounded bg-light border mb-3 small">
               <div class="d-flex justify-content-between py-1 border-bottom">
                 <span class="text-muted">Unit Alat:</span>
-                <strong class="text-dark">${safeBarang}</strong>
+                <div class="text-end">${barangDisplayHtml}</div>
               </div>
               <div class="d-flex justify-content-between py-1 border-bottom">
                 <span class="text-muted">Paket Durasi:</span>
@@ -1955,6 +2062,11 @@
         { id: "12", jam: 12, label: "12 Jam", tarif: 50000, desc: "Paket standar sewa 12 jam" }
       ]);
 
+      const chkPerp = document.getElementById("checkKustomPaketPerpanjang");
+      if (chkPerp) chkPerp.checked = false;
+      toggleFormPaketPerpanjangAset();
+      renderPaketPerpanjangFormInput([]);
+
       modalAsetInstance.show();
     }
 
@@ -1977,6 +2089,16 @@
       renderPaketFormInput(item.paketOpsi || [
         { id: "12", jam: 12, label: "12 Jam", tarif: 50000, desc: "" }
       ]);
+
+      const chkPerp = document.getElementById("checkKustomPaketPerpanjang");
+      const hasPerp = Array.isArray(item.paketPerpanjangan) && item.paketPerpanjangan.length > 0;
+      if (chkPerp) chkPerp.checked = hasPerp;
+      toggleFormPaketPerpanjangAset();
+      if (hasPerp) {
+        renderPaketPerpanjangFormInput(item.paketPerpanjangan);
+      } else {
+        renderPaketPerpanjangFormInput([]);
+      }
 
       modalAsetInstance.show();
     }
@@ -2050,6 +2172,70 @@
         alert("Minimal harus memiliki 1 opsi paket durasi!");
         return;
       }
+      if (row) row.remove();
+    }
+
+    // Handler Paket Khusus Perpanjangan Waktu
+    function toggleFormPaketPerpanjangAset() {
+      const isChecked = document.getElementById("checkKustomPaketPerpanjang") && document.getElementById("checkKustomPaketPerpanjang").checked;
+      const wrap = document.getElementById("wrapPaketPerpanjangAset");
+      if (wrap) {
+        if (isChecked) {
+          wrap.classList.remove("d-none");
+          const container = document.getElementById("formPaketPerpanjangContainer");
+          if (container && container.children.length === 0) {
+            tambahBarisPaketPerpanjang(3, "+3 Jam", 25000);
+            tambahBarisPaketPerpanjang(6, "+6 Jam", 45000);
+          }
+        } else {
+          wrap.classList.add("d-none");
+        }
+      }
+    }
+
+    function renderPaketPerpanjangFormInput(list) {
+      const container = document.getElementById("formPaketPerpanjangContainer");
+      if (!container) return;
+      container.innerHTML = "";
+      if (Array.isArray(list) && list.length > 0) {
+        list.forEach(p => {
+          tambahBarisPaketPerpanjang(p.jam || 3, p.label || ("+" + p.jam + " Jam"), p.tarif || 0);
+        });
+      }
+    }
+
+    function tambahBarisPaketPerpanjang(jam = 3, label = "", tarif = 20000) {
+      const container = document.getElementById("formPaketPerpanjangContainer");
+      if (!container) return;
+      const row = document.createElement("div");
+      row.className = "row g-2 align-items-center paket-perpanjang-row";
+      row.innerHTML = `
+        <div class="col-3">
+          <div class="input-group input-group-sm">
+            <input type="number" class="form-control paket-perp-jam" value="${jam}" min="1" required />
+            <span class="input-group-text">Jam</span>
+          </div>
+        </div>
+        <div class="col-4">
+          <input type="text" class="form-control form-control-sm paket-perp-label" value="${label || ('+' + jam + ' Jam')}" placeholder="Label (+${jam} Jam)" required />
+        </div>
+        <div class="col-4">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text">Rp</span>
+            <input type="number" class="form-control paket-perp-tarif" value="${tarif}" step="1000" required />
+          </div>
+        </div>
+        <div class="col-1 text-end">
+          <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="hapusBarisPaketPerpanjang(this)">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      `;
+      container.appendChild(row);
+    }
+
+    function hapusBarisPaketPerpanjang(btn) {
+      const row = btn.closest(".paket-perpanjang-row");
       if (row) row.remove();
     }
 
@@ -2151,6 +2337,26 @@
           tarifObj[String(jam)] = tarif;
         });
 
+        // Kumpulkan paket kustom perpanjangan jika diaktifkan admin
+        let paketPerpanjangan = null;
+        const isKustomPerp = document.getElementById("checkKustomPaketPerpanjang") && document.getElementById("checkKustomPaketPerpanjang").checked;
+        if (isKustomPerp) {
+          paketPerpanjangan = [];
+          const rowsPerp = document.querySelectorAll(".paket-perpanjang-row");
+          rowsPerp.forEach(r => {
+            const jam = parseInt(r.querySelector(".paket-perp-jam").value, 10) || 3;
+            const label = r.querySelector(".paket-perp-label").value.trim() || ("+" + jam + " Jam");
+            const tarif = parseInt(r.querySelector(".paket-perp-tarif").value, 10) || 0;
+            paketPerpanjangan.push({
+              id: String(jam),
+              jam: jam,
+              label: label,
+              tarif: tarif,
+              desc: "Paket perpanjangan " + label
+            });
+          });
+        }
+
         const assetObj = {
           id: id || ("ast-" + Date.now().toString(36)),
           nama: nama,
@@ -2163,6 +2369,7 @@
           deskripsi: deskripsi,
           kelengkapan: kelengkapan,
           paketOpsi: paketOpsi,
+          paketPerpanjangan: paketPerpanjangan,
           tarif: tarifObj
         };
 
@@ -2264,12 +2471,68 @@
         const badgeJaminan = b.jaminanIdentitas ? `<span class="badge bg-light text-dark border ms-1" title="Jaminan Fisik"><i class="bi bi-card-heading text-primary me-1"></i>${typeof escapeHtml === "function" ? escapeHtml(b.jaminanIdentitas) : b.jaminanIdentitas}</span>` : '';
         const badgeHandover = b.handoverRiil ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1" style="font-size: 0.68rem;"><i class="bi bi-stopwatch me-1"></i>Handover Riil</span>` : '';
 
+        let barangMonitoringHtml = `<h6 class="fw-bolder text-dark mb-1">${safeBarang} ${badgeHandover}</h6>`;
+        if (b.isMultiItem && b.items && b.items.length > 1) {
+          const itemPills = b.items.map(it => `<span class="badge bg-light text-dark border me-1 mb-1" style="font-size:0.75rem;"><i class="bi bi-box-seam me-1 text-primary"></i>${escapeHtml(it.namaBarang)} (${it.paketJam}j)</span>`).join("");
+          barangMonitoringHtml = `
+            <div class="mb-1 d-flex align-items-center gap-1">
+              <span class="badge bg-primary text-white"><i class="bi bi-basket3 me-1"></i>${b.items.length} Aset (Multi)</span>
+              ${badgeHandover}
+            </div>
+            <div class="d-flex flex-wrap mb-1">${itemPills}</div>
+          `;
+        }
+
         const noTujuan = typeof formatNomorWa === "function" ? formatNomorWa(b.noWa) : (b.noWa || '').replace(/[^0-9]/g, '');
         let pesanWa = "";
         if (isLate) {
           pesanWa = encodeURIComponent(`Assalamu'alaikum wr. wb. Saudara/i *${b.nama}*,\n\nAdmin Multimedia Ma'had Aly menginfokan bahwa waktu peminjaman aset *${b.namaBarang}* (${bId}) telah melewati batas pengembalian (*${b.waktuSelesai || ''}*).\n\nMohon segera kembalikan aset ke sekretariat. Terima kasih.`);
         } else {
           pesanWa = encodeURIComponent(`Assalamu'alaikum wr. wb. Saudara/i *${b.nama}*,\n\nAdmin Multimedia Ma'had Aly terkait peminjaman aset *${b.namaBarang}* (${bId}).\nJadwal pengembalian: *${b.waktuSelesai || '-'}*.\n\nApakah ada kendala pada unit alat? Terima kasih.`);
+        }
+
+        let perpanjanganAlertHtml = '';
+        if (b.pengajuanPerpanjangan && b.pengajuanPerpanjangan.status === 'menunggu_persetujuan') {
+          const p = b.pengajuanPerpanjangan;
+          const alasanTxt = p.catatan ? `<div class="mt-1 small fst-italic text-secondary">"${escapeHtml(p.catatan)}"</div>` : '';
+          let rincianItemsHtml = '';
+          if (p.itemsTerpilih && Array.isArray(p.itemsTerpilih) && p.itemsTerpilih.length > 0) {
+            const listPills = p.itemsTerpilih.map(it => `
+              <div class="d-flex justify-content-between py-1 border-bottom border-warning-subtle">
+                <span>• <strong>${escapeHtml(it.namaBarang)}</strong> (+${it.jamTambahan}j)</span>
+                <span class="text-primary fw-bold">${escapeHtml(it.waktuSelesaiBaru || '-')}</span>
+              </div>
+            `).join('');
+            rincianItemsHtml = `
+              <div class="mt-2 pt-1 border-top border-warning-subtle small">
+                <span class="text-secondary fw-bold" style="font-size: 0.72rem;">UNIT YANG DIAJUKAN PERPANJANG:</span>
+                ${listPills}
+              </div>
+            `;
+          }
+
+          perpanjanganAlertHtml = `
+            <div class="p-3 rounded-3 mb-3 border border-warning shadow-sm" style="background: rgba(254, 243, 199, 0.95);">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="badge bg-warning text-dark fw-bold"><i class="bi bi-clock-history me-1"></i> Minta Perpanjang ${p.itemsTerpilih ? '(' + p.itemsTerpilih.length + ' Unit)' : '+' + p.jamTambahan + ' Jam'}</span>
+                <span class="small text-danger fw-bold">Menunggu ACC</span>
+              </div>
+              <div class="small text-dark mt-1">
+                Batas Pengembalian Baru: <strong class="text-primary">${escapeHtml(p.waktuSelesaiBaru || '-')}</strong><br>
+                Biaya Tambahan: <strong class="text-dark">${escapeHtml(p.biayaTambahanTeks || formatRupiah(p.biayaTambahan || 0))}</strong>
+                ${alasanTxt}
+                ${rincianItemsHtml}
+              </div>
+              <div class="d-flex gap-2 mt-2 pt-2 border-top border-warning-subtle">
+                <button type="button" class="btn btn-sm btn-success fw-bold flex-fill shadow-sm" onclick="setujuiPerpanjanganAdmin('${bId}')">
+                  <i class="bi bi-check2-circle me-1"></i> Setujui Perpanjangan
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger fw-bold px-3" onclick="tolakPerpanjanganAdmin('${bId}')">
+                  Tolak
+                </button>
+              </div>
+            </div>
+          `;
         }
 
         html += `
@@ -2279,7 +2542,7 @@
                 <span class="badge text-white font-monospace" style="background-color: #7928ca;">${bId}</span>
                 ${statusBadge}
               </div>
-              <h6 class="fw-bolder text-dark mb-1">${safeBarang} ${badgeHandover}</h6>
+              ${barangMonitoringHtml}
               <div class="small text-secondary mb-2">
                 Penyewa: <strong class="text-dark">${safeNama}</strong> (${safeNoWa}) ${badgeJaminan}
               </div>
@@ -2297,6 +2560,8 @@
                   <strong>${dendaTeks}</strong>
                 </div>
               </div>
+
+              ${perpanjanganAlertHtml}
 
               <!-- Baris 1: Tombol Aksi Utama (Terima Pengembalian Fisik) -->
               <button type="button" class="btn btn-success w-100 fw-bold py-2 mb-2 shadow-sm" onclick="selesaikanPenyewaan('${bId}')">
@@ -2345,22 +2610,13 @@
       let sumKas = 0;
 
       list.forEach(b => {
-        const biayaSewa = parseInt(b.biayaSewa || 0);
-        let denda = 0;
         if (b.status === "completed") {
-          denda = parseInt(b.dendaKeterlambatan || 0);
-        } else if (b.waktuSelesaiRaw) {
-          const selesaiDate = new Date(b.waktuSelesaiRaw);
-          if (!isNaN(selesaiDate.getTime()) && (now - selesaiDate) > 15 * 60 * 1000) {
-            const overMs = now - selesaiDate;
-            const overMin = Math.floor(overMs / 60000);
-            const jamDenda = Math.ceil(overMin / 60);
-            denda = jamDenda * 10000;
-          }
+          const biayaSewa = parseInt(b.biayaSewa || 0);
+          const denda = parseInt(b.dendaKeterlambatan || b.denda || 0);
+          sumPokok += biayaSewa;
+          sumDenda += denda;
+          sumKas += (biayaSewa + denda);
         }
-        sumPokok += biayaSewa;
-        sumDenda += denda;
-        sumKas += (biayaSewa + denda);
       });
 
       if (document.getElementById("rekapSewaPokok")) {
@@ -2470,6 +2726,17 @@
         const safeJaminan = b.jaminanIdentitas ? `<small class="d-block text-muted"><i class="bi bi-card-heading text-primary me-1"></i>Jaminan: <strong>${typeof escapeHtml === "function" ? escapeHtml(b.jaminanIdentitas) : b.jaminanIdentitas}</strong></small>` : '';
         const safeHandoverBadge = b.handoverRiil ? `<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle ms-1" style="font-size: 0.65rem;"><i class="bi bi-stopwatch me-1"></i>Riil</span>` : '';
 
+        let barangRiwayatHtml = `<strong class="text-dark d-block">${safeNamaBarang} ${safeHandoverBadge}</strong><span class="badge bg-white text-dark border">${safePaketLabel}</span>`;
+        if (b.isMultiItem && b.items && b.items.length > 1) {
+          const itemPills = b.items.map(it => `<span class="badge bg-light text-dark border me-1 mb-1" style="font-size:0.72rem;">${escapeHtml(it.namaBarang)} (${it.paketJam}j)</span>`).join("");
+          barangRiwayatHtml = `
+            <div class="mb-1">
+              <span class="badge bg-primary text-white"><i class="bi bi-basket3 me-1"></i>${b.items.length} Aset</span> ${safeHandoverBadge}
+            </div>
+            <div class="d-flex flex-wrap">${itemPills}</div>
+          `;
+        }
+
         // 1. Render Baris Desktop (Tabel)
         if (tbody) {
           const tr = document.createElement("tr");
@@ -2484,8 +2751,7 @@
               ${safeJaminan}
             </td>
             <td>
-              <strong class="text-dark d-block">${safeNamaBarang} ${safeHandoverBadge}</strong>
-              <span class="badge bg-white text-dark border">${safePaketLabel}</span>
+              ${barangRiwayatHtml}
             </td>
             <td>
               <small class="d-block text-secondary">Ambil: <strong>${safeWaktuAmbil}</strong></small>
@@ -2609,11 +2875,7 @@
             <div class="p-2 rounded bg-light border mb-3 small">
               <div class="d-flex justify-content-between py-1 border-bottom">
                 <span class="text-muted">Unit Alat:</span>
-                <strong class="text-dark">${safeNamaBarang} ${safeHandoverBadge}</strong>
-              </div>
-              <div class="d-flex justify-content-between py-1 border-bottom">
-                <span class="text-muted">Paket:</span>
-                <span class="badge bg-white text-dark border">${safePaketLabel}</span>
+                <div class="text-end">${barangRiwayatHtml}</div>
               </div>
               <div class="d-flex justify-content-between py-1 border-bottom">
                 <span class="text-muted">Jadwal Pinjam:</span>
@@ -2690,9 +2952,14 @@
       document.getElementById("modalAccWa").value = targetBooking.noWa || "";
       document.getElementById("modalAccBadgeId").innerText = bId;
       document.getElementById("modalAccNama").innerText = targetBooking.nama || "-";
-      document.getElementById("modalAccAset").innerText = targetBooking.namaBarang || "-";
+      if (targetBooking.isMultiItem && targetBooking.items && targetBooking.items.length > 1) {
+        document.getElementById("modalAccAset").innerHTML = `<span class="badge bg-primary text-white me-1">${targetBooking.items.length} Aset</span> ` + targetBooking.items.map(i => escapeHtml(i.namaBarang)).join(", ");
+        document.getElementById("modalAccPaket").innerText = targetBooking.items.every(it => it.paketJam === targetBooking.items[0].paketJam) ? (targetBooking.items[0].paketJam + " Jam (Semua)") : "Bervariasi (Multi-Aset)";
+      } else {
+        document.getElementById("modalAccAset").innerText = targetBooking.namaBarang || "-";
+        document.getElementById("modalAccPaket").innerText = targetBooking.paketLabel || (targetBooking.paketJam + " Jam");
+      }
       document.getElementById("modalAccJadwal").innerText = `${targetBooking.waktuAmbil || '-'} s.d ${targetBooking.waktuSelesai || '-'}`;
-      document.getElementById("modalAccPaket").innerText = targetBooking.paketLabel || (targetBooking.paketJam + " Jam");
 
       const tarifAsli = hitungTarifRiilBooking(targetBooking);
       document.getElementById("modalAccTarifAsli").innerText = formatRupiah(tarifAsli);
@@ -2845,9 +3112,17 @@
 ${catatanRiil}
 Silakan datang ke kantor Ma'had Aly Amtsilati saat jadwal pengambilan tiba.\n\n*Pantau Countdown & Durasi Pemakaian:*
 ${linkCountdown}\n\nTerima kasih.`);
-        alert(`Pengajuan sewa ${targetBookingAcc.nama} (${bId}) berhasil DISETUJUI (ACC)!\n\nNotifikasi WhatsApp otomatis berisi rincian pengambilan dan link countdown telah dikirim ke santri via Bot Gateway.`);
+        modalNotif({
+          title: "Pengajuan Sewa Di-ACC!",
+          text: `Pengajuan sewa ${targetBookingAcc.nama} (${bId}) berhasil DISETUJUI (ACC)!\n\nNotifikasi WhatsApp otomatis berisi rincian pengambilan dan link countdown telah dikirim ke santri via Bot Gateway.`,
+          icon: "success"
+        });
       } else {
-        alert(`Pengajuan sewa ${targetBookingAcc.nama} (${bId}) berhasil DISETUJUI!`);
+        modalNotif({
+          title: "Pengajuan Sewa Di-ACC!",
+          text: `Pengajuan sewa ${targetBookingAcc.nama} (${bId}) berhasil DISETUJUI!`,
+          icon: "success"
+        });
       }
     }
 
@@ -3057,9 +3332,17 @@ ${linkCountdown}\n\nTerima kasih.`);
 ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'had Aly Amtsilati dengan baik. Semoga berkah dan bermanfaat.\n\nWassalamu'alaikum wr. wb.\n*Pengurus Inventaris Ma'had Aly Amtsilati*`;
 
       if (noTujuan) {
-        alert(`Penerimaan fisik aset "${targetBookingTerima.namaBarang}" dari ${targetBookingTerima.nama} (${bId}) berhasil diselesaikan!\n\nNotifikasi WhatsApp tanda terima & bukti invoice resmi telah dikirim ke santri via Bot Gateway.`);
+        modalNotif({
+          title: "Pengembalian Selesai!",
+          text: `Penerimaan fisik aset "${targetBookingTerima.namaBarang}" dari ${targetBookingTerima.nama} (${bId}) berhasil diselesaikan!\n\nNotifikasi WhatsApp tanda terima & bukti invoice resmi telah dikirim ke santri via Bot Gateway.`,
+          icon: "success"
+        });
       } else {
-        alert(`Penerimaan fisik aset "${targetBookingTerima.namaBarang}" dari ${targetBookingTerima.nama} (${bId}) berhasil diselesaikan!`);
+        modalNotif({
+          title: "Pengembalian Selesai!",
+          text: `Penerimaan fisik aset "${targetBookingTerima.namaBarang}" dari ${targetBookingTerima.nama} (${bId}) berhasil diselesaikan!`,
+          icon: "success"
+        });
       }
     }
 
@@ -3138,9 +3421,17 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
       // Buka WhatsApp untuk notifikasi santri
       const noTujuan = typeof formatNomorWa === "function" ? formatNomorWa(targetBookingTolak.noWa) : (targetBookingTolak.noWa || '').replace(/[^0-9]/g, '');
       if (noTujuan) {
-        alert(`Booking ${targetBookingTolak.nama} (${bId}) berhasil DITOLAK dan jadwal unit telah dibebaskan.\n\nNotifikasi WhatsApp penolakan telah dikirim ke santri via Bot Gateway.`);
+        modalNotif({
+          title: "Booking Ditolak",
+          text: `Booking ${targetBookingTolak.nama} (${bId}) berhasil DITOLAK dan jadwal unit telah dibebaskan.\n\nNotifikasi WhatsApp penolakan telah dikirim ke santri via Bot Gateway.`,
+          icon: "info"
+        });
       } else {
-        alert("Booking berhasil ditolak dan jadwal alat telah dibebaskan.");
+        modalNotif({
+          title: "Booking Ditolak",
+          text: "Booking berhasil ditolak dan jadwal alat telah dibebaskan.",
+          icon: "info"
+        });
       }
     }
 
@@ -3169,7 +3460,7 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
         return;
       }
 
-      targetBooking.status = "booked";
+      targetBooking.status = "active";
       delete targetBooking.waktuDikembalikan;
 
       if (targetIdx >= 0) {
@@ -3181,7 +3472,7 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
 
       const curBooking = ambilDataBooking();
       if (curBooking && (curBooking.bookingId === bId || (curBooking.nama === targetBooking.nama && curBooking.waktuAmbil === targetBooking.waktuAmbil))) {
-        curBooking.status = "booked";
+        curBooking.status = "active";
         delete curBooking.waktuDikembalikan;
         simpanDataBooking(curBooking);
       }
@@ -3202,6 +3493,208 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
       segarkanSemuaData();
     }
 
+    async function setujuiPerpanjanganAdmin(bId) {
+      if (!bId) return;
+
+      const targetIdx = daftarRiwayatAktif.findIndex(b => (b.bookingId && b.bookingId.toUpperCase() === bId.toUpperCase()) || (b.id && b.id.toUpperCase() === bId.toUpperCase()));
+      let targetBooking = targetIdx >= 0 ? daftarRiwayatAktif[targetIdx] : null;
+
+      if (!targetBooking) {
+        const cur = ambilDataBooking();
+        if (cur && ((cur.bookingId && cur.bookingId.toUpperCase() === bId.toUpperCase()) || (cur.id && cur.id.toUpperCase() === bId.toUpperCase()))) {
+          targetBooking = cur;
+        }
+      }
+
+      if (!targetBooking || !targetBooking.pengajuanPerpanjangan) {
+        alert(`Data pengajuan perpanjangan untuk "${bId}" tidak ditemukan.`);
+        return;
+      }
+
+      const p = targetBooking.pengajuanPerpanjangan;
+      const namaSantri = targetBooking.nama || "Santri";
+      const namaAset = targetBooking.namaBarang || "Aset";
+
+      const konfirmasi = confirm(`SETUJUI PERPANJANGAN SEWA:\n\nID: ${bId}\nPenyewa: ${namaSantri}\nAset: ${namaAset}\nTambahan Waktu: +${p.jamTambahan} Jam\nBatas Selesai Baru: ${p.waktuSelesaiBaru}\nBiaya Tambahan: ${p.biayaTambahanTeks || formatRupiah(p.biayaTambahan || 0)}\n\nLanjutkan persetujuan (ACC)?`);
+      if (!konfirmasi) return;
+
+      // Update data booking
+      targetBooking.waktuSelesai = p.waktuSelesaiBaru;
+      if (p.waktuSelesaiBaruRaw) {
+        targetBooking.waktuSelesaiRaw = p.waktuSelesaiBaruRaw;
+      }
+      
+      // Jika multi item, perbarui waktu selesai sesuai item-item yang diajukan
+      if (targetBooking.isMultiItem && Array.isArray(targetBooking.items)) {
+        if (p.itemsTerpilih && Array.isArray(p.itemsTerpilih) && p.itemsTerpilih.length > 0) {
+          targetBooking.items.forEach(it => {
+            const terpilih = p.itemsTerpilih.find(ti => ti.asetId === it.asetId);
+            if (terpilih) {
+              it.waktuSelesai = terpilih.waktuSelesaiBaru;
+              if (terpilih.waktuSelesaiBaruRaw) it.waktuSelesaiRaw = terpilih.waktuSelesaiBaruRaw;
+              it.diperpanjang = true;
+            }
+          });
+        } else {
+          targetBooking.items.forEach(it => {
+            it.waktuSelesai = p.waktuSelesaiBaru;
+            if (p.waktuSelesaiBaruRaw) it.waktuSelesaiRaw = p.waktuSelesaiBaruRaw;
+          });
+        }
+      }
+
+      // Tambahkan biaya sewa jika bukan dinas resmi
+      if (!targetBooking.isDinas && parseInt(p.biayaTambahan || 0) > 0) {
+        targetBooking.biayaSewa = parseInt(targetBooking.biayaSewa || 0) + parseInt(p.biayaTambahan || 0);
+      }
+
+      // Update status pengajuan
+      targetBooking.pengajuanPerpanjangan.status = 'disetujui';
+      targetBooking.pengajuanPerpanjangan.waktuDisetujui = new Date().toISOString();
+
+      // Simpan ke storage lokal
+      if (targetIdx >= 0) {
+        daftarRiwayatAktif[targetIdx] = targetBooking;
+      }
+      localStorage.setItem(STORAGE_BOOKING_HISTORY, JSON.stringify(daftarRiwayatAktif));
+
+      const curBooking = ambilDataBooking();
+      if (curBooking && (curBooking.bookingId === bId || (curBooking.nama === targetBooking.nama && curBooking.waktuAmbil === targetBooking.waktuAmbil))) {
+        curBooking.waktuSelesai = targetBooking.waktuSelesai;
+        curBooking.waktuSelesaiRaw = targetBooking.waktuSelesaiRaw;
+        curBooking.biayaSewa = targetBooking.biayaSewa;
+        curBooking.pengajuanPerpanjangan = targetBooking.pengajuanPerpanjangan;
+        if (targetBooking.items) curBooking.items = targetBooking.items;
+        simpanDataBooking(curBooking);
+      }
+
+      // Sinkronkan ke server PHP
+      try {
+        await fetch((typeof dapatkanApiEndpoint === 'function' ? dapatkanApiEndpoint('action=simpan_booking') : 'api-service.php?action=simpan_booking'), {
+          method: 'POST',
+          headers: typeof ambilHeaderAdminAuth === "function" ? ambilHeaderAdminAuth() : { 'Content-Type': 'application/json' },
+          body: JSON.stringify(targetBooking)
+        });
+      } catch (e) {}
+
+      // Kirim WhatsApp Bot Otomatis ke Santri
+      const noSantri = targetBooking.noWa;
+      if (noSantri && typeof kirimWaGatewayOtomatis === 'function') {
+        const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+        const linkStatus = `${baseUrl}/status.html?id=${encodeURIComponent(bId)}`;
+
+        let rincianDisetujuiWa = "";
+        if (p.itemsTerpilih && Array.isArray(p.itemsTerpilih) && p.itemsTerpilih.length > 0) {
+          rincianDisetujuiWa = p.itemsTerpilih.map(it => `  • *${it.namaBarang}* : s.d *${it.waktuSelesaiBaru}* (+${it.jamTambahan}j)`).join("\n");
+          if (targetBooking.items && targetBooking.items.length > p.itemsTerpilih.length) {
+            rincianDisetujuiWa += `\n  _(Unit lain tidak diperpanjang, mohon kembalikan sesuai jadwal semula)_`;
+          }
+        } else {
+          rincianDisetujuiWa = `  • *${namaAset}* : s.d *${p.waktuSelesaiBaru}* (+${p.jamTambahan} Jam)`;
+        }
+
+        const pesanSantri = `Assalamu'alaikum wr. wb. Saudara/i *${namaSantri}*,\n\n` +
+          `✅ *PERMOHONAN PERPANJANGAN WAKTU DISETUJUI (ACC)!*\n\n` +
+          `Pengajuan perpanjangan waktu sewa Anda (${bId}) telah *DISETUJUI* oleh Pengurus Ma'had Aly Amtsilati.\n\n` +
+          `*Rincian Jadwal Baru:*\n${rincianDisetujuiWa}\n\n` +
+          `- Biaya Tambahan: *${p.biayaTambahanTeks || formatRupiah(p.biayaTambahan || 0)}*\n` +
+          `- Total Biaya Sewa: *${formatRupiah(targetBooking.biayaSewa || 0)}*\n\n` +
+          `👉 *Pantau Hitung Mundur Waktu Baru di Halaman Status:*\n` +
+          `${linkStatus}\n\n` +
+          `Terima kasih telah merawat fasilitas pondok dengan baik.`;
+        
+        try {
+          await kirimWaGatewayOtomatis(noSantri, pesanSantri);
+        } catch (errWa) {
+          console.warn("[Perpanjangan] Gagal kirim WA ke santri:", errWa);
+        }
+      }
+
+      segarkanSemuaData();
+
+      modalNotif({
+        title: "Perpanjangan Disetujui!",
+        text: `Perpanjangan waktu +${p.jamTambahan} Jam untuk "${namaSantri}" berhasil disetujui. Batas pengembalian diperbarui menjadi ${p.waktuSelesaiBaru}, dan WhatsApp konfirmasi telah dikirim ke santri!`,
+        icon: "success"
+      });
+    }
+
+    async function tolakPerpanjanganAdmin(bId) {
+      if (!bId) return;
+
+      const targetIdx = daftarRiwayatAktif.findIndex(b => (b.bookingId && b.bookingId.toUpperCase() === bId.toUpperCase()) || (b.id && b.id.toUpperCase() === bId.toUpperCase()));
+      let targetBooking = targetIdx >= 0 ? daftarRiwayatAktif[targetIdx] : null;
+
+      if (!targetBooking) {
+        const cur = ambilDataBooking();
+        if (cur && ((cur.bookingId && cur.bookingId.toUpperCase() === bId.toUpperCase()) || (cur.id && cur.id.toUpperCase() === bId.toUpperCase()))) {
+          targetBooking = cur;
+        }
+      }
+
+      if (!targetBooking || !targetBooking.pengajuanPerpanjangan) {
+        alert(`Data pengajuan perpanjangan untuk "${bId}" tidak ditemukan.`);
+        return;
+      }
+
+      const p = targetBooking.pengajuanPerpanjangan;
+      const namaSantri = targetBooking.nama || "Santri";
+      const namaAset = targetBooking.namaBarang || "Aset";
+
+      const alasanTolak = prompt(`Tolak permohonan perpanjangan (+${p.jamTambahan} Jam) untuk ${namaSantri}?\n\nMasukkan alasan penolakan (akan dikirimkan ke WhatsApp santri):`, "Jadwal unit padat / akan digunakan kegiatan lain");
+      if (alasanTolak === null) return;
+
+      // Update status pengajuan
+      targetBooking.pengajuanPerpanjangan.status = 'ditolak';
+      targetBooking.pengajuanPerpanjangan.alasanTolak = (alasanTolak || "").trim() || "Jadwal alat padat / akan digunakan untuk kegiatan lain.";
+      targetBooking.pengajuanPerpanjangan.waktuDitolak = new Date().toISOString();
+
+      if (targetIdx >= 0) {
+        daftarRiwayatAktif[targetIdx] = targetBooking;
+      }
+      localStorage.setItem(STORAGE_BOOKING_HISTORY, JSON.stringify(daftarRiwayatAktif));
+
+      const curBooking = ambilDataBooking();
+      if (curBooking && (curBooking.bookingId === bId || (curBooking.nama === targetBooking.nama && curBooking.waktuAmbil === targetBooking.waktuAmbil))) {
+        curBooking.pengajuanPerpanjangan = targetBooking.pengajuanPerpanjangan;
+        simpanDataBooking(curBooking);
+      }
+
+      // Sinkronkan ke server PHP
+      try {
+        await fetch((typeof dapatkanApiEndpoint === 'function' ? dapatkanApiEndpoint('action=simpan_booking') : 'api-service.php?action=simpan_booking'), {
+          method: 'POST',
+          headers: typeof ambilHeaderAdminAuth === "function" ? ambilHeaderAdminAuth() : { 'Content-Type': 'application/json' },
+          body: JSON.stringify(targetBooking)
+        });
+      } catch (e) {}
+
+      // Kirim WhatsApp Bot Otomatis ke Santri
+      const noSantri = targetBooking.noWa;
+      if (noSantri && typeof kirimWaGatewayOtomatis === 'function') {
+        const pesanSantri = `Assalamu'alaikum wr. wb. Saudara/i *${namaSantri}*,\n\n` +
+          `⚠️ *INFORMASI PERPANJANGAN WAKTU SEWA*\n\n` +
+          `Mohon maaf, permohonan perpanjangan waktu untuk aset *${namaAset}* (${bId}) *BELUM DAPAT DISETUJUI* oleh Pengurus Ma'had Aly Amtsilati.\n\n` +
+          `*Alasan:* ${targetBooking.pengajuanPerpanjangan.alasanTolak}\n` +
+          `*Batas Pengembalian Tetap:* *${targetBooking.waktuSelesai || '-'}*\n\n` +
+          `Mohon untuk mengembalikan aset tepat waktu ke sekretariat agar tidak terkena denda keterlambatan. Terima kasih.`;
+        
+        try {
+          await kirimWaGatewayOtomatis(noSantri, pesanSantri);
+        } catch (errWa) {
+          console.warn("[Perpanjangan] Gagal kirim WA tolak ke santri:", errWa);
+        }
+      }
+
+      segarkanSemuaData();
+
+      modalNotif({
+        title: "Perpanjangan Ditolak",
+        text: `Permohonan perpanjangan sewa untuk "${namaSantri}" telah ditolak, dan notifikasi WhatsApp pemberitahuan telah dikirimkan ke santri.`,
+        icon: "info"
+      });
+    }
+
     function cetakLaporanKas() {
       const filterStatus = document.getElementById("filterRiwayatStatus") ? document.getElementById("filterRiwayatStatus").value : "semua";
       let list = [...daftarRiwayatAktif];
@@ -3213,21 +3706,31 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
 
       const rowsHtml = list.map((b, idx) => {
         const bId = b.bookingId || ('INV-' + String(idx + 1).padStart(4, '0'));
-        const pokok = parseInt(b.biayaSewa || 0);
-        const denda = parseInt(b.dendaKeterlambatan || 0);
+        const isCompleted = b.status === 'completed';
+        const pokok = isCompleted ? parseInt(b.biayaSewa || 0) : 0;
+        const denda = isCompleted ? parseInt(b.dendaKeterlambatan || 0) : 0;
         const total = pokok + denda;
         totalPokok += pokok;
         totalDenda += denda;
         totalKas += total;
+
+        let barangNamaPrint = b.namaBarang || '-';
+        if (b.isMultiItem && b.items && b.items.length > 1) {
+          barangNamaPrint = b.items.map(it => `${it.namaBarang} (${it.paketJam}j)`).join('<br>&bull; ');
+          barangNamaPrint = `<strong>[${b.items.length} Aset]</strong><br>&bull; ` + barangNamaPrint;
+        } else {
+          barangNamaPrint += ` (${b.paketLabel || (b.paketJam + ' Jam')})`;
+        }
+
         return `
           <tr>
             <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace;">${bId}</td>
-            <td style="padding: 8px; border: 1px solid #ddd;">${b.nama}<br><small style="color:#666">${b.noWa || '-'}</small></td>
-            <td style="padding: 8px; border: 1px solid #ddd;">${b.namaBarang} (${b.paketLabel || (b.paketJam + ' Jam')})</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${escapeHtml(b.nama || '-')}<br><small style="color:#666">${escapeHtml(b.noWa || '-')}</small></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${barangNamaPrint}</td>
             <td style="padding: 8px; border: 1px solid #ddd;">${b.waktuAmbil || '-'}<br><small style="color:#d00">s/d ${b.waktuSelesai || '-'}</small></td>
-            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${formatRupiah(pokok)}</td>
-            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${formatRupiah(denda)}</td>
-            <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatRupiah(total)}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${formatRupiah(parseInt(b.biayaSewa || 0))}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${formatRupiah(parseInt(b.dendaKeterlambatan || 0))}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${isCompleted ? formatRupiah(total) : '<span style="color:#888;">(Belum Selesai)</span>'}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${b.status === 'completed' ? 'Lunas / Selesai' : (b.status === 'pending' ? 'Menunggu ACC' : (b.status === 'rejected' || b.status === 'cancelled' ? 'Ditolak' : 'Sedang Berjalan'))}</td>
           </tr>
         `;
@@ -3366,6 +3869,12 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
     // ========================================================
     function muatPengaturanForm() {
       const config = ambilPengaturanAdmin();
+      const nama1 = (config.admin1 && config.admin1.label) ? config.admin1.label : "Admin 1 (Pengurus)";
+      const nama2 = (config.admin2 && config.admin2.label) ? config.admin2.label : "Admin 2 (Pengurus)";
+      const elNama1 = document.getElementById("settingNamaAdmin1");
+      const elNama2 = document.getElementById("settingNamaAdmin2");
+      if (elNama1) elNama1.value = nama1;
+      if (elNama2) elNama2.value = nama2;
       document.getElementById("settingWaAdmin1").value = (config.admin1 && config.admin1.wa) ? config.admin1.wa : "628812762520";
       document.getElementById("settingWaAdmin2").value = (config.admin2 && config.admin2.wa) ? config.admin2.wa : "628812762520";
       document.getElementById("settingUsername").value = config.username || "admin";
@@ -3393,7 +3902,66 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
       const elNotifSantri = document.getElementById("gwNotifySantri");
       if (elNotifSantri) elNotifSantri.checked = (gw.notifySantriBooking !== false);
 
+      // Muat pengaturan Opsi Durasi Perpanjangan Sewa
+      const opsiPerp = config.opsiPerpanjangan || { mode: "katalog", jamKustom: [3, 6, 12, 24] };
+      const radKatalog = document.getElementById("modePerpanjanganKatalog");
+      const radKustom = document.getElementById("modePerpanjanganKustom");
+      const inpKustom = document.getElementById("inputJamKustomPerpanjang");
+      if (radKatalog && radKustom) {
+        if (opsiPerp.mode === "kustom") {
+          radKustom.checked = true;
+        } else {
+          radKatalog.checked = true;
+        }
+      }
+      if (inpKustom) {
+        const listJam = Array.isArray(opsiPerp.jamKustom) ? opsiPerp.jamKustom.join(", ") : "3, 6, 12, 24";
+        inpKustom.value = listJam;
+      }
+      toggleFormPerpanjanganKustom();
+
       muatFotoProfilAdminSaatIni();
+    }
+
+    function toggleFormPerpanjanganKustom() {
+      const isKustom = document.getElementById("modePerpanjanganKustom") && document.getElementById("modePerpanjanganKustom").checked;
+      const box = document.getElementById("boxInputJamKustom");
+      if (box) {
+        box.style.display = isKustom ? "block" : "none";
+      }
+    }
+
+    function simpanPengaturanPerpanjangan(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const isKustom = document.getElementById("modePerpanjanganKustom") && document.getElementById("modePerpanjanganKustom").checked;
+      const inpKustom = document.getElementById("inputJamKustomPerpanjang");
+      let jamList = [3, 6, 12, 24];
+      if (inpKustom && inpKustom.value.trim()) {
+        jamList = inpKustom.value
+          .split(/[,;\s]+/)
+          .map(v => parseInt(v.trim()))
+          .filter(n => !isNaN(n) && n > 0);
+        if (jamList.length === 0) jamList = [3, 6, 12, 24];
+      }
+
+      const cfg = ambilPengaturanAdmin();
+      cfg.opsiPerpanjangan = {
+        mode: isKustom ? "kustom" : "katalog",
+        jamKustom: jamList
+      };
+      simpanPengaturanAdmin(cfg);
+
+      if (typeof modalNotif === "function") {
+        modalNotif({
+          title: "Pengaturan Disimpan!",
+          text: isKustom 
+            ? `Mode Kustom aktif (${jamList.join(', ')} Jam) untuk perpanjangan sewa santri.`
+            : "Mode Katalog aktif (Pilihan jam otomatis mengikuti paket katalog masing-masing aset).",
+          icon: "success"
+        });
+      } else {
+        alert("Pengaturan opsi perpanjangan berhasil disimpan!");
+      }
     }
 
     function toggleLihatApiKey() {
@@ -3485,6 +4053,10 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
 
     function simpanPengaturanWaAdmin(e) {
       e.preventDefault();
+      const elNama1 = document.getElementById("settingNamaAdmin1");
+      const elNama2 = document.getElementById("settingNamaAdmin2");
+      const nama1 = (elNama1 ? elNama1.value.trim() : "") || "Admin 1 (Pengurus)";
+      const nama2 = (elNama2 ? elNama2.value.trim() : "") || "Admin 2 (Pengurus)";
       const wa1 = document.getElementById("settingWaAdmin1").value.trim().replace(/[^0-9]/g, '');
       const wa2 = document.getElementById("settingWaAdmin2").value.trim().replace(/[^0-9]/g, '');
 
@@ -3494,11 +4066,11 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
       }
 
       const cfg = ambilPengaturanAdmin();
-      cfg.admin1 = { id: "admin1", label: "Admin 1", wa: wa1 };
-      cfg.admin2 = { id: "admin2", label: "Admin 2", wa: wa2 };
+      cfg.admin1 = { id: "admin1", label: nama1, wa: wa1 };
+      cfg.admin2 = { id: "admin2", label: nama2, wa: wa2 };
       simpanPengaturanAdmin(cfg);
 
-      alert("Pengaturan nomor WhatsApp Admin 1 & Admin 2 berhasil disimpan dan langsung aktif!");
+      alert("Pengaturan nama dan nomor WhatsApp Pengurus berhasil disimpan dan langsung aktif!");
     }
 
     function simpanAkunAdmin(e) {
@@ -3517,6 +4089,7 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
       simpanPengaturanAdmin(cfg);
 
       sessionStorage.setItem("admin_user", user);
+      sessionStorage.setItem("admin_token", pass);
       document.getElementById("navAdminName").innerText = user;
       const sidebarName = document.getElementById("sidebarAdminName");
       if (sidebarName) sidebarName.innerText = user;

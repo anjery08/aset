@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Unit Test & Simulasi Logika Rental - METAHATI</title>
+  <!-- Google Font & Bootstrap Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <style>
+    :root {
+      --primary: #0066ff;
+      --metahati-magenta: #d60099;
+      --metahati-dark: #0f172a;
+      --success: #10b981;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: #1e293b;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    .btn-run {
+      background: var(--metahati-magenta);
+      color: white !important;
+      border: none;
+      padding: 0.65rem 1.25rem;
+      border-radius: 0.75rem;
+      font-weight: 700;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(214, 0, 153, 0.3);
+    }
+    .btn-run:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(214, 0, 153, 0.45);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      padding: 1.25rem;
+      border-radius: 0.875rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .stat-card .label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #64748b;
+      letter-spacing: 0.05em;
+    }
+    .stat-card .value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-top: 0.25rem;
+    }
+    .stat-card.success .value { color: var(--success); }
+    .stat-card.danger .value { color: var(--danger); }
+    .stat-card.primary .value { color: var(--primary); }
+
+    .test-group {
+      background: var(--card-bg);
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px -2px rgba(0,0,0,0.05);
+    }
+    .test-group-header {
+      background: #f1f5f9;
+      padding: 1rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .test-item {
+      padding: 0.875rem 1.25rem;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      transition: background 0.15s ease;
+    }
+    .test-item:last-child {
+      border-bottom: none;
+    }
+    .test-item:hover {
+      background: #f8fafc;
+    }
+    .test-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .badge-status {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+    }
+    .badge-pass {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+    .badge-fail {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.8125rem;
+      color: #64748b;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <h1><i class="bi bi-shield-check" style="color: var(--metahati-magenta);"></i> Unit Test & Simulasi Sistem</h1>
+        <p>Pengujian Otomatis Logika Rental, Bentrok Jadwal, Keranjang, dan Denda</p>
+      </div>
+      <button class="btn-run" onclick="jalankanSemuaTes()">
+        <i class="bi bi-play-circle-fill"></i> Jalankan Ulang Tes
+      </button>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stats-grid">
+      <div class="stat-card primary">
+        <div class="label">Total Skenario</div>
+        <div class="value" id="statTotal">0</div>
+      </div>
+      <div class="stat-card success">
+        <div class="label">Skenario Lolos</div>
+        <div class="value" id="statLolos">0</div>
+      </div>
+      <div class="stat-card danger">
+        <div class="label">Skenario Gagal / Bug</div>
+        <div class="value" id="statGagal">0</div>
+      </div>
+      <div class="stat-card primary">
+        <div class="label">Waktu Eksekusi</div>
+        <div class="value" id="statWaktu">0 ms</div>
+      </div>
+    </div>
+
+    <!-- Output Container -->
+    <div id="testOutput"></div>
+
+    <div class="footer">
+      Sistem Peminjaman Aset Ma'had Aly Amtsilati • Test Runner Version 2.0 • 2026
+    </div>
+  </div>
+
+  <!-- Muat Skrip Logika Rental Asli -->
+  <script src="../js/rental-logic.js"></script>
+
+  <script>
+    let totalCount = 0;
+    let passCount = 0;
+    let failCount = 0;
+
+    function resetStats() {
+      totalCount = 0;
+      passCount = 0;
+      failCount = 0;
+      document.getElementById('testOutput').innerHTML = '';
+    }
+
+    function createGroup(title) {
+      const div = document.createElement('div');
+      div.className = 'test-group';
+      div.innerHTML = `
+        <div class="test-group-header">
+          <span>${title}</span>
+          <span class="badge-status badge-pass" id="badge-${title.replace(/[^a-zA-Z0-9]/g, '')}">Semua Lolos</span>
+        </div>
+        <div class="test-group-body"></div>
+      `;
+      document.getElementById('testOutput').appendChild(div);
+      return div.querySelector('.test-group-body');
+    }
+
+    function assertTest(groupEl, deskripsi, kondisi, detail = '') {
+      totalCount++;
+      const item = document.createElement('div');
+      item.className = 'test-item';
+      
+      if (kondisi) {
+        passCount++;
+        item.innerHTML = `
+          <div class="test-title">
+            <i class="bi bi-check-circle-fill text-success" style="color: var(--success) !important;"></i>
+            <span>${deskripsi}</span>
+          </div>
+          <span class="badge-status badge-pass"><i class="bi bi-check2"></i> Lulus</span>
+        `;
+      } else {
+        failCount++;
+        item.innerHTML = `
+          <div class="test-title">
+            <i class="bi bi-x-circle-fill text-danger" style="color: var(--danger) !important;"></i>
+            <div>
+              <span>${deskripsi}</span>
+              ${detail ? `<small class="d-block text-danger" style="color: var(--danger); font-size: 0.75rem;">↳ ${detail}</small>` : ''}
+            </div>
+          </div>
+          <span class="badge-status badge-fail"><i class="bi bi-exclamation-triangle"></i> Gagal</span>
+        `;
+      }
+      groupEl.appendChild(item);
+    }
+
+    function jalankanSemuaTes() {
+      const t0 = performance.now();
+      resetStats();
+
+      // Kelompok 1: Keranjang & Multi-Item
+      const g1 = createGroup('1. Kalkulasi Keranjang & Multi-Aset');
+      kosongkanKeranjang();
+      let kAwal = hitungTotalKeranjang();
+      assertTest(g1, 'Keranjang awal kosong (0 item, Rp 0)', kAwal.totalItem === 0 && kAwal.totalBiaya === 0);
+
+      tambahKeKeranjang({ id: 'cam-01', nama: 'Sony A6400', tarif: 60000 }, { id: '12', jam: 12, tarif: 60000, label: '12 Jam' });
+      let k1 = hitungTotalKeranjang();
+      assertTest(g1, 'Tambah 1 unit: 1 item & total Rp 60.000', k1.totalItem === 1 && k1.totalBiaya === 60000);
+
+      tambahKeKeranjang({ id: 'lens-01', nama: 'Lensa 50mm', tarif: 25000 }, { id: '6', jam: 6, tarif: 25000, label: '6 Jam' });
+      tambahKeKeranjang({ id: 'tripod-01', nama: 'Tripod Takara', tarif: 15000 }, { id: '24', jam: 24, tarif: 30000, label: '24 Jam' });
+      let k3 = hitungTotalKeranjang();
+      assertTest(g1, 'Tambah 3 unit berbeda: akumulasi total Rp 115.000', k3.totalItem === 3 && k3.totalBiaya === 115000);
+
+      tambahKeKeranjang({ id: 'cam-01', nama: 'Sony A6400', tarif: 60000 }, { id: '24', jam: 24, tarif: 100000, label: '24 Jam' });
+      let kUp = hitungTotalKeranjang();
+      assertTest(g1, 'Update durasi alat lama: tidak menduplikasi item (tetap 3)', kUp.totalItem === 3 && kUp.totalBiaya === 155000);
+
+      hapusDariKeranjang('lens-01');
+      let kDel = hitungTotalKeranjang();
+      assertTest(g1, 'Hapus 1 unit: sisa 2 item & biaya Rp 130.000', kDel.totalItem === 2 && kDel.totalBiaya === 130000);
+
+      kosongkanKeranjang();
+      let kEmpty = hitungTotalKeranjang();
+      assertTest(g1, 'Kosongkan keranjang: kembali ke 0 item dan Rp 0', kEmpty.totalItem === 0 && kEmpty.totalBiaya === 0);
+
+      // Kelompok 2: Deteksi Bentrok Jadwal & Buffer
+      const g2 = createGroup('2. Deteksi Bentrok Jadwal & Buffer 30 Menit');
+      const dummyHistory = [
+        { bookingId: 'INV-T1', status: 'approved', asetId: 'cam-sony', namaBarang: 'Sony A6400', waktuAmbilRaw: '2026-10-01T08:00:00.000Z', waktuSelesaiRaw: '2026-10-01T10:00:00.000Z' },
+        { bookingId: 'INV-T2', status: 'completed', asetId: 'cam-sony', waktuAmbilRaw: '2026-10-01T14:00:00.000Z', waktuSelesaiRaw: '2026-10-01T16:00:00.000Z' }
+      ];
+      localStorage.setItem('rental_aset_booking_history', JSON.stringify(dummyHistory));
+
+      const bDirect = cekBentrokJadwalAset('cam-sony', '2026-10-01T08:30:00.000Z', '2026-10-01T09:30:00.000Z');
+      assertTest(g2, 'Tabrakan langsung di tengah jam sewa: wajib bentrok', bDirect.available === false);
+
+      const bBufferAfter = cekBentrokJadwalAset('cam-sony', '2026-10-01T10:15:00.000Z', '2026-10-01T12:00:00.000Z');
+      assertTest(g2, 'Sewa jam 10:15 (dalam jeda perawatan 30 mnt): wajib ditolak', bBufferAfter.available === false);
+
+      const bSafeAfter = cekBentrokJadwalAset('cam-sony', '2026-10-01T10:35:00.000Z', '2026-10-01T12:00:00.000Z');
+      assertTest(g2, 'Sewa jam 10:35 (lewat dari jeda perawatan): wajib lolos', bSafeAfter.available === true);
+
+      const bBufferBefore = cekBentrokJadwalAset('cam-sony', '2026-10-01T06:00:00.000Z', '2026-10-01T07:45:00.000Z');
+      assertTest(g2, 'Sewa selesai jam 07:45 (jeda ke 08:00 < 30 mnt): wajib ditolak', bBufferBefore.available === false);
+
+      const bCompleted = cekBentrokJadwalAset('cam-sony', '2026-10-01T14:30:00.000Z', '2026-10-01T15:30:00.000Z');
+      assertTest(g2, 'Booking lama status completed: tidak menghalangi sewa baru', bCompleted.available === true);
+
+      const multiItems = [
+        { asetId: 'cam-sony', namaBarang: 'Sony A6400', paketJam: 2 },
+        { asetId: 'lens-wide', namaBarang: 'Lensa 16mm', paketJam: 2 }
+      ];
+      const resMulti = cekBentrokMultiAset(multiItems, '2026-10-01T09:00:00.000Z');
+      assertTest(g2, 'Multi-aset: deteksi akurat alat spesifik yang bentrok', resMulti.available === false && resMulti.bentrokItems.length === 1);
+
+      // Kelompok 3: Perhitungan Waktu
+      const g3 = createGroup('3. Perhitungan Waktu Selesai Sewa');
+      const w1 = hitungWaktuSelesai('2026-10-01T08:00:00', 3);
+      assertTest(g3, 'Mulai 08:00 + 3 Jam: selesai tepat jam 11:00', w1 && w1.getHours() === 11);
+
+      const w2 = hitungWaktuSelesai('2026-10-01T22:00:00', 6);
+      assertTest(g3, 'Mulai 22:00 + 6 Jam (lintas hari): selesai jam 04:00 besoknya', w2 && w2.getDate() === 2 && w2.getHours() === 4);
+
+      const w3 = hitungWaktuSelesai('', 6);
+      assertTest(g3, 'Input waktu kosong: menghasilkan null secara aman', w3 === null);
+
+      // Kelompok 4: Denda Keterlambatan
+      const g4 = createGroup('4. Perhitungan Denda Keterlambatan');
+      const limit = '2026-10-01T12:00:00';
+      const d1 = hitungDenda(limit, '2026-10-01T11:45:00');
+      assertTest(g4, 'Kembali tepat waktu: denda Rp 0', d1.totalDenda === 0 && !d1.terlambat);
+
+      const d2 = hitungDenda(limit, '2026-10-01T12:10:00');
+      assertTest(g4, 'Terlambat 10 menit (masa toleransi 15 menit): denda Rp 0', d2.totalDenda === 0 && !d2.terlambat);
+
+      const d3 = hitungDenda(limit, '2026-10-01T12:20:00');
+      assertTest(g4, 'Terlambat 20 menit (lewat toleransi): denda 1 jam (Rp 10.000)', d3.totalDenda === 10000 && d3.terlambat);
+
+      const d4 = hitungDenda(limit, '2026-10-01T13:15:00');
+      assertTest(g4, 'Terlambat 75 menit: pembulatan 2 jam (Rp 20.000)', d4.totalDenda === 20000 && d4.jamDihitung === 2);
+
+      const d5 = hitungDenda(limit, '2026-10-01T15:00:00', true);
+      assertTest(g4, 'Terlambat 3 jam peminjaman dinas resmi: denda Rp 0 (Bebas Biaya)', d5.totalDenda === 0);
+
+      // Kelompok 5: Ketahanan Data & Sanitasi
+      const g5 = createGroup('5. Ketahanan Data & Sanitasi Sistem');
+      const invDate = cekBentrokJadwalAset('cam-sony', '2026-10-01T12:00:00.000Z', '2026-10-01T08:00:00.000Z');
+      assertTest(g5, 'Rentang waktu terbalik: sistem menolak validasi secara aman', invDate.available === false && !!invDate.error);
+
+      const waLokal = formatNomorWaLokal('628123456789');
+      assertTest(g5, 'Normalisasi nomor WA ke standar 08... bekerja tepat', waLokal === '08123456789');
+
+      const xssTest = escapeHtml('<script>alert("hack")</script>');
+      assertTest(g5, 'Sanitasi XSS: tag berbahaya berhasil dinetralkan', !xssTest.includes('<script>') && xssTest.includes('&lt;script&gt;'));
+
+      const t1 = performance.now();
+      const durasi = Math.round(t1 - t0);
+
+      // Update stat cards
+      document.getElementById('statTotal').innerText = totalCount;
+      document.getElementById('statLolos').innerText = passCount;
+      document.getElementById('statGagal').innerText = failCount;
+      document.getElementById('statWaktu').innerText = durasi + ' ms';
+    }
+
+    // Jalankan otomatis saat halaman dibuka
+    document.addEventListener('DOMContentLoaded', jalankanSemuaTes);
+  </script>
+</body>
+</html>

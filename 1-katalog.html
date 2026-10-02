@@ -22,7 +22,7 @@
   
   <!-- AdminLTE & Custom CSS -->
   <link rel="stylesheet" href="./dist/css/adminlte.min.css" />
-  <link rel="stylesheet" href="./css/custom.css" />
+  <link rel="stylesheet" href="./css/custom.css?v=5.0" />
 </head>
 <body class="ios-glass-theme">
   <!-- Navbar iOS Frosted Glass -->
@@ -101,8 +101,21 @@
       </div>
     </div>
 
-    <!-- Filter Kategori Toolbar (iOS Glass Segmented Control) -->
+    <!-- Filter Kategori & Search Toolbar (iOS Glass Segmented Control) -->
     <div class="ios-filter-glass mb-4">
+      <div class="row g-2 justify-content-center mb-3">
+        <div class="col-md-6 col-lg-5">
+          <div class="input-group shadow-sm" style="border-radius: 50rem; overflow: hidden; border: 1.5px solid rgba(0, 102, 255, 0.2);">
+            <span class="input-group-text bg-white border-0 ps-3">
+              <i class="bi bi-search text-primary"></i>
+            </span>
+            <input type="text" id="searchInput" class="form-control border-0 py-2 ps-2" placeholder="Cari nama kamera, lighting, sound..." style="font-size: 0.95rem;">
+            <button class="btn bg-white border-0 text-muted pe-3" type="button" id="btnResetSearch" onclick="resetFilter()" title="Hapus pencarian">
+              <i class="bi bi-x-circle-fill"></i>
+            </button>
+          </div>
+        </div>
+      </div>
       <div class="d-flex flex-wrap gap-2 justify-content-center align-items-center" id="kategoriFilterGroup">
         <!-- Diisi otomatis oleh renderFilterKategoriButtons() -->
       </div>
@@ -166,6 +179,138 @@
     </div>
   </div>
 
+  <!-- Modal Quick Add Durasi Sewa (Gaya A) -->
+  <div class="modal fade" id="modalQuickAdd" tabindex="-1" aria-labelledby="modalQuickAddLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 1.25rem; overflow: hidden; backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.98);">
+        <div class="modal-header border-bottom py-3 px-4" style="background: rgba(0, 102, 255, 0.05);">
+          <div>
+            <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2 mb-0" id="modalQuickAddLabel">
+              <i class="bi bi-cart-plus text-primary"></i> Pilih Durasi Sewa
+            </h5>
+            <div class="small text-muted mt-1">Tambahkan alat ke keranjang peminjaman santri</div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <!-- Info Ringkas Alat -->
+          <div class="d-flex align-items-center gap-3 p-3 rounded-3 mb-3" style="background: rgba(248, 250, 252, 0.9); border: 1px solid rgba(0, 102, 255, 0.15);">
+            <img id="quickAddImg" src="" alt="" style="width: 55px; height: 55px; object-fit: cover; border-radius: 0.65rem;" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';" />
+            <div id="quickAddFallbackIcon" class="align-items-center justify-content-center text-primary" style="display:none; width:55px; height:55px; background:rgba(0,102,255,0.1); border-radius:0.65rem; font-size:1.6rem;">
+              <i class="bi bi-camera-fill"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-1" id="quickAddNamaBarang">-</h6>
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill small" id="quickAddKategori">-</span>
+            </div>
+          </div>
+
+          <label class="form-label fw-bold text-dark small mb-2">Pilih Paket Durasi Sewa:</label>
+          <div id="quickAddPaketContainer" class="d-flex flex-column gap-2 mb-3">
+            <!-- Rendered via JS -->
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center p-3 rounded-3" style="background: rgba(240, 247, 255, 0.8); border: 1px solid rgba(0, 102, 255, 0.2);">
+            <span class="small fw-bold text-secondary">Estimasi Biaya:</span>
+            <strong class="fs-5 text-primary" id="quickAddTotalEstimasi">Rp 0</strong>
+          </div>
+        </div>
+        <div class="modal-footer bg-white border-top p-3 d-flex gap-2">
+          <button type="button" class="btn btn-outline-secondary fw-bold rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-ios-primary fw-bold rounded-pill px-4 flex-grow-1 shadow-sm" id="btnSimpanQuickAdd" onclick="eksekusiQuickAdd()">
+            <i class="bi bi-plus-circle me-1"></i> Masukkan ke Keranjang
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal / Drawer Rincian Keranjang Sewa -->
+  <div class="modal fade" id="modalKeranjang" tabindex="-1" aria-labelledby="modalKeranjangLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 1.25rem; overflow: hidden; backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.98);">
+        <div class="modal-header border-bottom py-3 px-4" style="background: rgba(0, 102, 255, 0.05);">
+          <div>
+            <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2 mb-0" id="modalKeranjangLabel">
+              <i class="bi bi-cart3 text-primary"></i> Keranjang Sewa Aset Santri
+            </h5>
+            <div class="small text-muted mt-1">Daftar peralatan yang akan disewa dalam satu pengajuan resmi</div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div id="keranjangListContainer" class="d-flex flex-column gap-3 mb-3">
+            <!-- Diisi via JS -->
+          </div>
+
+          <div id="keranjangEmptyNotice" class="text-center py-5 d-none">
+            <i class="bi bi-cart-x text-muted display-4 d-block mb-3"></i>
+            <h6 class="fw-bold text-dark">Keranjang sewa Anda masih kosong</h6>
+            <p class="small text-muted mb-3">Pilih alat dari katalog lalu klik tombol (+) untuk menambahkan paket sewa.</p>
+            <button type="button" class="btn btn-ios-primary btn-sm px-4 py-2 rounded-pill fw-bold" data-bs-dismiss="modal">
+              Jelajahi Katalog Alat
+            </button>
+          </div>
+
+          <div class="p-3 rounded-3 mt-3 border" id="keranjangSummaryBox" style="background: rgba(248, 250, 252, 0.95); border-color: rgba(0, 102, 255, 0.2) !important;">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="text-secondary small">Total Peralatan:</span>
+              <strong class="text-dark" id="modalCartTotalItem">0 Unit</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="text-secondary small fw-bold">Total Biaya Pokok:</span>
+              <strong class="fs-5 text-primary" id="modalCartTotalBiaya">Rp 0</strong>
+            </div>
+            <small class="text-muted d-block mt-2" style="font-size: 0.8rem;">
+              *Biaya sewa dibayarkan di akhir saat pengembalian barang fisik ke kantor Ma'had Aly Amtsilati.
+            </small>
+          </div>
+        </div>
+        <div class="modal-footer bg-white border-top p-3 d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold" onclick="eksekusiKosongkanKeranjang()">
+            <i class="bi bi-trash me-1"></i> Kosongkan
+          </button>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-bold" data-bs-dismiss="modal">Tambah Alat Lain</button>
+            <button type="button" class="btn btn-ios-checkout btn-sm rounded-pill px-4 fw-bold shadow-sm text-white" id="btnCheckoutKeranjang" onclick="lanjutBookingDariKeranjang()" style="background: #d60099 !important; border: none !important; color: #ffffff !important;">
+              <span class="text-white" style="color: #ffffff !important;">Lanjut Isi Data Diri</span>
+              <i class="bi bi-arrow-right ms-1 text-white" style="color: #ffffff !important;"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Glass Cart Bar (Gaya A) -->
+  <div class="floating-cart-bar px-3 py-2 px-sm-4 py-sm-3 d-flex align-items-center justify-content-between shadow-lg" id="floatingCartBar">
+    <div class="d-flex align-items-center gap-2 gap-sm-3" style="cursor: pointer;" onclick="bukaModalKeranjang()">
+      <div class="position-relative">
+        <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 44px; height: 44px; background: #d60099 !important;">
+          <i class="bi bi-cart3 fs-5 text-white" style="color: #ffffff !important;"></i>
+        </div>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" id="floatingCartBadge">
+          0
+        </span>
+      </div>
+      <div>
+        <div class="small text-muted fw-bold lh-1 mb-1">
+          <span id="floatingCartCount">0</span> Alat Dipilih
+        </div>
+        <strong class="text-dark fs-6" id="floatingCartTotal">Rp 0</strong>
+      </div>
+    </div>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-bold d-none d-sm-inline-flex align-items-center" onclick="bukaModalKeranjang()">
+        Rincian
+      </button>
+      <button type="button" class="btn btn-ios-checkout btn-sm rounded-pill px-3 px-sm-4 py-2 fw-bold d-inline-flex align-items-center gap-1 shadow-sm text-white" onclick="lanjutBookingDariKeranjang()" style="background: #d60099 !important; border: none !important; color: #ffffff !important;">
+        <span class="text-white" style="color: #ffffff !important;">Lanjut Booking</span>
+        <i class="bi bi-arrow-right text-white" style="color: #ffffff !important;"></i>
+      </button>
+    </div>
+  </div>
+
   <!-- Footer METAHATI Bersih iOS Glass -->
   <footer class="footer-simple navbar-ios-glass mt-5">
     <div class="container text-center">
@@ -179,7 +324,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
   <script src="./dist/js/adminlte.min.js"></script>
-  <script src="./js/rental-logic.js?v=3.0"></script>
+  <script src="./dist/js/sweetalert2.all.min.js"></script>
+  <script>
+    if (typeof window !== 'undefined') {
+      window.Swal = window.Swal || window.Sweetalert2;
+      window.SweetAlert = window.SweetAlert || window.Sweetalert2;
+    }
+    if (typeof Swal === 'undefined' && typeof Sweetalert2 === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"><\/script>');
+    }
+  </script>
+  <script src="./js/rental-logic.js?v=4.0"></script>
 
   <script>
     let filterKategori = "semua";
@@ -335,10 +490,13 @@
                 <span class="asset-price-value">${hargaTeks}</span>
               </div>
 
-              <div>
-                <a href="2-detail.html?id=${item.id}" class="btn btn-ios-primary w-100 btn-asset-detail fw-bold" onclick="pilihItem('${item.id}')">
+              <div class="d-flex gap-2">
+                <a href="2-detail.html?id=${item.id}" class="btn btn-ios-primary flex-grow-1 btn-asset-detail fw-bold py-2" onclick="pilihItem('${item.id}')">
                   Lihat Detail
                 </a>
+                <button type="button" class="btn btn-ios-quickadd" onclick="bukaQuickAddModal('${item.id}')" title="Pilih Durasi & Masukkan ke Keranjang">
+                  <i class="bi bi-plus-lg"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -521,6 +679,249 @@
       html += `</div>`;
       container.innerHTML = html;
     }
+
+    // ==========================================
+    // CONTROLLER KERANJANG & QUICK-ADD MODAL
+    // ==========================================
+    let activeQuickAsset = null;
+    let activeQuickPaket = null;
+    let quickAddModalInstance = null;
+    let keranjangModalInstance = null;
+
+    function bukaQuickAddModal(assetId) {
+      const items = (typeof ambilSemuaKatalog === "function") ? ambilSemuaKatalog() : KATALOG_DEFAULT;
+      const asset = items.find(a => a.id === assetId);
+      if (!asset) return;
+
+      activeQuickAsset = asset;
+      const modalEl = document.getElementById("modalQuickAdd");
+      if (!modalEl) return;
+
+      // Populate info alat
+      const imgEl = document.getElementById("quickAddImg");
+      const fallbackIconEl = document.getElementById("quickAddFallbackIcon");
+      if (asset.gambar) {
+        imgEl.src = asset.gambar;
+        imgEl.style.display = "block";
+        if (fallbackIconEl) fallbackIconEl.style.display = "none";
+      } else {
+        imgEl.style.display = "none";
+        if (fallbackIconEl) fallbackIconEl.style.display = "flex";
+      }
+
+      document.getElementById("quickAddNamaBarang").innerText = asset.nama;
+      document.getElementById("quickAddKategori").innerText = asset.kategoriLabel || asset.kategori || "Multimedia";
+
+      // Render pilihan paket durasi
+      const container = document.getElementById("quickAddPaketContainer");
+      container.innerHTML = "";
+
+      const paketList = (asset.paketOpsi && asset.paketOpsi.length > 0) ? asset.paketOpsi : [
+        { id: "12", jam: 12, label: "12 Jam", tarif: asset.tarif || 50000, desc: "Paket standar sewa 12 jam" }
+      ];
+
+      activeQuickPaket = paketList[0];
+
+      paketList.forEach((p, idx) => {
+        const isChecked = idx === 0;
+        const optDiv = document.createElement("div");
+        optDiv.className = `p-3 rounded-3 border d-flex align-items-center justify-content-between quick-paket-opt ${isChecked ? 'border-primary bg-primary-subtle' : 'bg-white'}`;
+        optDiv.style = "cursor: pointer; transition: all 0.2s;";
+        optDiv.onclick = () => pilihQuickPaket(p.id);
+        optDiv.id = `quickPaketOpt_${p.id}`;
+
+        optDiv.innerHTML = `
+          <div class="d-flex align-items-center gap-2">
+            <input class="form-check-input mt-0" type="radio" name="radioQuickPaket" id="radQuick_${p.id}" value="${p.id}" ${isChecked ? 'checked' : ''}>
+            <div>
+              <label class="form-check-label fw-bold text-dark mb-0" style="cursor: pointer;" for="radQuick_${p.id}">
+                ${p.label}
+              </label>
+              ${p.desc ? `<div class="small text-muted" style="font-size: 0.78rem;">${p.desc}</div>` : ''}
+            </div>
+          </div>
+          <strong class="text-primary fs-6">Rp ${Number(p.tarif || 0).toLocaleString('id-ID')}</strong>
+        `;
+        container.appendChild(optDiv);
+      });
+
+      document.getElementById("quickAddTotalEstimasi").innerText = `Rp ${Number(activeQuickPaket.tarif || 0).toLocaleString('id-ID')}`;
+
+      quickAddModalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+      quickAddModalInstance.show();
+    }
+
+    function pilihQuickPaket(paketId) {
+      if (!activeQuickAsset) return;
+      const paketList = activeQuickAsset.paketOpsi || [];
+      const found = paketList.find(p => p.id === paketId);
+      if (!found) return;
+
+      activeQuickPaket = found;
+      const container = document.getElementById("quickAddPaketContainer");
+      if (container) {
+        container.querySelectorAll(".quick-paket-opt").forEach(el => {
+          el.classList.remove("border-primary", "bg-primary-subtle");
+          el.classList.add("bg-white");
+        });
+      }
+
+      const activeOpt = document.getElementById(`quickPaketOpt_${paketId}`);
+      if (activeOpt) {
+        activeOpt.classList.remove("bg-white");
+        activeOpt.classList.add("border-primary", "bg-primary-subtle");
+        const rad = activeOpt.querySelector("input[type=radio]");
+        if (rad) rad.checked = true;
+      }
+
+      document.getElementById("quickAddTotalEstimasi").innerText = `Rp ${Number(found.tarif || 0).toLocaleString('id-ID')}`;
+    }
+
+    function eksekusiQuickAdd() {
+      if (!activeQuickAsset || !activeQuickPaket) return;
+      if (typeof tambahKeKeranjang === "function") {
+        tambahKeKeranjang(activeQuickAsset, activeQuickPaket);
+      }
+      if (quickAddModalInstance) {
+        quickAddModalInstance.hide();
+      }
+      updateTampilanKeranjangBar();
+    }
+
+    function updateTampilanKeranjangBar() {
+      const summary = (typeof hitungTotalKeranjang === "function") ? hitungTotalKeranjang() : { totalItem: 0, totalBiaya: 0, items: [] };
+      const bar = document.getElementById("floatingCartBar");
+      const badgeNav = document.getElementById("navCartBadge");
+      const badgeFloating = document.getElementById("floatingCartBadge");
+      const countFloating = document.getElementById("floatingCartCount");
+      const totalFloating = document.getElementById("floatingCartTotal");
+
+      if (summary.totalItem > 0) {
+        if (bar) bar.classList.add("active");
+        if (badgeNav) {
+          badgeNav.innerText = summary.totalItem;
+          badgeNav.classList.remove("d-none");
+        }
+        if (badgeFloating) badgeFloating.innerText = summary.totalItem;
+        if (countFloating) countFloating.innerText = summary.totalItem;
+        if (totalFloating) totalFloating.innerText = `Rp ${summary.totalBiaya.toLocaleString('id-ID')}`;
+      } else {
+        if (bar) bar.classList.remove("active");
+        if (badgeNav) badgeNav.classList.add("d-none");
+      }
+    }
+
+    function bukaModalKeranjang() {
+      const modalEl = document.getElementById("modalKeranjang");
+      if (!modalEl) return;
+      renderKeranjangModal();
+      keranjangModalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+      keranjangModalInstance.show();
+    }
+
+    function renderKeranjangModal() {
+      const summary = (typeof hitungTotalKeranjang === "function") ? hitungTotalKeranjang() : { totalItem: 0, totalBiaya: 0, items: [] };
+      const listContainer = document.getElementById("keranjangListContainer");
+      const emptyNotice = document.getElementById("keranjangEmptyNotice");
+      const summaryBox = document.getElementById("keranjangSummaryBox");
+      const btnCheckout = document.getElementById("btnCheckoutKeranjang");
+
+      if (!listContainer) return;
+      listContainer.innerHTML = "";
+
+      if (summary.totalItem === 0) {
+        if (emptyNotice) emptyNotice.classList.remove("d-none");
+        if (summaryBox) summaryBox.classList.add("d-none");
+        if (btnCheckout) btnCheckout.disabled = true;
+        return;
+      }
+
+      if (emptyNotice) emptyNotice.classList.add("d-none");
+      if (summaryBox) summaryBox.classList.remove("d-none");
+      if (btnCheckout) btnCheckout.disabled = false;
+
+      summary.items.forEach((item, idx) => {
+        const itemCard = document.createElement("div");
+        itemCard.className = "cart-item-card p-3 d-flex align-items-center justify-content-between gap-3 shadow-sm";
+        itemCard.innerHTML = `
+          <div class="d-flex align-items-center gap-3">
+            <div class="fw-bold text-muted fs-6" style="width: 20px;">${idx + 1}.</div>
+            <div>
+              <strong class="text-dark d-block fs-6 mb-1">${escapeHtml(item.namaBarang)}</strong>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill small">${escapeHtml(item.paketLabel || (item.paketJam + ' Jam'))}</span>
+                <span class="text-secondary small">&bull; ${escapeHtml(item.kategori || '')}</span>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <strong class="text-primary fs-6">Rp ${Number(item.biaya || 0).toLocaleString('id-ID')}</strong>
+            <button type="button" class="btn btn-sm btn-outline-danger rounded-circle p-1" style="width: 32px; height: 32px;" onclick="eksekusiHapusDariKeranjang('${item.asetId}')" title="Hapus dari keranjang">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        `;
+        listContainer.appendChild(itemCard);
+      });
+
+      document.getElementById("modalCartTotalItem").innerText = `${summary.totalItem} Unit Peralatan`;
+      document.getElementById("modalCartTotalBiaya").innerText = `Rp ${summary.totalBiaya.toLocaleString('id-ID')}`;
+    }
+
+    function eksekusiHapusDariKeranjang(asetId) {
+      if (typeof hapusDariKeranjang === "function") {
+        hapusDariKeranjang(asetId);
+      }
+      renderKeranjangModal();
+      updateTampilanKeranjangBar();
+    }
+
+    function eksekusiKosongkanKeranjang() {
+      if (!confirm("Kosongkan semua daftar peralatan di keranjang sewa?")) return;
+      if (typeof kosongkanKeranjang === "function") {
+        kosongkanKeranjang();
+      }
+      renderKeranjangModal();
+      updateTampilanKeranjangBar();
+    }
+
+    function lanjutBookingDariKeranjang() {
+      const summary = (typeof hitungTotalKeranjang === "function") ? hitungTotalKeranjang() : { totalItem: 0, items: [] };
+      if (summary.totalItem === 0) {
+        alert("Keranjang sewa Anda masih kosong. Silakan pilih alat terlebih dahulu.");
+        return;
+      }
+
+      // Ambil unit pertama sebagai basis master info
+      const first = summary.items[0];
+      const multiNames = summary.items.map(it => it.namaBarang).join(" + ");
+
+      const multiBookingData = {
+        asetId: first.asetId,
+        namaBarang: multiNames,
+        kategori: "Multi-Aset Multimedia",
+        kategoriKey: "multi",
+        adminPic: first.adminPic || "admin1",
+        paketJam: first.paketJam,
+        paketLabel: summary.items.map(it => `${it.namaBarang} (${it.paketJam} Jam)`).join(", "),
+        biayaSewa: summary.totalBiaya,
+        biayaSewaAsli: summary.totalBiaya,
+        isMultiItem: true,
+        items: summary.items
+      };
+
+      simpanDataBooking(multiBookingData);
+      window.location.href = "3-datadiri.html";
+    }
+
+    // Dengarkan event sinkronisasi keranjang
+    window.addEventListener("keranjang-diperbarui", () => {
+      updateTampilanKeranjangBar();
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      updateTampilanKeranjangBar();
+    });
   </script>
 </body>
 </html>

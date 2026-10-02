@@ -61,7 +61,8 @@
     "flatten-build": "shx cp -r dist/html/* dist/ && shx rm -rf dist/html && shx rm -rf dist/.astro && shx mkdir -p dist/docs && shx mv dist/docs.html dist/docs/index.html",
     "assets": "node src/config/assets.config.mjs",
     "version": "node src/config/sync-version.mjs",
-    "test": "vitest run",
+    "test": "node tests/simulasi.cjs",
+    "test:upstream": "vitest run",
     "test-watch": "vitest",
     "test-a11y": "node tests/a11y.mjs",
     "palette": "node scripts/palette.mjs",
@@ -148,5 +149,8 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.11"
+  },
+  "dependencies": {
+    "sweetalert2": "^11.26.25"
   }
 }

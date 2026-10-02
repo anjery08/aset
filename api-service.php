@@ -1,4 +1,19 @@
 <?php
+// Setel zona waktu resmi Indonesia Barat (WIB)
+date_default_timezone_set('Asia/Jakarta');
+
+// Polyfill kompatibilitas PHP 7.4 (mencegah fatal error di cPanel versi lama)
+if (!function_exists('str_starts_with')) {
+    function str_starts_with($haystack, $needle) {
+        return (string)$needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0;
+    }
+}
+if (!function_exists('str_contains')) {
+    function str_contains($haystack, $needle) {
+        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+    }
+}
+
 // ============================================================================
 // API Sinkronisasi Server - Sistem Peminjaman Aset Ma'had Aly Amtsilati
 // Bekerja secara otomatis di cPanel (Jagoan Hosting) tanpa perlu konfigurasi MySQL
@@ -118,6 +133,18 @@ function tulisJson($filePath, $data) {
         @mkdir($dir, 0777, true);
     }
     $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    
+    // Tulis aman secara atomik menggunakan file temporer agar data tidak pernah korup saat bersamaan
+    $tmpPath = $filePath . '.' . uniqid('tmp_', true);
+    if (@file_put_contents($tmpPath, $json, LOCK_EX) !== false) {
+        @chmod($tmpPath, 0666);
+        if (@rename($tmpPath, $filePath)) {
+            return true;
+        }
+        @unlink($tmpPath);
+    }
+    
+    // Fallback penulisan langsung dengan penguncian berkas (LOCK_EX)
     $res = @file_put_contents($filePath, $json, LOCK_EX);
     if ($res === false) {
         $res = @file_put_contents($filePath, $json);
@@ -194,7 +221,7 @@ function verifikasiOtorisasiAdmin($input, $fileSettings) {
     $validUser = $cfg['username'] ?? 'admin';
     $expectedToken = md5($validUser . ':' . $validPass);
     
-    return (!empty($token) && ($token === $validPass || $token === $expectedToken || $token === 'metahati2026'));
+    return (!empty($token) && ($token === $validPass || $token === $expectedToken));
 }
 
 function cekWajibAdmin($input, $fileSettings) {
@@ -285,6 +312,21 @@ function kirimWaGateway($nomorTujuan, $pesan, $customSessionId = null) {
     ];
 }
 
+// Helper format rincian daftar aset untuk pesan WhatsApp
+function formatRincianAsetWa($booking) {
+    if (!empty($booking['items']) && is_array($booking['items']) && count($booking['items']) > 1) {
+        $lines = [];
+        foreach ($booking['items'] as $idx => $it) {
+            $n = $it['namaBarang'] ?? ($it['nama'] ?? 'Aset');
+            $p = !empty($it['paketJam']) ? " ({$it['paketJam']} Jam)" : "";
+            $b = isset($it['biaya']) ? (" - Rp " . number_format(intval($it['biaya']), 0, ',', '.')) : "";
+            $lines[] = "  " . ($idx + 1) . ". *{$n}*{$p}{$b}";
+        }
+        return implode("\n", $lines);
+    }
+    return "*{$booking['namaBarang']}*";
+}
+
 // 1. Notifikasi saat ada pengajuan booking baru
 function kirimNotifBookingBaru($booking) {
     global $fileSettings;
@@ -300,22 +342,39 @@ function kirimNotifBookingBaru($booking) {
     $waktuKembali = $booking['waktuSelesai'] ?? '-';
     $komunitas = $booking['komunitas'] ?? ($booking['departemen'] ?? '-');
 
+    $isMulti = (!empty($booking['items']) && is_array($booking['items']) && count($booking['items']) > 1);
+    $daftarAsetTeks = formatRincianAsetWa($booking);
+
     $isDinas = !empty($booking['isDinas']) || (isset($booking['biayaSewa']) && intval($booking['biayaSewa']) === 0 && !empty($booking['biayaSewaAsli']));
     $biayaTeks = $isDinas ? "Gratis (Khusus Tugas Resmi Pondok)" : "Rp " . number_format(intval($booking['biayaSewa'] ?? 0), 0, ',', '.');
 
     // A. Kirim notifikasi ke Santri / Penyewa (MENUNGGU KONFIRMASI & MURNI TANPA LINK)
     if (!empty($noWa) && (!isset($gw['notifySantriBooking']) || !empty($gw['notifySantriBooking']))) {
-        $pesanSantri = "Assalamu'alaikum wr. wb. Saudara/i *{$nama}*,\n\n" .
-            "Alhamdulillah, pengajuan sewa aset *{$namaBarang}* (*{$bId}*) telah kami terima di sistem dan saat ini sedang *MENUNGGU KONFIRMASI (ACC)* dari Pengurus Ma'had Aly Amtsilati.\n\n" .
-            "*Rincian Peminjaman:*\n" .
-            "- No. Transaksi: *{$bId}*\n" .
-            "- Aset: *{$namaBarang}*\n" .
-            "- Jadwal Pengambilan: *{$waktuAmbil}*\n" .
-            "- Batas Pengembalian: *{$waktuKembali}*\n" .
-            "- Biaya Sewa: *{$biayaTeks}*\n\n" .
-            "_Mohon menunggu konfirmasi persetujuan resmi (ACC) via WhatsApp sebelum mengambil unit ke Kantor Ma'had Aly Amtsilati._\n\n" .
-            "Wassalamu'alaikum wr. wb.\n" .
-            "*Pengurus Ma'had Aly Amtsilati*";
+        if ($isMulti) {
+            $pesanSantri = "Assalamu'alaikum wr. wb. Saudara/i *{$nama}*,\n\n" .
+                "Alhamdulillah, pengajuan sewa multi-aset (*{$bId}*) sebanyak *" . count($booking['items']) . " unit* telah kami terima di sistem dan saat ini sedang *MENUNGGU KONFIRMASI (ACC)* dari Pengurus Ma'had Aly Amtsilati.\n\n" .
+                "*Rincian Peminjaman:*\n" .
+                "- No. Transaksi: *{$bId}*\n" .
+                "- Daftar Aset Disewa:\n{$daftarAsetTeks}\n" .
+                "- Jadwal Pengambilan: *{$waktuAmbil}*\n" .
+                "- Batas Pengembalian: *{$waktuKembali}*\n" .
+                "- Total Biaya Sewa: *{$biayaTeks}*\n\n" .
+                "_Mohon menunggu konfirmasi persetujuan resmi (ACC) via WhatsApp sebelum mengambil unit ke Kantor Ma'had Aly Amtsilati._\n\n" .
+                "Wassalamu'alaikum wr. wb.\n" .
+                "*Pengurus Ma'had Aly Amtsilati*";
+        } else {
+            $pesanSantri = "Assalamu'alaikum wr. wb. Saudara/i *{$nama}*,\n\n" .
+                "Alhamdulillah, pengajuan sewa aset *{$namaBarang}* (*{$bId}*) telah kami terima di sistem dan saat ini sedang *MENUNGGU KONFIRMASI (ACC)* dari Pengurus Ma'had Aly Amtsilati.\n\n" .
+                "*Rincian Peminjaman:*\n" .
+                "- No. Transaksi: *{$bId}*\n" .
+                "- Aset: *{$namaBarang}*\n" .
+                "- Jadwal Pengambilan: *{$waktuAmbil}*\n" .
+                "- Batas Pengembalian: *{$waktuKembali}*\n" .
+                "- Biaya Sewa: *{$biayaTeks}*\n\n" .
+                "_Mohon menunggu konfirmasi persetujuan resmi (ACC) via WhatsApp sebelum mengambil unit ke Kantor Ma'had Aly Amtsilati._\n\n" .
+                "Wassalamu'alaikum wr. wb.\n" .
+                "*Pengurus Ma'had Aly Amtsilati*";
+        }
         kirimWaGateway($noWa, $pesanSantri);
     }
 
@@ -357,17 +416,31 @@ function kirimNotifBookingBaru($booking) {
         foreach ($targetPengurus as $idx => $target) {
             if ($idx > 0) sleep(2);
             $sapaan = ($target['role'] === 'admin2') ? "Mbak Cantik" : "Mas Ganteng";
-            $pesanAdmin = "🔔 *PERMOHONAN SEWA / PINJAM ASET BARU*\n\n" .
-                "Assalamu'alaikum {$sapaan},\n" .
-                "Terdapat pengajuan sewa unit baru masuk ke sistem yang memerlukan konfirmasi & persetujuan (ACC / Tolak):\n\n" .
-                "- No. Transaksi: *{$bId}*\n" .
-                "- Peminjam: *{$nama}* ({$noWa})\n" .
-                "- Asrama/Dept: *{$komunitas}*\n" .
-                "- Aset: *{$namaBarang}*\n" .
-                "- Jadwal: *{$waktuAmbil}* s.d *{$waktuKembali}*\n" .
-                "- Biaya: *{$biayaTeks}*\n\n" .
-                "👉 *Buka Dashboard Admin untuk Verifikasi & ACC / Tolak:*\n" .
-                "{$baseUrl}/admin-dashboard.html";
+            if ($isMulti) {
+                $pesanAdmin = "🔔 *PERMOHONAN SEWA / PINJAM MULTI-ASET BARU*\n\n" .
+                    "Assalamu'alaikum {$sapaan},\n" .
+                    "Terdapat pengajuan sewa paket multi-aset (" . count($booking['items']) . " unit) masuk ke sistem yang memerlukan konfirmasi & persetujuan (ACC / Tolak):\n\n" .
+                    "- No. Transaksi: *{$bId}*\n" .
+                    "- Peminjam: *{$nama}* ({$noWa})\n" .
+                    "- Asrama/Dept: *{$komunitas}*\n" .
+                    "- Daftar Aset Disewa:\n{$daftarAsetTeks}\n" .
+                    "- Jadwal: *{$waktuAmbil}* s.d *{$waktuKembali}*\n" .
+                    "- Total Biaya: *{$biayaTeks}*\n\n" .
+                    "👉 *Buka Dashboard Admin untuk Verifikasi & ACC / Tolak:*\n" .
+                    "{$baseUrl}/admin-dashboard.html";
+            } else {
+                $pesanAdmin = "🔔 *PERMOHONAN SEWA / PINJAM ASET BARU*\n\n" .
+                    "Assalamu'alaikum {$sapaan},\n" .
+                    "Terdapat pengajuan sewa unit baru masuk ke sistem yang memerlukan konfirmasi & persetujuan (ACC / Tolak):\n\n" .
+                    "- No. Transaksi: *{$bId}*\n" .
+                    "- Peminjam: *{$nama}* ({$noWa})\n" .
+                    "- Asrama/Dept: *{$komunitas}*\n" .
+                    "- Aset: *{$namaBarang}*\n" .
+                    "- Jadwal: *{$waktuAmbil}* s.d *{$waktuKembali}*\n" .
+                    "- Biaya: *{$biayaTeks}*\n\n" .
+                    "👉 *Buka Dashboard Admin untuk Verifikasi & ACC / Tolak:*\n" .
+                    "{$baseUrl}/admin-dashboard.html";
+            }
 
             kirimWaGateway($target['phone'], $pesanAdmin);
         }
@@ -391,24 +464,44 @@ function kirimNotifBookingAcc($booking) {
     $waktuAmbil = $booking['waktuAmbil'] ?? '-';
     $waktuKembali = $booking['waktuSelesai'] ?? '-';
 
+    $isMulti = (!empty($booking['items']) && is_array($booking['items']) && count($booking['items']) > 1);
+    $daftarAsetTeks = formatRincianAsetWa($booking);
+
     $isDinas = !empty($booking['isDinas']) || (isset($booking['biayaSewa']) && intval($booking['biayaSewa']) === 0 && !empty($booking['biayaSewaAsli']));
     $biayaTeks = $isDinas ? "Gratis (Khusus Tugas Resmi Pondok)" : "Rp " . number_format(intval($booking['biayaSewa'] ?? 0), 0, ',', '.');
 
     $statusUrl = $baseUrl . '/status.html?id=' . urlencode($bId);
 
-    $pesan = "Assalamu'alaikum wr. wb. Saudara/i *{$nama}*,\n\n" .
-        "🎉 *ALHAMDULILLAH! Pengajuan Sewa Aset Telah DISETUJUI (ACC)!*\n\n" .
-        "Permohonan Anda untuk unit *{$namaBarang}* (*{$bId}*) telah disetujui oleh Pengurus. Unit *SUDAH BISA DIAMBIL DI KANTOR MA'HAD ALY AMTSILATI*.\n\n" .
-        "*Petunjuk Pengambilan Unit:*\n" .
-        "- Waktu Pengambilan: *{$waktuAmbil}*\n" .
-        "- Batas Pengembalian: *{$waktuKembali}*\n" .
-        "- Lokasi Pengambilan: *Kantor Ma'had Aly Amtsilati*\n" .
-        "- Biaya Sewa: *{$biayaTeks}*\n" .
-        "- Syarat Serah Terima: Wajib membawa *KTS / KTP Asli* sebagai jaminan.\n\n" .
-        "⏱️ *Pantau Status Sewa & Hitung Mundur (Countdown):*\n" .
-        "{$statusUrl}\n\n" .
-        "Wassalamu'alaikum wr. wb.\n" .
-        "*Pengurus Ma'had Aly Amtsilati*";
+    if ($isMulti) {
+        $pesan = "Assalamu'alaikum wr. wb. Saudara/i *{$nama}*,\n\n" .
+            "🎉 *ALHAMDULILLAH! Pengajuan Sewa Multi-Aset Telah DISETUJUI (ACC)!*\n\n" .
+            "Permohonan Anda (*{$bId}*) sebanyak *" . count($booking['items']) . " unit alat* telah disetujui oleh Pengurus. Unit-unit tersebut *SUDAH BISA DIAMBIL DI KANTOR MA'HAD ALY AMTSILATI*.\n\n" .
+            "*Rincian Peminjaman:*\n" .
+            "- Daftar Aset:\n{$daftarAsetTeks}\n" .
+            "- Waktu Pengambilan: *{$waktuAmbil}*\n" .
+            "- Batas Pengembalian: *{$waktuKembali}*\n" .
+            "- Lokasi Pengambilan: *Kantor Ma'had Aly Amtsilati*\n" .
+            "- Total Biaya Sewa: *{$biayaTeks}*\n" .
+            "- Syarat Serah Terima: Wajib membawa *KTS / KTP Asli* sebagai jaminan.\n\n" .
+            "⏱️ *Pantau Status Sewa & Hitung Mundur (Countdown):*\n" .
+            "{$statusUrl}\n\n" .
+            "Wassalamu'alaikum wr. wb.\n" .
+            "*Pengurus Ma'had Aly Amtsilati*";
+    } else {
+        $pesan = "Assalamu'alaikum wr. wb. Saudara/i *{$nama}*,\n\n" .
+            "🎉 *ALHAMDULILLAH! Pengajuan Sewa Aset Telah DISETUJUI (ACC)!*\n\n" .
+            "Permohonan Anda untuk unit *{$namaBarang}* (*{$bId}*) telah disetujui oleh Pengurus. Unit *SUDAH BISA DIAMBIL DI KANTOR MA'HAD ALY AMTSILATI*.\n\n" .
+            "*Petunjuk Pengambilan Unit:*\n" .
+            "- Waktu Pengambilan: *{$waktuAmbil}*\n" .
+            "- Batas Pengembalian: *{$waktuKembali}*\n" .
+            "- Lokasi Pengambilan: *Kantor Ma'had Aly Amtsilati*\n" .
+            "- Biaya Sewa: *{$biayaTeks}*\n" .
+            "- Syarat Serah Terima: Wajib membawa *KTS / KTP Asli* sebagai jaminan.\n\n" .
+            "⏱️ *Pantau Status Sewa & Hitung Mundur (Countdown):*\n" .
+            "{$statusUrl}\n\n" .
+            "Wassalamu'alaikum wr. wb.\n" .
+            "*Pengurus Ma'had Aly Amtsilati*";
+    }
 
     kirimWaGateway($noWa, $pesan);
 }
@@ -425,7 +518,8 @@ function kirimNotifBookingTolak($booking, $alasan) {
 
     $bId = $booking['bookingId'] ?? 'INV-0000';
     $nama = $booking['nama'] ?? 'Santri';
-    $namaBarang = $booking['namaBarang'] ?? 'Aset';
+    $isMulti = (!empty($booking['items']) && is_array($booking['items']) && count($booking['items']) > 1);
+    $namaBarang = $isMulti ? (count($booking['items']) . " unit alat (" . implode(', ', array_map(function($i){ return $i['namaBarang'] ?? 'Aset'; }, $booking['items'])) . ")") : ($booking['namaBarang'] ?? 'Aset');
 
     $alasanTeks = !empty($alasan) ? $alasan : "Jadwal padat atau unit sedang dalam perawatan.";
 
@@ -455,6 +549,9 @@ function kirimNotifBookingKembali($booking) {
     $nama = $booking['nama'] ?? 'Santri';
     $namaBarang = $booking['namaBarang'] ?? 'Aset';
 
+    $isMulti = (!empty($booking['items']) && is_array($booking['items']) && count($booking['items']) > 1);
+    $daftarAsetTeks = formatRincianAsetWa($booking);
+
     $isRusak = ($booking['kondisiFisik'] ?? 'normal') === 'rusak' || intval($booking['dendaKerusakan'] ?? 0) > 0;
     $infoKondisi = $isRusak ? "Ada Kerusakan (Rp " . number_format(intval($booking['dendaKerusakan'] ?? 0), 0, ',', '.') . ")" : "Normal & Lengkap";
 
@@ -468,20 +565,93 @@ function kirimNotifBookingKembali($booking) {
     $linkInvoice = $baseUrl . '/invoice.html?id=' . urlencode($bId);
     $waktuKembali = $booking['waktuDikembalikan'] ?? date('d/m/Y H:i');
 
-    $pesan = "Assalamu'alaikum wr. wb. Saudara/i *{$nama}*,\n\n" .
-        "Alhamdulillah, serah terima pengembalian aset *{$namaBarang}* (*{$bId}*) telah *SELESAI DITERIMA* oleh Pengurus Ma'had Aly Amtsilati.\n\n" .
-        "*Rincian Pengembalian:*\n" .
-        "- Waktu Pengembalian: *{$waktuKembali}*\n" .
-        "- Kondisi Alat: *{$infoKondisi}*\n" .
-        "- Denda Keterlambatan: *{$dendaTeks}*\n" .
-        "- Total Pelunasan: *{$totalTeks}*\n\n" .
-        "📄 *Unduh & Lihat Invoice / Bukti Sewa Resmi:*\n" .
-        "{$linkInvoice}\n\n" .
-        "Terima kasih banyak telah menjaga amanah dan merawat aset pondok dengan baik. Semoga berkah dan bermanfaat.\n\n" .
-        "Wassalamu'alaikum wr. wb.\n" .
-        "*Pengurus Ma'had Aly Amtsilati*";
+    if ($isMulti) {
+        $pesan = "Assalamu'alaikum wr. wb. Saudara/i *{$nama}*,\n\n" .
+            "Alhamdulillah, serah terima pengembalian paket multi-aset (*{$bId}*) sebanyak *" . count($booking['items']) . " unit* telah *SELESAI DITERIMA* oleh Pengurus Ma'had Aly Amtsilati.\n\n" .
+            "*Rincian Pengembalian:*\n" .
+            "- Daftar Aset:\n{$daftarAsetTeks}\n" .
+            "- Waktu Pengembalian: *{$waktuKembali}*\n" .
+            "- Kondisi Alat: *{$infoKondisi}*\n" .
+            "- Denda Keterlambatan: *{$dendaTeks}*\n" .
+            "- Total Pelunasan: *{$totalTeks}*\n\n" .
+            "📄 *Unduh & Lihat Invoice / Bukti Sewa Resmi:*\n" .
+            "{$linkInvoice}\n\n" .
+            "Terima kasih banyak telah menjaga amanah dan merawat aset pondok dengan baik. Semoga berkah dan bermanfaat.\n\n" .
+            "Wassalamu'alaikum wr. wb.\n" .
+            "*Pengurus Ma'had Aly Amtsilati*";
+    } else {
+        $pesan = "Assalamu'alaikum wr. wb. Saudara/i *{$nama}*,\n\n" .
+            "Alhamdulillah, serah terima pengembalian aset *{$namaBarang}* (*{$bId}*) telah *SELESAI DITERIMA* oleh Pengurus Ma'had Aly Amtsilati.\n\n" .
+            "*Rincian Pengembalian:*\n" .
+            "- Waktu Pengembalian: *{$waktuKembali}*\n" .
+            "- Kondisi Alat: *{$infoKondisi}*\n" .
+            "- Denda Keterlambatan: *{$dendaTeks}*\n" .
+            "- Total Pelunasan: *{$totalTeks}*\n\n" .
+            "📄 *Unduh & Lihat Invoice / Bukti Sewa Resmi:*\n" .
+            "{$linkInvoice}\n\n" .
+            "Terima kasih banyak telah menjaga amanah dan merawat aset pondok dengan baik. Semoga berkah dan bermanfaat.\n\n" .
+            "Wassalamu'alaikum wr. wb.\n" .
+            "*Pengurus Ma'had Aly Amtsilati*";
+    }
 
     kirimWaGateway($noWa, $pesan);
+}
+
+// 5. Notifikasi saat ada permohonan perpanjangan waktu sewa santri
+function kirimNotifPengajuanPerpanjangan($booking, $pengajuan) {
+    global $fileSettings;
+    $cfg = ambilPengaturanSistem($fileSettings);
+    $gw = $cfg['waGateway'] ?? [];
+    if (isset($gw['enabled']) && empty($gw['enabled'])) return;
+
+    $bId = $booking['bookingId'] ?? 'INV-0000';
+    $nama = $booking['nama'] ?? 'Santri';
+    $noWa = $booking['noWa'] ?? '-';
+    $namaBarang = $booking['namaBarang'] ?? 'Aset';
+    $jamTambahan = $pengajuan['jamTambahan'] ?? 0;
+    $batasLama = $pengajuan['waktuSelesaiSemula'] ?? ($booking['waktuSelesai'] ?? '-');
+    $batasBaru = $pengajuan['waktuSelesaiBaru'] ?? '-';
+    $biayaTambahanTeks = $pengajuan['biayaTambahanTeks'] ?? 'Rp 0';
+    $catatan = !empty($pengajuan['catatan']) ? "\n- Alasan/Catatan: _{$pengajuan['catatan']}_" : "";
+    $baseUrl = ambilBaseUrlWebsite();
+
+    $rincianUnitTeks = '';
+    if (!empty($pengajuan['itemsTerpilih']) && is_array($pengajuan['itemsTerpilih'])) {
+        $lines = [];
+        foreach ($pengajuan['itemsTerpilih'] as $it) {
+            $nBarang = $it['namaBarang'] ?? 'Aset';
+            $jTambahan = $it['jamTambahan'] ?? 0;
+            $wBaru = $it['waktuSelesaiBaru'] ?? '-';
+            $bTambahan = $it['biayaTambahanTeks'] ?? '';
+            $lines[] = "  • *{$nBarang}* : +{$jTambahan} Jam (s.d {$wBaru}) [{$bTambahan}]";
+        }
+        $rincianUnitTeks = "- Rincian Unit yang Diperpanjang:\n" . implode("\n", $lines) . "\n- Batas Waktu Baru (Maks): *{$batasBaru}*";
+    } else {
+        $rincianUnitTeks = "- Aset: *{$namaBarang}*\n" .
+            "- Tambahan Waktu: *+{$jamTambahan} Jam*\n" .
+            "- Batas Semula: {$batasLama}\n" .
+            "- Batas Baru Yang Diminta: *{$batasBaru}*";
+    }
+
+    $adminList = [
+        ['phone' => $cfg['admin1']['wa'] ?? '628812762520', 'nama' => $cfg['admin1']['nama'] ?? 'Admin 1'],
+        ['phone' => $cfg['admin2']['wa'] ?? '628812762520', 'nama' => $cfg['admin2']['nama'] ?? 'Admin 2']
+    ];
+
+    foreach ($adminList as $adm) {
+        if (empty($adm['phone'])) continue;
+        $pesanAdmin = "🔔 *PERMOHONAN PERPANJANGAN WAKTU SEWA*\n\n" .
+            "Assalamu'alaikum Pengurus,\n" .
+            "Santri peminjam mengajukan permohonan penambahan durasi sewa melalui sistem:\n\n" .
+            "- No. Booking: *{$bId}*\n" .
+            "- Peminjam: *{$nama}* ({$noWa})\n" .
+            "{$rincianUnitTeks}\n" .
+            "- Estimasi Total Biaya Tambahan: *{$biayaTambahanTeks}*{$catatan}\n\n" .
+            "👉 *Buka Dashboard Admin untuk Setujui (ACC) atau Tolak:*\n" .
+            "{$baseUrl}/admin-dashboard.html";
+
+        kirimWaGateway($adm['phone'], $pesanAdmin);
+    }
 }
 
 $action = $_GET['action'] ?? '';
@@ -499,9 +669,53 @@ switch ($action) {
             exit;
         }
 
+        // Sanitasi dan strukturkan daftar item jika ada (Dukungan Keranjang Multi-Aset)
+        $itemsToBook = [];
+        if (!empty($input['items']) && is_array($input['items'])) {
+            foreach ($input['items'] as $it) {
+                if (!empty($it['asetId'])) {
+                    $itemsToBook[] = [
+                        'asetId'          => sanitasiString($it['asetId']),
+                        'namaBarang'      => sanitasiString($it['namaBarang'] ?? 'Aset'),
+                        'paketJam'        => intval($it['paketJam'] ?? 12),
+                        'paketLabel'      => sanitasiString($it['paketLabel'] ?? ''),
+                        'biaya'           => intval($it['biaya'] ?? 0),
+                        'waktuSelesaiRaw' => $it['waktuSelesaiRaw'] ?? ($input['waktuSelesaiRaw'] ?? ''),
+                        'waktuSelesai'    => $it['waktuSelesai'] ?? ($input['waktuSelesai'] ?? '')
+                    ];
+                }
+            }
+            $input['items'] = $itemsToBook;
+            $input['isMultiItem'] = count($itemsToBook) > 1;
+        }
+
+        // Fallback untuk booking single aset tradisional
+        if (empty($itemsToBook) && !empty($input['asetId'])) {
+            $singleItem = [
+                'asetId'          => sanitasiString($input['asetId']),
+                'namaBarang'      => sanitasiString($input['namaBarang'] ?? 'Aset'),
+                'paketJam'        => intval($input['paketJam'] ?? 12),
+                'paketLabel'      => sanitasiString($input['paketLabel'] ?? ''),
+                'biaya'           => intval($input['biayaSewa'] ?? 0),
+                'waktuSelesaiRaw' => $input['waktuSelesaiRaw'] ?? '',
+                'waktuSelesai'    => $input['waktuSelesai'] ?? ''
+            ];
+            $itemsToBook[] = $singleItem;
+            $input['items'] = $itemsToBook;
+        }
+
+        if (empty($input['asetId']) && !empty($itemsToBook[0]['asetId'])) {
+            $input['asetId'] = $itemsToBook[0]['asetId'];
+        }
+        if (empty($input['namaBarang']) && !empty($itemsToBook)) {
+            $input['namaBarang'] = count($itemsToBook) > 1
+                ? ($itemsToBook[0]['namaBarang'] . ' +' . (count($itemsToBook) - 1) . ' alat lainnya')
+                : $itemsToBook[0]['namaBarang'];
+        }
+
         // Validasi kolom wajib demi integritas data
-        if (empty($input['nama']) || empty($input['asetId']) || (empty($input['waktuAmbil']) && empty($input['waktuAmbilRaw']))) {
-            echo json_encode(['success' => false, 'message' => 'Nama peminjam, aset, dan jadwal waktu sewa wajib diisi']);
+        if (empty($input['nama']) || empty($itemsToBook) || (empty($input['waktuAmbil']) && empty($input['waktuAmbilRaw']))) {
+            echo json_encode(['success' => false, 'message' => 'Nama peminjam, aset yang dipilih, dan jadwal waktu sewa wajib diisi']);
             exit;
         }
 
@@ -564,55 +778,73 @@ switch ($action) {
             $bookings[$existingIndex] = array_merge($bookings[$existingIndex], $input);
         } else {
             // Booking baru dari penyewa:
-            // Status awal default: 'pending' (menunggu konfirmasi pengurus), publik tidak boleh set 'completed'
+            // Status awal default: 'pending' (menunggu konfirmasi pengurus), publik tidak boleh set status sewenang-wenang
             if (!$isAdmin) {
-                if (empty($input['status']) || $input['status'] === 'completed') {
-                    $input['status'] = 'pending';
-                }
+                $input['status'] = 'pending';
             }
 
-            // Validasi Server-Side Bentrok Jadwal (Anti-Race Condition Atomik)
-            $reqAsetId = $input['asetId'];
+            // Validasi Server-Side Bentrok Jadwal untuk SETIAP aset yang dipinjam (Anti-Race Condition Atomik)
             $reqStart = strtotime($input['waktuAmbilRaw'] ?? $input['waktuAmbil'] ?? '');
-            $reqEnd = strtotime($input['waktuSelesaiRaw'] ?? $input['waktuSelesai'] ?? '');
             $bufferSec = 30 * 60; // Buffer 30 menit
+            $assets = bacaJson($fileAssets, []);
 
-            if ($reqStart && $reqEnd && $reqStart < $reqEnd) {
-                // Dapatkan total stok fisik aset dari assets.json jika ada
-                $assets = bacaJson($fileAssets, []);
-                $stokTotal = 1;
-                foreach ($assets as $ast) {
-                    if (($ast['id'] ?? '') === $reqAsetId) {
-                        $stokTotal = max(1, intval($ast['stokTotal'] ?? 1));
-                        break;
+            if ($reqStart) {
+                foreach ($itemsToBook as $itemReq) {
+                    $reqAsetId = $itemReq['asetId'];
+                    $itemSelesaiRaw = $itemReq['waktuSelesaiRaw'] ?? ($input['waktuSelesaiRaw'] ?? $input['waktuSelesai'] ?? '');
+                    $reqEnd = strtotime($itemSelesaiRaw);
+                    if (!$reqEnd || $reqStart >= $reqEnd) continue;
+
+                    // Dapatkan total stok fisik aset ini
+                    $stokTotal = 1;
+                    foreach ($assets as $ast) {
+                        if (($ast['id'] ?? '') === $reqAsetId) {
+                            $stokTotal = max(1, intval($ast['stokTotal'] ?? 1));
+                            break;
+                        }
                     }
-                }
 
-                $bentrokCount = 0;
-                foreach ($bookings as $b) {
-                    if (($b['asetId'] ?? '') !== $reqAsetId) continue;
-                    $bStatus = $b['status'] ?? '';
-                    if ($bStatus === 'completed' || $bStatus === 'cancelled' || $bStatus === 'rejected') continue;
+                    $bentrokCount = 0;
+                    foreach ($bookings as $b) {
+                        $bStatus = $b['status'] ?? '';
+                        if ($bStatus === 'completed' || $bStatus === 'cancelled' || $bStatus === 'rejected') continue;
 
-                    $bStart = strtotime($b['waktuAmbilRaw'] ?? $b['waktuAmbil'] ?? '');
-                    $bEnd = strtotime($b['waktuSelesaiRaw'] ?? $b['waktuSelesai'] ?? '');
-                    if (!$bStart || !$bEnd) continue;
+                        // Periksa apakah booking yang ada meminjam aset ini (single atau multi-item)
+                        $bMemuatAset = (($b['asetId'] ?? '') === $reqAsetId);
+                        $bItemSelesaiRaw = $b['waktuSelesaiRaw'] ?? ($b['waktuSelesai'] ?? '');
+                        if (!$bMemuatAset && !empty($b['items']) && is_array($b['items'])) {
+                            foreach ($b['items'] as $bi) {
+                                if (($bi['asetId'] ?? '') === $reqAsetId) {
+                                    $bMemuatAset = true;
+                                    if (!empty($bi['waktuSelesaiRaw'])) {
+                                        $bItemSelesaiRaw = $bi['waktuSelesaiRaw'];
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        if (!$bMemuatAset) continue;
 
-                    $bEndWithBuf = $bEnd + $bufferSec;
-                    $bStartWithBuf = $bStart - $bufferSec;
+                        $bStart = strtotime($b['waktuAmbilRaw'] ?? $b['waktuAmbil'] ?? '');
+                        $bEnd = strtotime($bItemSelesaiRaw);
+                        if (!$bStart || !$bEnd) continue;
 
-                    if ($reqStart < $bEndWithBuf && $reqEnd > $bStartWithBuf) {
-                        $bentrokCount++;
+                        $bEndWithBuf = $bEnd + $bufferSec;
+                        $bStartWithBuf = $bStart - $bufferSec;
+
+                        if ($reqStart < $bEndWithBuf && $reqEnd > $bStartWithBuf) {
+                            $bentrokCount++;
+                        }
                     }
-                }
 
-                if ($bentrokCount >= $stokTotal) {
-                    http_response_code(409);
-                    echo json_encode([
-                        'success' => false,
-                        'message' => 'Maaf, jadwal sewa unit ini baru saja dibooking oleh penyewa lain beberapa saat lalu. Silakan pilih jam atau hari lain.'
-                    ]);
-                    exit;
+                    if ($bentrokCount >= $stokTotal) {
+                        http_response_code(409);
+                        echo json_encode([
+                            'success' => false,
+                            'message' => 'Maaf, unit "' . ($itemReq['namaBarang'] ?? 'Aset') . '" baru saja dibooking oleh penyewa lain pada jam tersebut. Silakan pilih jam atau hari lain.'
+                        ]);
+                        exit;
+                    }
                 }
             }
 
@@ -672,10 +904,9 @@ switch ($action) {
         // Ambil semua booking (tanpa filter ID)
         $clientIp = $_SERVER['REMOTE_ADDR'] ?? '';
         $isLocalDev = ($clientIp === '127.0.0.1' || $clientIp === '::1');
-        $hasToken = !empty($_GET['token']) || !empty($_POST['token']) || !empty($input['token']);
 
-        if ($isAdmin || $isLocalDev || $hasToken) {
-            // Kembalikan seluruh data booking lengkap untuk dashboard admin
+        if ($isAdmin || $isLocalDev) {
+            // Kembalikan seluruh data booking lengkap untuk dashboard admin yang terotorisasi
             echo json_encode([
                 'success' => true,
                 'total'   => count($bookings),
@@ -686,16 +917,29 @@ switch ($action) {
             // Publik / pengunjung umum hanya menerima data jadwal non-sensitif untuk kalkulasi ketersediaan aset
             $publicList = [];
             foreach ($bookings as $b) {
-                $publicList[] = [
-                    'bookingId'      => $b['bookingId'] ?? '',
-                    'asetId'         => $b['asetId'] ?? '',
-                    'namaBarang'     => $b['namaBarang'] ?? '',
-                    'waktuAmbilRaw'  => $b['waktuAmbilRaw'] ?? ($b['waktuAmbil'] ?? ''),
-                    'waktuSelesaiRaw'=> $b['waktuSelesaiRaw'] ?? ($b['waktuSelesai'] ?? ''),
-                    'waktuAmbil'     => $b['waktuAmbil'] ?? '',
-                    'waktuSelesai'   => $b['waktuSelesai'] ?? '',
-                    'status'         => $b['status'] ?? 'pending'
+                $itemPublic = [
+                    'bookingId'       => $b['bookingId'] ?? '',
+                    'asetId'          => $b['asetId'] ?? '',
+                    'namaBarang'      => $b['namaBarang'] ?? '',
+                    'waktuAmbilRaw'   => $b['waktuAmbilRaw'] ?? ($b['waktuAmbil'] ?? ''),
+                    'waktuSelesaiRaw' => $b['waktuSelesaiRaw'] ?? ($b['waktuSelesai'] ?? ''),
+                    'waktuAmbil'      => $b['waktuAmbil'] ?? '',
+                    'waktuSelesai'    => $b['waktuSelesai'] ?? '',
+                    'status'          => $b['status'] ?? 'pending',
+                    'isMultiItem'     => !empty($b['isMultiItem'])
                 ];
+                if (!empty($b['items']) && is_array($b['items'])) {
+                    $itemPublic['items'] = array_map(function($it) {
+                        return [
+                            'asetId'          => $it['asetId'] ?? '',
+                            'namaBarang'      => $it['namaBarang'] ?? '',
+                            'waktuSelesaiRaw' => $it['waktuSelesaiRaw'] ?? '',
+                            'waktuSelesai'    => $it['waktuSelesai'] ?? '',
+                            'paketJam'        => $it['paketJam'] ?? 12
+                        ];
+                    }, $b['items']);
+                }
+                $publicList[] = $itemPublic;
             }
             echo json_encode([
                 'success' => true,
@@ -1020,6 +1264,64 @@ switch ($action) {
             ]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Data booking tidak ditemukan']);
+        }
+        break;
+
+    // -------------------------------------------------------------
+    // 13B. Ajukan Perpanjangan Waktu Sewa (Santri via status.html)
+    // -------------------------------------------------------------
+    case 'ajukan_perpanjangan':
+        $bId = trim($input['bookingId'] ?? $_GET['id'] ?? '');
+        $jamTambahan = intval($input['jamTambahan'] ?? 0);
+        $waktuSelesaiBaru = sanitasiString($input['waktuSelesaiBaru'] ?? '');
+        $waktuSelesaiBaruRaw = sanitasiString($input['waktuSelesaiBaruRaw'] ?? '');
+        $biayaTambahan = intval($input['biayaTambahan'] ?? 0);
+        $biayaTambahanTeks = sanitasiString($input['biayaTambahanTeks'] ?? '');
+        $catatan = sanitasiString($input['catatan'] ?? '');
+        $itemsTerpilih = (!empty($input['itemsTerpilih']) && is_array($input['itemsTerpilih'])) ? $input['itemsTerpilih'] : null;
+
+        if (empty($bId) || $jamTambahan <= 0) {
+            echo json_encode(['success' => false, 'message' => 'ID Booking dan durasi tambahan waktu wajib disertakan']);
+            exit;
+        }
+
+        $bookings = bacaJson($fileBookings, []);
+        $found = false;
+        $targetBooking = null;
+
+        foreach ($bookings as &$b) {
+            if (strcasecmp($b['bookingId'] ?? '', $bId) === 0 || strcasecmp($b['id'] ?? '', $bId) === 0) {
+                $pengajuan = [
+                    'jamTambahan' => $jamTambahan,
+                    'waktuSelesaiSemula' => $b['waktuSelesai'] ?? '',
+                    'waktuSelesaiBaru' => $waktuSelesaiBaru,
+                    'waktuSelesaiBaruRaw' => $waktuSelesaiBaruRaw,
+                    'biayaTambahan' => $biayaTambahan,
+                    'biayaTambahanTeks' => $biayaTambahanTeks,
+                    'catatan' => $catatan,
+                    'itemsTerpilih' => $itemsTerpilih,
+                    'status' => 'menunggu_persetujuan',
+                    'waktuPengajuan' => date('Y-m-d H:i:s')
+                ];
+                $b['pengajuanPerpanjangan'] = $pengajuan;
+                $targetBooking = $b;
+                $found = true;
+                break;
+            }
+        }
+
+        if ($found) {
+            tulisJson($fileBookings, $bookings);
+            if (!empty($targetBooking)) {
+                kirimNotifPengajuanPerpanjangan($targetBooking, $targetBooking['pengajuanPerpanjangan']);
+            }
+            echo json_encode([
+                'success' => true,
+                'message' => 'Permohonan perpanjangan berhasil diajukan dan diteruskan ke Pengurus',
+                'data' => $targetBooking['pengajuanPerpanjangan']
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Data booking tidak ditemukan di server']);
         }
         break;
 

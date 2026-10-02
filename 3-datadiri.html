@@ -72,7 +72,8 @@
                 <i class="bi bi-box-seam me-1" style="color: #0066ff;"></i> 1. Aset yang Dipilih
               </h6>
               
-              <div class="row g-3 p-3 mb-4 rounded-3 border" style="background: rgba(248, 250, 252, 0.85); border-color: rgba(0, 102, 255, 0.15) !important;">
+              <!-- Tampilan Single Item -->
+              <div id="sectionSingleItem" class="row g-3 p-3 mb-4 rounded-3 border" style="background: rgba(248, 250, 252, 0.85); border-color: rgba(0, 102, 255, 0.15) !important;">
                 <div class="col-md-5">
                   <label class="form-label text-dark small fw-bold">Barang / Aset yang Dipinjam</label>
                   <div class="input-group">
@@ -92,6 +93,38 @@
                   <div class="input-group">
                     <span class="input-group-text bg-white"><i class="bi bi-cash" style="color: #00d2d3;"></i></span>
                     <input type="text" id="roBiayaSewa" class="form-control bg-white fw-bold text-success" readonly value="-" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tampilan Multi-Item (Keranjang Sewa) -->
+              <div id="sectionMultiItem" class="mb-4 d-none">
+                <div class="p-3 rounded-3 border" style="background: rgba(248, 250, 252, 0.85); border-color: rgba(0, 102, 255, 0.2) !important;">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-dark small fw-bold"><i class="bi bi-cart3 text-primary me-1"></i> Rincian Paket Multi-Aset:</strong>
+                    <span class="badge bg-primary rounded-pill" id="badgeMultiItemCount">0 Unit</span>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table table-sm table-bordered bg-white mb-2 align-middle" style="font-size: 0.9rem;">
+                      <thead class="table-light">
+                        <tr>
+                          <th style="width: 5%;">No</th>
+                          <th>Nama Peralatan</th>
+                          <th style="width: 25%;">Paket Durasi</th>
+                          <th style="width: 25%;">Batas Selesai</th>
+                          <th class="text-end" style="width: 20%;">Tarif Pokok</th>
+                        </tr>
+                      </thead>
+                      <tbody id="multiItemsTableBody">
+                        <!-- Rendered via JS -->
+                      </tbody>
+                      <tfoot>
+                        <tr class="table-light fw-bold">
+                          <td colspan="4" class="text-end">Total Biaya Pokok:</td>
+                          <td class="text-end text-primary" id="multiItemTotalFoot">Rp 0</td>
+                        </tr>
+                      </tfoot>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -247,7 +280,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
   <script src="./dist/js/adminlte.min.js"></script>
-  <script src="./js/rental-logic.js?v=3.0"></script>
+  <script src="./dist/js/sweetalert2.all.min.js"></script>
+  <script>
+    if (typeof window !== 'undefined') {
+      window.Swal = window.Swal || window.Sweetalert2;
+      window.SweetAlert = window.SweetAlert || window.Sweetalert2;
+    }
+    if (typeof Swal === 'undefined' && typeof Sweetalert2 === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"><\/script>');
+    }
+  </script>
+  <script src="./js/rental-logic.js?v=4.0"></script>
 
   <script>
     let currentBooking = {};
@@ -286,26 +329,61 @@
         }
       }
 
+      // Jika belum ada data sewa aktif tapi di keranjang ada item, inisialisasi dari keranjang
+      const cartItems = (typeof ambilKeranjang === "function") ? ambilKeranjang() : [];
+      if ((!currentBooking || !currentBooking.namaBarang) && cartItems.length > 0) {
+        const first = cartItems[0];
+        const multiNames = cartItems.map(it => it.namaBarang).join(" + ");
+        const summary = (typeof hitungTotalKeranjang === "function") ? hitungTotalKeranjang() : { totalBiaya: 0 };
+        currentBooking = {
+          asetId: first.asetId,
+          namaBarang: multiNames,
+          kategori: "Multi-Aset Multimedia",
+          kategoriKey: "multi",
+          adminPic: first.adminPic || "admin1",
+          paketJam: first.paketJam,
+          paketLabel: cartItems.map(it => `${it.namaBarang} (${it.paketJam} Jam)`).join(", "),
+          biayaSewa: summary.totalBiaya,
+          biayaSewaAsli: summary.totalBiaya,
+          isMultiItem: true,
+          items: cartItems
+        };
+        simpanDataBooking(currentBooking);
+      }
+
       if (!currentBooking || !currentBooking.namaBarang) {
         alert("Silakan pilih unit alat yang ingin disewa terlebih dahulu dari katalog.");
         window.location.href = "1-katalog.html";
         return;
       }
 
-      const inputNamaBarang = document.getElementById("roNamaBarang");
-      const inputPaketJam = document.getElementById("roPaketJam");
-      const inputBiayaSewa = document.getElementById("roBiayaSewa");
+      const hasItems = !!(currentBooking.items && Array.isArray(currentBooking.items) && currentBooking.items.length > 0);
+      const isMulti = hasItems && (currentBooking.items.length > 1 || currentBooking.isMultiItem);
+      const secSingle = document.getElementById("sectionSingleItem");
+      const secMulti = document.getElementById("sectionMultiItem");
 
-      currentBooking.biayaSewaAsli = currentBooking.biayaSewaAsli || currentBooking.biayaSewa || 0;
-      inputNamaBarang.value = currentBooking.namaBarang || "-";
-      inputPaketJam.value = currentBooking.paketLabel || (currentBooking.paketJam ? `${currentBooking.paketJam} Jam` : "-");
-      
-      if (currentBooking.isDinas) {
-        const radDinas = document.getElementById("tipeDinas");
-        if (radDinas) radDinas.checked = true;
-        inputBiayaSewa.value = "Rp 0 (Tugas Resmi Pondok)";
+      if (isMulti) {
+        if (secSingle) secSingle.classList.add("d-none");
+        if (secMulti) secMulti.classList.remove("d-none");
+        renderMultiItemsTableRows();
       } else {
-        inputBiayaSewa.value = formatRupiah(currentBooking.biayaSewaAsli);
+        if (secSingle) secSingle.classList.remove("d-none");
+        if (secMulti) secMulti.classList.add("d-none");
+        const inputNamaBarang = document.getElementById("roNamaBarang");
+        const inputPaketJam = document.getElementById("roPaketJam");
+        const inputBiayaSewa = document.getElementById("roBiayaSewa");
+
+        currentBooking.biayaSewaAsli = currentBooking.biayaSewaAsli || currentBooking.biayaSewa || 0;
+        if (inputNamaBarang) inputNamaBarang.value = currentBooking.namaBarang || "-";
+        if (inputPaketJam) inputPaketJam.value = currentBooking.paketLabel || (currentBooking.paketJam ? `${currentBooking.paketJam} Jam` : "-");
+        
+        if (currentBooking.isDinas) {
+          const radDinas = document.getElementById("tipeDinas");
+          if (radDinas) radDinas.checked = true;
+          if (inputBiayaSewa) inputBiayaSewa.value = "Rp 0 (Tugas Resmi Pondok)";
+        } else if (inputBiayaSewa) {
+          inputBiayaSewa.value = formatRupiah(currentBooking.biayaSewaAsli);
+        }
       }
 
       // Auto-fill dari profil penyewa tersimpan jika memesan barang kedua/ketiga
@@ -354,6 +432,36 @@
 
     let isJadwalTersedia = true;
 
+    function renderMultiItemsTableRows() {
+      const tbody = document.getElementById("multiItemsTableBody");
+      const badgeCount = document.getElementById("badgeMultiItemCount");
+      const footTotal = document.getElementById("multiItemTotalFoot");
+      if (!tbody || !currentBooking.items) return;
+
+      tbody.innerHTML = "";
+      let totalTarif = 0;
+      currentBooking.items.forEach((it, idx) => {
+        const tarif = parseInt(it.biaya || 0);
+        totalTarif += tarif;
+        const selesaiTeks = it.waktuSelesai ? `<strong>${it.waktuSelesai}</strong>` : '<span class="text-muted">Menyesuaikan jam ambil</span>';
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="text-center fw-bold text-muted">${idx + 1}</td>
+          <td>
+            <strong class="text-dark d-block">${escapeHtml(it.namaBarang)}</strong>
+            <small class="text-secondary">${escapeHtml(it.kategori || '')}</small>
+          </td>
+          <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill">${escapeHtml(it.paketLabel || (it.paketJam + ' Jam'))}</span></td>
+          <td class="small text-danger">${selesaiTeks}</td>
+          <td class="text-end fw-bold text-success">${formatRupiah(tarif)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (badgeCount) badgeCount.innerText = `${currentBooking.items.length} Unit`;
+      if (footTotal) footTotal.innerText = formatRupiah(totalTarif);
+    }
+
     function validasiJadwalRealtime() {
       const container = document.getElementById("containerStatusJadwal");
       const btnSubmit = document.getElementById("btnSubmitForm");
@@ -361,7 +469,72 @@
       const waktuAmbilVal = inputWaktuAmbil ? inputWaktuAmbil.value : "";
 
       if (!container) return;
-      if (!waktuAmbilVal || !waktuSelesaiCalculated || !currentBooking.asetId) {
+      if (!waktuAmbilVal || !waktuSelesaiCalculated) {
+        container.innerHTML = "";
+        isJadwalTersedia = true;
+        if (btnSubmit) btnSubmit.disabled = false;
+        return;
+      }
+
+      // Validasi paralel jika peminjaman multi-item atau memiliki daftar items
+      if (currentBooking.items && Array.isArray(currentBooking.items) && currentBooking.items.length > 0) {
+        const multiRes = (typeof cekBentrokMultiAset === "function") 
+          ? cekBentrokMultiAset(currentBooking.items, waktuAmbilVal)
+          : { available: true, bentrokItems: [] };
+
+        if (!multiRes.available) {
+          isJadwalTersedia = false;
+          if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.classList.add("opacity-50");
+          }
+          let detailBentrokHtml = "";
+          multiRes.bentrokItems.forEach(bIt => {
+            detailBentrokHtml += `<li><strong>${escapeHtml(bIt.namaBarang)}:</strong> Bentrok pada rentang jadwal yang dipilih.</li>`;
+          });
+          container.innerHTML = `
+            <div class="alert alert-danger mb-0 p-3 rounded-3 shadow-sm border-2 border-danger" role="alert" style="background: rgba(254, 242, 242, 0.98);">
+              <div class="d-flex align-items-start gap-2">
+                <i class="bi bi-exclamation-triangle-fill fs-4 text-danger flex-shrink-0 mt-1"></i>
+                <div>
+                  <strong class="d-block text-danger fs-6">JADWAL MULTI-ASET BENTROK!</strong>
+                  <span class="small text-dark d-block mb-1">
+                    Sebagian alat yang Anda sewa sudah dibooking oleh santri lain pada rentang jam tersebut:
+                  </span>
+                  <ul class="mb-2 ps-3 small text-dark">
+                    ${detailBentrokHtml}
+                  </ul>
+                  <div class="p-2 rounded bg-white border border-danger-subtle small fw-bold text-danger">
+                    <i class="bi bi-lightbulb me-1 text-warning"></i> Solusi: Silakan pilih jam pengambilan lain atau pilih tanggal berikutnya.
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          return;
+        } else {
+          isJadwalTersedia = true;
+          if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.classList.remove("opacity-50");
+          }
+          container.innerHTML = `
+            <div class="alert alert-success mb-0 p-2 px-3 rounded-3 shadow-sm" role="alert" style="background: rgba(240, 253, 244, 0.98); border: 1.5px solid #22c55e;">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+                <div>
+                  <strong class="text-success small d-block">SEMUA JADWAL MULTI-ASET TERSEDIA!</strong>
+                  <span class="small text-dark">Seluruh ${currentBooking.items.length} unit peralatan siap Anda ambil dan gunakan pada jadwal ini.</span>
+                </div>
+              </div>
+            </div>
+          `;
+          return;
+        }
+      }
+
+      // Validasi single item biasa
+      if (!currentBooking.asetId) {
         container.innerHTML = "";
         isJadwalTersedia = true;
         if (btnSubmit) btnSubmit.disabled = false;
@@ -449,14 +622,52 @@
         return updateWaktuSelesai();
       }
 
-      const durasiJam = currentBooking.paketJam || 5;
-      const hasil = hitungWaktuSelesai(waktuAmbilVal, durasiJam);
-      if (hasil) {
-        waktuSelesaiCalculated = hasil;
-        outputEl.value = formatWaktuIndo(hasil);
+      // Jika memiliki items di keranjang (multi-item ataupun single cart item): hitung durasi untuk setiap item
+      if (currentBooking.items && Array.isArray(currentBooking.items) && currentBooking.items.length > 0) {
+        const tAmbil = new Date(waktuAmbilVal);
+        let maxSelesaiTime = 0;
+        let maxSelesaiDate = null;
+
+        currentBooking.items.forEach(it => {
+          const jam = parseInt(it.paketJam || 12);
+          const tSelesai = new Date(tAmbil.getTime() + (jam * 3600 * 1000));
+          it.waktuAmbilRaw = tAmbil.toISOString();
+          it.waktuAmbil = formatWaktuIndo(tAmbil);
+          it.waktuSelesaiRaw = tSelesai.toISOString();
+          it.waktuSelesai = formatWaktuIndo(tSelesai);
+
+          if (tSelesai.getTime() > maxSelesaiTime) {
+            maxSelesaiTime = tSelesai.getTime();
+            maxSelesaiDate = tSelesai;
+          }
+        });
+
+        waktuSelesaiCalculated = maxSelesaiDate;
+
+        if (currentBooking.items.length === 1) {
+          currentBooking.paketJam = currentBooking.items[0].paketJam;
+          outputEl.value = formatWaktuIndo(maxSelesaiDate);
+        } else {
+          const durasiSet = new Set(currentBooking.items.map(it => it.paketJam));
+          if (durasiSet.size === 1) {
+            const satuJam = currentBooking.items[0].paketJam;
+            outputEl.value = `${formatWaktuIndo(maxSelesaiDate)} (Serempak ${satuJam} Jam)`;
+          } else {
+            outputEl.value = `Sesuai rincian tiap alat (Maks: ${formatWaktuIndo(maxSelesaiDate)})`;
+          }
+        }
+
+        renderMultiItemsTableRows();
       } else {
-        outputEl.value = "Format waktu tidak valid";
-        waktuSelesaiCalculated = null;
+        const durasiJam = currentBooking.paketJam || 5;
+        const hasil = hitungWaktuSelesai(waktuAmbilVal, durasiJam);
+        if (hasil) {
+          waktuSelesaiCalculated = hasil;
+          outputEl.value = formatWaktuIndo(hasil);
+        } else {
+          outputEl.value = "Format waktu tidak valid";
+          waktuSelesaiCalculated = null;
+        }
       }
 
       validasiJadwalRealtime();
@@ -505,10 +716,10 @@
       const elKeperluan = document.getElementById("inputKeperluan");
       const rawKeperluan = elKeperluan ? elKeperluan.value.trim() : "";
       const keperluanVal = rawKeperluan || "Kegiatan Santri / Umum";
-      const isDinasPengajuan = rawKeperluan.toLowerCase().includes("dinas") || rawKeperluan.toLowerCase().includes("pondok");
 
       const isDinasPondok = document.getElementById("tipeDinas") ? document.getElementById("tipeDinas").checked : false;
       const tarifPokok = currentBooking.biayaSewaAsli || currentBooking.biayaSewa || 0;
+      const isMulti = !!(currentBooking.items && Array.isArray(currentBooking.items) && currentBooking.items.length > 1);
 
       const dataToSave = {
         ...currentBooking,
@@ -526,6 +737,8 @@
         waktuAmbil: formatWaktuIndo(waktuAmbilRaw),
         waktuSelesaiRaw: waktuSelesaiCalculated.toISOString(),
         waktuSelesai: formatWaktuIndo(waktuSelesaiCalculated),
+        isMultiItem: isMulti,
+        items: currentBooking.items || null,
         bookingId: null,
         id: null
       };

@@ -227,9 +227,33 @@
         <h5 class="fw-bolder mb-0 text-dark">
           <i class="bi bi-receipt me-2" style="color: #0066ff;"></i>Informasi Sewa Unit
         </h5>
-        <span class="badge text-white px-3 py-2 rounded-pill fw-bold" style="background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%);" id="viewBookingId">INV-0000</span>
+        <span class="badge text-white px-3 py-2 rounded-pill fw-bold" style="background: #0066ff;" id="viewBookingId">INV-0000</span>
       </div>
       <div class="card-body p-3 p-sm-4">
+        <!-- Rincian Multi-Item Booking jika > 1 Aset -->
+        <div id="viewBoxMultiItem" class="mb-3 d-none">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge text-white px-3 py-1 fw-bold" style="background: #0066ff;">
+              <i class="bi bi-basket3-fill me-1"></i> Rincian Aset Disewa (<span id="viewBadgeMultiCount">0</span>)
+            </span>
+            <span class="small text-muted fw-semibold">Multi-Booking</span>
+          </div>
+          <div class="table-responsive rounded-3 border bg-white shadow-sm mb-3">
+            <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.85rem;">
+              <thead class="table-light small">
+                <tr>
+                  <th class="ps-2">#</th>
+                  <th>Alat</th>
+                  <th>Paket</th>
+                  <th>Target Selesai</th>
+                  <th class="text-end pe-2">Biaya</th>
+                </tr>
+              </thead>
+              <tbody id="viewMultiItemBody"></tbody>
+            </table>
+          </div>
+        </div>
+
         <table class="table table-borderless align-middle mb-0" style="table-layout: fixed; width: 100%; word-break: break-word;">
           <tbody>
             <tr style="background-color: rgba(255, 255, 255, 0.7);">
@@ -238,7 +262,7 @@
             </tr>
             <tr style="background-color: rgba(248, 250, 252, 0.85);">
               <td class="text-secondary small fw-bold">Durasi / Paket</td>
-              <td><span class="badge text-white px-3 py-1 fw-bold" style="background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%);" id="viewPaket">-</span></td>
+              <td><span class="badge text-white px-3 py-1 fw-bold" style="background: #0066ff;" id="viewPaket">-</span></td>
             </tr>
             <tr style="background-color: rgba(255, 255, 255, 0.7);">
               <td class="text-secondary small fw-bold">Biaya Sewa Pokok</td>
@@ -277,7 +301,7 @@
       <div class="modal-content border-0 shadow-lg" style="border-radius: 1.25rem; overflow: hidden; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px);">
         <div class="modal-header border-0 pb-0 pt-4 px-4">
           <div class="d-flex align-items-center gap-2">
-            <div class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm flex-shrink-0" style="width: 44px; height: 44px; background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%); font-size: 1.25rem;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm flex-shrink-0" style="width: 44px; height: 44px; background: #0066ff; font-size: 1.25rem;">
               <i class="bi bi-clock-history"></i>
             </div>
             <div>
@@ -304,28 +328,32 @@
             </div>
           </div>
 
-          <!-- Pilihan Tambahan Durasi -->
-          <div class="mb-3">
+          <!-- Pilihan Tambahan Durasi (Khusus Single-Asset) -->
+          <div class="mb-3" id="wrapDurasiSingleAsset">
             <label class="form-label fw-bold text-dark small mb-2">
               <i class="bi bi-stopwatch text-primary me-1"></i> Pilih Tambahan Durasi Waktu:
             </label>
             <div class="row g-2" id="groupDurasiPerpanjang">
-              <div class="col-6 col-sm-3">
-                <input type="radio" class="btn-check" name="durasiTambahan" id="durasi_3" value="3" autocomplete="off" onchange="hitungPratinjauPerpanjangan()">
-                <label class="btn btn-outline-primary w-100 py-2 fw-bold" for="durasi_3">+3 Jam</label>
+              <!-- Diisi dinamis via JS -->
+            </div>
+          </div>
+
+          <!-- Pilihan Selektif Unit (Khusus Multi-Asset) -->
+          <div class="mb-3 d-none" id="wrapSelektifMultiAsset">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label fw-bold text-dark small mb-0">
+                <i class="bi bi-check2-square text-primary me-1"></i> Pilih Unit yang Ingin Diperpanjang:
+              </label>
+              <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-outline-primary py-0 px-2 fw-bold" style="font-size: 0.72rem;" onclick="togglePilihSemuaItemPerpanjang(true)">Centang Semua</button>
+                <button type="button" class="btn btn-outline-secondary py-0 px-2" style="font-size: 0.72rem;" onclick="togglePilihSemuaItemPerpanjang(false)">Hapus Semua</button>
               </div>
-              <div class="col-6 col-sm-3">
-                <input type="radio" class="btn-check" name="durasiTambahan" id="durasi_6" value="6" checked autocomplete="off" onchange="hitungPratinjauPerpanjangan()">
-                <label class="btn btn-outline-primary w-100 py-2 fw-bold" for="durasi_6">+6 Jam</label>
-              </div>
-              <div class="col-6 col-sm-3">
-                <input type="radio" class="btn-check" name="durasiTambahan" id="durasi_12" value="12" autocomplete="off" onchange="hitungPratinjauPerpanjangan()">
-                <label class="btn btn-outline-primary w-100 py-2 fw-bold" for="durasi_12">+12 Jam</label>
-              </div>
-              <div class="col-6 col-sm-3">
-                <input type="radio" class="btn-check" name="durasiTambahan" id="durasi_24" value="24" autocomplete="off" onchange="hitungPratinjauPerpanjangan()">
-                <label class="btn btn-outline-primary w-100 py-2 fw-bold" for="durasi_24">+24 Jam</label>
-              </div>
+            </div>
+            <div id="containerListSelektifAset" class="d-flex flex-column gap-2">
+              <!-- Daftar unit dinamis per barang -->
+            </div>
+            <div class="p-2 rounded bg-light border mt-2 small text-secondary" style="font-size: 0.74rem;">
+              <i class="bi bi-info-circle text-primary me-1"></i> <strong>Catatan:</strong> Unit yang tidak dicentang wajib dikembalikan tepat waktu sesuai jadwal semula.
             </div>
           </div>
 
@@ -343,8 +371,13 @@
               <span class="small text-secondary fw-medium">Batas Waktu Baru:</span>
               <strong class="text-primary fs-6" id="mpBatasBaru">-</strong>
             </div>
+            <!-- Rincian Biaya Per Unit (Muncul saat multi-item) -->
+            <div id="mpBreakdownWrap" class="mb-2 pb-2 border-bottom d-none" style="border-color: rgba(0, 102, 255, 0.15) !important;">
+              <span class="small text-muted fw-bold d-block mb-1" style="font-size: 0.72rem;">RINCIAN BIAYA PER UNIT:</span>
+              <div id="mpBreakdownList" class="small text-dark d-flex flex-column gap-1"></div>
+            </div>
             <div class="d-flex justify-content-between align-items-center">
-              <span class="small text-secondary fw-medium">Estimasi Biaya Tambahan:</span>
+              <span class="small text-secondary fw-medium">Total Estimasi Biaya Tambahan:</span>
               <strong class="text-dark fs-6" id="mpBiayaTambahan">Rp 0</strong>
             </div>
           </div>
@@ -356,10 +389,10 @@
 
           <!-- Tombol Eksekusi -->
           <div class="d-grid gap-2">
-            <button type="button" id="mpBtnKirimWa" class="btn btn-success fw-bold py-2 shadow-sm" onclick="kirimPesanPerpanjangWhatsApp()">
-              <i class="bi bi-whatsapp me-1"></i> Kirim Permohonan ke Pengurus via WhatsApp
+            <button type="button" id="mpBtnKirimWa" class="btn btn-primary fw-bold py-2 shadow-sm" style="background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%); border: none; border-radius: 12px;" onclick="kirimPesanPerpanjangWhatsApp()">
+              <i class="bi bi-send-check me-1"></i> Ajukan Perpanjangan (Kirim WhatsApp Otomatis)
             </button>
-            <button type="button" class="btn btn-light text-secondary fw-bold" data-bs-dismiss="modal">
+            <button type="button" class="btn btn-light text-secondary fw-bold" style="border-radius: 12px;" data-bs-dismiss="modal">
               Batal
             </button>
           </div>
@@ -379,7 +412,17 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
-  <script src="./js/rental-logic.js?v=3.0"></script>
+  <script src="./dist/js/sweetalert2.all.min.js"></script>
+  <script>
+    if (typeof window !== 'undefined') {
+      window.Swal = window.Swal || window.Sweetalert2;
+      window.SweetAlert = window.SweetAlert || window.Sweetalert2;
+    }
+    if (typeof Swal === 'undefined' && typeof Sweetalert2 === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"><\/script>');
+    }
+  </script>
+  <script src="./js/rental-logic.js?v=4.0"></script>
   <script>
     let activeBooking = null;
 
@@ -406,9 +449,48 @@
 
       // Tampilkan Data
       document.getElementById("viewBookingId").innerText = bId;
-      document.getElementById("viewNamaBarang").innerText = activeBooking.namaBarang;
-      document.getElementById("viewPaket").innerText = activeBooking.paketLabel || (activeBooking.paketJam + " Jam");
-      document.getElementById("viewBiayaSewa").innerText = formatRupiah(activeBooking.biayaSewa || 0);
+
+      const isMulti = !!(activeBooking.isMultiItem && activeBooking.items && activeBooking.items.length > 1);
+      const viewBoxMulti = document.getElementById("viewBoxMultiItem");
+      const viewTbodyMulti = document.getElementById("viewMultiItemBody");
+      const viewBadgeMulti = document.getElementById("viewBadgeMultiCount");
+
+      if (isMulti && viewBoxMulti && viewTbodyMulti) {
+        viewBoxMulti.classList.remove("d-none");
+        if (viewBadgeMulti) viewBadgeMulti.innerText = activeBooking.items.length + " Unit";
+        viewTbodyMulti.innerHTML = "";
+        activeBooking.items.forEach((it, idx) => {
+          const tr = document.createElement("tr");
+          const tarif = (activeBooking.isDinas || parseInt(activeBooking.biayaSewa || 0) === 0) ? '<span class="text-success fw-bold">Gratis</span>' : formatRupiah(it.biaya || 0);
+          tr.innerHTML = `
+            <td class="ps-2 text-muted fw-bold">${idx + 1}</td>
+            <td>
+              <span class="fw-bold text-dark d-block">${escapeHtml(it.namaBarang)}</span>
+              <small class="text-muted">${escapeHtml(it.kategori || '')}</small>
+            </td>
+            <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle">${escapeHtml(it.paketLabel || (it.paketJam + ' Jam'))}</span></td>
+            <td class="small text-danger fw-semibold">${it.waktuSelesai || activeBooking.waktuSelesai}</td>
+            <td class="text-end pe-2 fw-bold text-primary">${tarif}</td>
+          `;
+          viewTbodyMulti.appendChild(tr);
+        });
+
+        const elNamaBarang = document.getElementById("viewNamaBarang");
+        if (elNamaBarang) {
+          elNamaBarang.innerHTML = `<span class="badge bg-primary px-2 py-1 me-1">${activeBooking.items.length} Aset</span> ` + activeBooking.items.map(it => escapeHtml(it.namaBarang)).join(", ");
+        }
+        const elPaket = document.getElementById("viewPaket");
+        if (elPaket) {
+          const semuaSama = activeBooking.items.every(it => it.paketJam === activeBooking.items[0].paketJam);
+          elPaket.innerText = semuaSama ? (activeBooking.items[0].paketJam + " Jam") : "Bervariasi (Lihat Rincian)";
+        }
+      } else {
+        const itemFirst = (activeBooking.items && activeBooking.items[0]) ? activeBooking.items[0] : null;
+        document.getElementById("viewNamaBarang").innerText = activeBooking.namaBarang || (itemFirst ? itemFirst.namaBarang : "-");
+        document.getElementById("viewPaket").innerText = activeBooking.paketLabel || (activeBooking.paketJam ? (activeBooking.paketJam + " Jam") : (itemFirst ? (itemFirst.paketJam + " Jam") : "-"));
+      }
+
+      document.getElementById("viewBiayaSewa").innerText = (activeBooking.isDinas || parseInt(activeBooking.biayaSewa || 0) === 0) ? "Gratis (Tugas Resmi Pondok)" : formatRupiah(activeBooking.biayaSewa || 0);
       let namaTampil = activeBooking.nama || "-";
       if (namaTampil.includes('***')) {
         const cur = typeof ambilDataBooking === "function" ? ambilDataBooking() : null;
@@ -437,6 +519,12 @@
       document.getElementById("viewWaktuAmbil").innerText = viewAmbilTeks || "-";
 
       let viewKembaliTeks = activeBooking.waktuSelesai;
+      if (isMulti) {
+        const semuaSelesaiSama = activeBooking.items.every(it => (it.waktuSelesai || it.waktuSelesaiRaw) === (activeBooking.items[0].waktuSelesai || activeBooking.items[0].waktuSelesaiRaw));
+        if (!semuaSelesaiSama) {
+          viewKembaliTeks = `Bervariasi (Maksimal: ${activeBooking.waktuSelesai || '-'})`;
+        }
+      }
       if (!viewKembaliTeks && activeBooking.waktuSelesaiRaw && typeof formatWaktuIndo === "function") {
         viewKembaliTeks = formatWaktuIndo(activeBooking.waktuSelesaiRaw) + " WIB";
       }
@@ -455,10 +543,18 @@
       // Monitor status overdue untuk memunculkan notifikasi & tombol WA pengembalian
       setInterval(() => {
         if (activeBooking && (activeBooking.status === "completed" || activeBooking.status === "rejected" || activeBooking.status === "cancelled")) return;
-        if (!activeBooking || !activeBooking.waktuSelesaiRaw) return;
+        if (!activeBooking) return;
 
-        const sTime = new Date(activeBooking.waktuSelesaiRaw).getTime();
-        const isOverdue = Date.now() > sTime;
+        let isOverdue = false;
+        if (activeBooking.isMultiItem && activeBooking.items && activeBooking.items.length > 0) {
+          isOverdue = activeBooking.items.some(it => {
+            const raw = it.waktuSelesaiRaw || activeBooking.waktuSelesaiRaw;
+            return raw && Date.now() > new Date(raw).getTime();
+          });
+        } else if (activeBooking.waktuSelesaiRaw) {
+          isOverdue = Date.now() > new Date(activeBooking.waktuSelesaiRaw).getTime();
+        }
+
         const banner = document.getElementById("overdueAlertBanner");
         if (banner) {
           if (isOverdue) {
@@ -466,7 +562,8 @@
             const btnLapor = document.getElementById("btnLaporPengembalianWa");
             if (btnLapor && !btnLapor.href.includes("wa.me")) {
               const noAdmin = dapatkanNomorWaAdmin(activeBooking);
-              const pesan = `Assalamu'alaikum Pengurus / Admin Ma'had Aly Amtsilati, saya ${activeBooking.nama} hendak mengembalikan aset ${activeBooking.namaBarang} (${bId}). Mohon arahan serah terima unitnya. Terima kasih.`;
+              const barangPesan = activeBooking.isMultiItem && activeBooking.items ? activeBooking.items.map(i => i.namaBarang).join(", ") : (activeBooking.namaBarang || "alat");
+              const pesan = `Assalamu'alaikum Pengurus / Admin Ma'had Aly Amtsilati, saya ${activeBooking.nama} hendak mengembalikan aset ${barangPesan} (${bId}). Mohon arahan serah terima unitnya. Terima kasih.`;
               btnLapor.href = `https://wa.me/${noAdmin}?text=${encodeURIComponent(pesan)}`;
             }
           } else {
@@ -524,7 +621,8 @@
 
         if (cardDitolak) {
           cardDitolak.classList.remove("d-none");
-          document.getElementById("tolakNamaBarang").innerText = booking.namaBarang || "-";
+          const namaTolak = (booking.isMultiItem && booking.items) ? booking.items.map(i => i.namaBarang).join(", ") : (booking.namaBarang || "-");
+          document.getElementById("tolakNamaBarang").innerText = namaTolak;
           document.getElementById("tolakBookingId").innerText = bId;
           document.getElementById("tolakAlasanTeks").innerText = booking.alasanTolak || "Unit sedang dalam pemeliharaan atau jadwal sewa berbenturan.";
         }
@@ -555,7 +653,8 @@
           const elWaktu = document.getElementById("selesaiWaktuKembali");
 
           if (elNama) elNama.innerText = booking.nama || "-";
-          if (elBarang) elBarang.innerText = booking.namaBarang || "-";
+          const namaSelesai = (booking.isMultiItem && booking.items) ? booking.items.map(i => i.namaBarang).join(", ") : (booking.namaBarang || "-");
+          if (elBarang) elBarang.innerText = namaSelesai;
           if (elId) elId.innerText = bId;
 
           let waktuKembaliTeks = "-";
@@ -626,7 +725,7 @@
           viewBadgeId.style.background = "#f59e0b";
           viewBadgeId.innerHTML = `<i class="bi bi-hourglass-top me-1"></i> ${bId} • MENUNGGU ACC`;
         } else {
-          viewBadgeId.style.background = "linear-gradient(135deg, #0055ff 0%, #7928ca 100%)";
+          viewBadgeId.style.background = "#0066ff";
           viewBadgeId.innerHTML = `<i class="bi bi-check-circle me-1"></i> ${bId} • DISETUJUI`;
         }
       }
@@ -647,13 +746,103 @@
         elTarif.innerHTML = '<span class="badge bg-primary text-white">Gratis (Dinas Resmi Pondok)</span>';
       }
 
-      // Jalankan hitung mundur 3 bagian (Sebelum Ambil -> Sedang Sewa -> Waktu Habis)
-      const wSelesai = booking.waktuSelesaiRaw || booking.waktuSelesai;
-      const wAmbil = booking.waktuAmbilRaw || booking.waktuAmbil;
-      const durLabel = booking.paketLabel || (booking.paketJam ? (booking.paketJam + " Jam") : null);
+      // Jalankan hitung mundur cerdas (Adaptif Single atau Multi-Asset)
+      const countdownContainer = document.getElementById("liveCountdownContainer");
+      if (typeof jalankanCountdown === "function" && countdownContainer) {
+        if (typeof hentikanCountdown === "function") hentikanCountdown();
 
-      if (typeof jalankanCountdown === "function") {
-        jalankanCountdown(wSelesai, "liveCountdownContainer", wAmbil, durLabel);
+        const hasMulti = !!(booking.isMultiItem && booking.items && booking.items.length > 1);
+
+        if (hasMulti) {
+          // Periksa apakah semua barang memiliki durasi & deadline yang sama
+          let semuaSelesaiSama = true;
+          const firstTarget = parseTanggalKeMillis(booking.items[0].waktuSelesaiRaw || booking.items[0].waktuSelesai);
+          const firstPaket = parseInt(booking.items[0].paketJam || 0, 10);
+
+          for (let i = 1; i < booking.items.length; i++) {
+            const thisTarget = parseTanggalKeMillis(booking.items[i].waktuSelesaiRaw || booking.items[i].waktuSelesai);
+            const thisPaket = parseInt(booking.items[i].paketJam || 0, 10);
+            if (thisTarget !== firstTarget || thisPaket !== firstPaket) {
+              semuaSelesaiSama = false;
+              break;
+            }
+          }
+
+          if (semuaSelesaiSama) {
+            // Opsi 1: Durasi sama -> 1 countdown tunggal untuk semua aset
+            const durasiSama = booking.items[0].paketJam || booking.paketJam;
+            const namaAsetSemua = booking.items.map(it => escapeHtml(it.namaBarang)).join(" & ");
+            countdownContainer.innerHTML = `
+              <div class="mb-2 text-center">
+                <span class="badge text-white px-3 py-1 rounded-pill fw-bold" style="background: #0066ff;">
+                  <i class="bi bi-collection-play me-1"></i> Durasi Bersama Seluruh Aset (${booking.items.length} Alat)
+                </span>
+                <div class="fw-bold text-dark fs-6 mt-1">${namaAsetSemua}</div>
+              </div>
+              <div id="unifiedCountdownBox" class="py-1"></div>
+            `;
+            const wSelesaiUnified = booking.items[0].waktuSelesaiRaw || booking.waktuSelesaiRaw || booking.waktuSelesai;
+            const wAmbilUnified = booking.items[0].waktuAmbilRaw || booking.waktuAmbilRaw || booking.waktuAmbil;
+            jalankanCountdown(wSelesaiUnified, "unifiedCountdownBox", wAmbilUnified, `${durasiSama} Jam (Semua Aset)`);
+          } else {
+            // Opsi 2: Durasi berbeda -> Countdown terpisah untuk tiap aset pada halaman yang sama
+            let multiCardsHtml = `
+              <div class="alert alert-info border border-info-subtle small text-start p-2 mb-3 rounded-3" style="background: rgba(224, 242, 254, 0.85);">
+                <i class="bi bi-info-circle-fill text-primary me-1"></i>
+                <strong>Paket Waktu Berbeda:</strong> Anda menyewa ${booking.items.length} alat dengan batas waktu selesai yang berbeda. Di bawah ini adalah hitung mundur masing-masing unit:
+              </div>
+              <div class="d-flex flex-column gap-3">
+            `;
+
+            booking.items.forEach((it, idx) => {
+              multiCardsHtml += `
+                <div class="card shadow-sm border-0 text-start" style="background: rgba(255, 255, 255, 0.95); border-radius: 14px; border: 1.5px solid rgba(0, 102, 255, 0.18) !important;">
+                  <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center bg-white border-bottom" style="border-radius: 14px 14px 0 0;">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge text-white px-2 py-1 rounded-pill" style="background: #0066ff;">
+                        Aset #${idx + 1}
+                      </span>
+                      <strong class="text-dark fs-6">${escapeHtml(it.namaBarang)}</strong>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill fw-bold">
+                      ${escapeHtml(it.paketLabel || (it.paketJam + ' Jam'))}
+                    </span>
+                  </div>
+                  <div class="card-body p-3 text-center">
+                    <div id="liveCountdownContainer_${idx}" class="py-1"></div>
+                    <div class="row g-2 border-top pt-2 mt-2 text-start small text-secondary">
+                      <div class="col-6">
+                        <span class="d-block text-muted" style="font-size:0.75rem;">Mulai:</span>
+                        <strong class="text-dark">${it.waktuAmbil || booking.waktuAmbil || '-'}</strong>
+                      </div>
+                      <div class="col-6 text-end">
+                        <span class="d-block text-muted" style="font-size:0.75rem;">Batas Kembali:</span>
+                        <strong class="text-danger fw-bold">${it.waktuSelesai || '-'}</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+            });
+
+            multiCardsHtml += `</div>`;
+            countdownContainer.innerHTML = multiCardsHtml;
+
+            // Jalankan countdown untuk tiap aset secara independen
+            booking.items.forEach((it, idx) => {
+              const itemSelesai = it.waktuSelesaiRaw || it.waktuSelesai || booking.waktuSelesaiRaw || booking.waktuSelesai;
+              const itemAmbil = it.waktuAmbilRaw || it.waktuAmbil || booking.waktuAmbilRaw || booking.waktuAmbil;
+              const itemDurasi = it.paketLabel || (it.paketJam ? (it.paketJam + " Jam") : null);
+              jalankanCountdown(itemSelesai, `liveCountdownContainer_${idx}`, itemAmbil, itemDurasi);
+            });
+          }
+        } else {
+          // KASUS 3: Single aset biasa
+          const wSelesai = booking.waktuSelesaiRaw || booking.waktuSelesai;
+          const wAmbil = booking.waktuAmbilRaw || booking.waktuAmbil;
+          const durLabel = booking.paketLabel || (booking.paketJam ? (booking.paketJam + " Jam") : null);
+          jalankanCountdown(wSelesai, "liveCountdownContainer", wAmbil, durLabel);
+        }
       }
     }
 
@@ -664,9 +853,37 @@
     let waktuSelesaiBaruCalculated = null;
     let biayaTambahanCalculated = 0;
     let statusKetersediaanPerpanjang = true;
+    let multiItemPerpanjangData = [];
 
     function bukaModalPerpanjang() {
       if (!activeBooking) return;
+
+      // 1. Proteksi: Kunci jika sudah lewat waktu sewa lebih dari batas toleransi 15 menit
+      const now = new Date();
+      const baseEnd = activeBooking.waktuSelesaiRaw ? new Date(activeBooking.waktuSelesaiRaw) : null;
+      if (baseEnd && !isNaN(baseEnd.getTime())) {
+        const diffMs = now.getTime() - baseEnd.getTime();
+        const diffMin = Math.floor(diffMs / 60000);
+        if (diffMin > 15) {
+          modalNotif({
+            title: "Waktu Sewa Telah Habis",
+            text: "Batas pengembalian sewa telah terlewati lebih dari toleransi 15 menit (Status Terlambat). Silakan segera kembalikan unit alat ke kantor Ma'had Aly atau hubungi pengurus secara langsung.",
+            icon: "warning"
+          });
+          return;
+        }
+      }
+
+      // 2. Proteksi: Cek jika ada perpanjangan yang sedang menunggu ACC
+      if (activeBooking.pengajuanPerpanjangan && activeBooking.pengajuanPerpanjangan.status === "menunggu_persetujuan") {
+        modalNotif({
+          title: "Pengajuan Sedang Ditinjau",
+          text: "Permohonan perpanjangan Anda sebelumnya (+ " + activeBooking.pengajuanPerpanjangan.jamTambahan + " Jam) saat ini sedang menunggu persetujuan Pengurus. Mohon tunggu konfirmasi sebelum mengajukan kembali.",
+          icon: "info"
+        });
+        return;
+      }
+
       if (!modalPerpanjangInstance) {
         modalPerpanjangInstance = new bootstrap.Modal(document.getElementById("modalPerpanjangSewa"));
       }
@@ -674,15 +891,93 @@
       document.getElementById("mpNamaBarang").innerText = activeBooking.namaBarang || "-";
       document.getElementById("mpBookingId").innerText = activeBooking.bookingId || "INV-0000";
 
-      let batasSaatIniTeks = activeBooking.waktuSelesai;
-      if (!batasSaatIniTeks && activeBooking.waktuSelesaiRaw && typeof formatWaktuIndo === "function") {
-        batasSaatIniTeks = formatWaktuIndo(activeBooking.waktuSelesaiRaw) + " WIB";
+      let batasSaatIniTeks = activeBooking.waktuSelesai || "-";
+      if ((!batasSaatIniTeks || batasSaatIniTeks === "-") && activeBooking.waktuSelesaiRaw && typeof formatWaktuIndo === "function") {
+        batasSaatIniTeks = formatWaktuIndo(activeBooking.waktuSelesaiRaw);
       }
       document.getElementById("mpBatasSaatIni").innerText = batasSaatIniTeks || "-";
 
-      // Reset radio ke +6 Jam
-      const r6 = document.getElementById("durasi_6");
-      if (r6) r6.checked = true;
+      const isMulti = !!(activeBooking.isMultiItem && activeBooking.items && activeBooking.items.length > 1);
+      const wrapSingle = document.getElementById("wrapDurasiSingleAsset");
+      const wrapMulti = document.getElementById("wrapSelektifMultiAsset");
+
+      if (!isMulti) {
+        // TAMPILAN SINGLE-ASSET:
+        if (wrapSingle) wrapSingle.classList.remove("d-none");
+        if (wrapMulti) wrapMulti.classList.add("d-none");
+
+        const groupDurasi = document.getElementById("groupDurasiPerpanjang");
+        if (groupDurasi) {
+          groupDurasi.innerHTML = "";
+          const opsiList = (typeof ambilOpsiDurasiPerpanjangan === "function") 
+            ? ambilOpsiDurasiPerpanjangan(activeBooking)
+            : [
+                { jam: 3, label: "+3 Jam", tarif: null },
+                { jam: 6, label: "+6 Jam", tarif: null },
+                { jam: 12, label: "+12 Jam", tarif: null },
+                { jam: 24, label: "+24 Jam", tarif: null }
+              ];
+
+          opsiList.forEach((opt, idx) => {
+            const col = document.createElement("div");
+            col.className = "col-6 col-sm-3";
+            const isChecked = idx === 0 ? "checked" : "";
+            const tarifText = (opt.tarif && !activeBooking.isDinas) ? `<small class="d-block text-muted fw-normal" style="font-size: 0.72rem;">${formatRupiah(opt.tarif)}</small>` : "";
+            col.innerHTML = `
+              <input type="radio" class="btn-check" name="durasiTambahan" id="durasi_opt_${idx}" value="${opt.jam}" data-tarif="${opt.tarif || 0}" ${isChecked} autocomplete="off" onchange="hitungPratinjauPerpanjangan()">
+              <label class="btn btn-outline-primary w-100 py-2 fw-bold text-center d-flex flex-column justify-content-center align-items-center" for="durasi_opt_${idx}">
+                <span>${escapeHtml(opt.label)}</span>
+                ${tarifText}
+              </label>
+            `;
+            groupDurasi.appendChild(col);
+          });
+        }
+      } else {
+        // TAMPILAN MULTI-ASSET (SELEKTIF PER BARANG):
+        if (wrapSingle) wrapSingle.classList.add("d-none");
+        if (wrapMulti) wrapMulti.classList.remove("d-none");
+
+        const containerSelektif = document.getElementById("containerListSelektifAset");
+        if (containerSelektif) {
+          containerSelektif.innerHTML = "";
+          multiItemPerpanjangData = [];
+
+          activeBooking.items.forEach((it, idx) => {
+            const opsiItem = (typeof ambilOpsiDurasiPerpanjangan === "function") 
+              ? ambilOpsiDurasiPerpanjangan(it.asetId)
+              : [
+                  { jam: 3, label: "+3 Jam", tarif: null },
+                  { jam: 6, label: "+6 Jam", tarif: null },
+                  { jam: 12, label: "+12 Jam", tarif: null }
+                ];
+
+            let optionsHtml = opsiItem.map((opt, oIdx) => {
+              const selected = oIdx === 0 ? "selected" : "";
+              const tarifTxt = opt.tarif ? ` - ${formatRupiah(opt.tarif)}` : "";
+              return `<option value="${opt.jam}" data-tarif="${opt.tarif || 0}" ${selected}>${opt.label}${tarifTxt}</option>`;
+            }).join("");
+
+            const row = document.createElement("div");
+            row.className = "p-2 rounded-3 border bg-white shadow-sm d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2";
+            row.innerHTML = `
+              <div class="d-flex align-items-center gap-2">
+                <input class="form-check-input mt-0 fs-5 flex-shrink-0" type="checkbox" name="pilihItemPerpanjang" id="chk_perp_${idx}" value="${it.asetId}" data-idx="${idx}" checked onchange="hitungPratinjauPerpanjangan()">
+                <label class="form-check-label fw-bold text-dark small" for="chk_perp_${idx}">
+                  ${escapeHtml(it.namaBarang)}
+                </label>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <select class="form-select form-select-sm fw-bold text-primary sel-durasi-item" id="sel_durasi_perp_${idx}" data-idx="${idx}" data-asetid="${it.asetId}" onchange="hitungPratinjauPerpanjangan()" style="min-width: 140px; border-radius: 8px;">
+                  ${optionsHtml}
+                </select>
+                <span id="badge_status_item_${idx}" class="badge bg-success-subtle text-success small" style="font-size: 0.7rem;"><i class="bi bi-check-circle me-1"></i>Aman</span>
+              </div>
+            `;
+            containerSelektif.appendChild(row);
+          });
+        }
+      }
 
       const elCatatan = document.getElementById("mpCatatanPerpanjang");
       if (elCatatan) elCatatan.value = "";
@@ -691,76 +986,82 @@
       modalPerpanjangInstance.show();
     }
 
+    function togglePilihSemuaItemPerpanjang(checked) {
+      const chks = document.querySelectorAll('input[name="pilihItemPerpanjang"]');
+      chks.forEach(chk => {
+        if (!chk.disabled) chk.checked = checked;
+      });
+      hitungPratinjauPerpanjangan();
+    }
+
     function hitungPratinjauPerpanjangan() {
       if (!activeBooking) return;
 
-      const selectedRadio = document.querySelector('input[name="durasiTambahan"]:checked');
-      const jamTambahan = selectedRadio ? parseInt(selectedRadio.value, 10) : 6;
-
-      // Waktu dasar: batas selesai sewa saat ini
-      const baseEnd = activeBooking.waktuSelesaiRaw ? new Date(activeBooking.waktuSelesaiRaw) : new Date();
-      const newEnd = new Date(baseEnd.getTime() + (jamTambahan * 3600 * 1000));
-      waktuSelesaiBaruCalculated = newEnd;
-
-      const batasBaruTeks = typeof formatWaktuIndo === "function" ? (formatWaktuIndo(newEnd) + " WIB") : newEnd.toLocaleString('id-ID');
-      document.getElementById("mpBatasBaru").innerText = batasBaruTeks;
-
-      // Hitung biaya tambahan (jika dinas resmi = Gratis)
-      if (activeBooking.isDinas || parseInt(activeBooking.biayaSewa || 0) === 0) {
-        biayaTambahanCalculated = 0;
-        document.getElementById("mpBiayaTambahan").innerHTML = '<span class="badge bg-primary text-white">Gratis (Dinas Resmi Pondok)</span>';
-      } else {
-        // Hitung pro-rata biaya tambahan berdasarkan aset
-        try {
-          const item = (typeof cariAset === "function") ? cariAset(activeBooking.asetId) : null;
-          if (item && item.paketOpsi && item.paketOpsi.length > 0) {
-            const paketCocok = item.paketOpsi.find(p => parseInt(p.jam, 10) === jamTambahan);
-            if (paketCocok) {
-              biayaTambahanCalculated = paketCocok.tarif;
-            } else {
-              const paketDasar = item.paketOpsi[0];
-              const rate = paketDasar.tarif / (parseInt(paketDasar.jam, 10) || 1);
-              biayaTambahanCalculated = Math.round(rate * jamTambahan);
-            }
-          } else if (activeBooking.biayaSewa && activeBooking.paketJam) {
-            const rate = parseInt(activeBooking.biayaSewa, 10) / (parseInt(activeBooking.paketJam, 10) || 1);
-            biayaTambahanCalculated = Math.round(rate * jamTambahan);
-          } else {
-            biayaTambahanCalculated = jamTambahan * 10000;
-          }
-        } catch (e) {
-          biayaTambahanCalculated = jamTambahan * 10000;
-        }
-        document.getElementById("mpBiayaTambahan").innerText = formatRupiah(biayaTambahanCalculated);
-      }
-
-      // Validasi Bentrok Jadwal Aset Real-Time (Conflict Check)
+      const isMulti = !!(activeBooking.isMultiItem && activeBooking.items && activeBooking.items.length > 1);
       const alertWrap = document.getElementById("mpAlertKetersediaan");
       const btnKirim = document.getElementById("mpBtnKirimWa");
+      const breakdownWrap = document.getElementById("mpBreakdownWrap");
+      const breakdownList = document.getElementById("mpBreakdownList");
 
-      if (typeof cekBentrokJadwalAset === "function" && activeBooking.asetId) {
-        const cek = cekBentrokJadwalAset(
-          activeBooking.asetId,
-          baseEnd.toISOString(),
-          newEnd.toISOString(),
-          activeBooking.bookingId
-        );
+      if (!isMulti) {
+        // -------------------------------------------------------------
+        // KALKULASI SINGLE-ASSET
+        // -------------------------------------------------------------
+        if (breakdownWrap) breakdownWrap.classList.add("d-none");
 
-        if (!cek.available) {
-          statusKetersediaanPerpanjang = false;
-          let infoBentrok = "Aset ini telah dipesan oleh peminjam lain pada rentang jam tersebut.";
-          if (cek.jadwalBentrok && cek.jadwalBentrok.length > 0) {
-            const b = cek.jadwalBentrok[0];
-            infoBentrok = `Aset sudah dibooking oleh <strong>${b.nama || 'Peminjam lain'}</strong> (${b.bookingId}) mulai ${b.waktuAmbil || '-'}.`;
+        const selectedRadio = document.querySelector('input[name="durasiTambahan"]:checked');
+        const jamTambahan = selectedRadio ? parseInt(selectedRadio.value, 10) : 6;
+        const radioTarif = selectedRadio ? parseInt(selectedRadio.getAttribute("data-tarif") || 0, 10) : 0;
+
+        const baseEnd = activeBooking.waktuSelesaiRaw ? new Date(activeBooking.waktuSelesaiRaw) : new Date();
+        const newEnd = new Date(baseEnd.getTime() + (jamTambahan * 3600 * 1000));
+        waktuSelesaiBaruCalculated = newEnd;
+
+        const batasBaruTeks = typeof formatWaktuIndo === "function" ? formatWaktuIndo(newEnd) : newEnd.toLocaleString('id-ID');
+        document.getElementById("mpBatasBaru").innerText = batasBaruTeks;
+
+        // Biaya Tambahan
+        if (activeBooking.isDinas || parseInt(activeBooking.biayaSewa || 0) === 0) {
+          biayaTambahanCalculated = 0;
+          document.getElementById("mpBiayaTambahan").innerHTML = '<span class="badge bg-primary text-white">Gratis (Dinas Resmi Pondok)</span>';
+        } else if (radioTarif > 0) {
+          biayaTambahanCalculated = radioTarif;
+          document.getElementById("mpBiayaTambahan").innerText = formatRupiah(biayaTambahanCalculated);
+        } else {
+          try {
+            const item = (typeof cariAset === "function") ? cariAset(activeBooking.asetId) : null;
+            if (item && item.paketOpsi && item.paketOpsi.length > 0) {
+              const paketCocok = item.paketOpsi.find(p => parseInt(p.jam, 10) === jamTambahan);
+              biayaTambahanCalculated = paketCocok ? paketCocok.tarif : Math.round((item.paketOpsi[0].tarif / (parseInt(item.paketOpsi[0].jam, 10) || 1)) * jamTambahan);
+            } else {
+              biayaTambahanCalculated = jamTambahan * 10000;
+            }
+          } catch (e) {
+            biayaTambahanCalculated = jamTambahan * 10000;
           }
+          document.getElementById("mpBiayaTambahan").innerText = formatRupiah(biayaTambahanCalculated);
+        }
 
+        // Cek Bentrok Jadwal
+        let isAvailable = true;
+        let jadwalBentrok = null;
+        if (typeof cekBentrokJadwalAset === "function" && activeBooking.asetId) {
+          const res = cekBentrokJadwalAset(activeBooking.asetId, baseEnd.toISOString(), newEnd.toISOString(), activeBooking.bookingId);
+          if (!res.available) {
+            isAvailable = false;
+            jadwalBentrok = res.jadwalBentrok && res.jadwalBentrok[0] ? res.jadwalBentrok[0] : null;
+          }
+        }
+
+        if (!isAvailable) {
+          statusKetersediaanPerpanjang = false;
+          const det = jadwalBentrok ? `(sudah dipesan santri lain mulai ${jadwalBentrok.waktuAmbil || '-'})` : '';
           alertWrap.innerHTML = `
             <div class="alert alert-danger d-flex align-items-start gap-2 p-2 rounded-3 small mb-0">
               <i class="bi bi-exclamation-triangle-fill fs-5 text-danger flex-shrink-0"></i>
               <div>
                 <strong class="d-block">Jadwal Tidak Tersedia / Bentrok!</strong>
-                <span>${infoBentrok}</span>
-                <span class="d-block mt-1 fst-italic text-secondary">Silakan kembalikan aset tepat waktu atau pilih durasi yang lebih singkat.</span>
+                <span>Aset ${escapeHtml(activeBooking.namaBarang)} bentrok ${det}. Silakan kembalikan tepat waktu atau pilih durasi lebih pendek.</span>
               </div>
             </div>
           `;
@@ -780,50 +1081,347 @@
           btnKirim.disabled = false;
           btnKirim.classList.remove("disabled");
         }
+
       } else {
-        statusKetersediaanPerpanjang = true;
-        alertWrap.innerHTML = "";
-        btnKirim.disabled = false;
-        btnKirim.classList.remove("disabled");
+        // -------------------------------------------------------------
+        // KALKULASI MULTI-ASSET (SELEKTIF PER BARANG)
+        // -------------------------------------------------------------
+        const chkSelected = document.querySelectorAll('input[name="pilihItemPerpanjang"]:checked');
+
+        if (chkSelected.length === 0) {
+          statusKetersediaanPerpanjang = false;
+          if (breakdownWrap) breakdownWrap.classList.add("d-none");
+          document.getElementById("mpBatasBaru").innerText = "-";
+          document.getElementById("mpBiayaTambahan").innerText = "Rp 0";
+          alertWrap.innerHTML = `
+            <div class="alert alert-warning d-flex align-items-center gap-2 p-2 rounded-3 small mb-0">
+              <i class="bi bi-exclamation-circle-fill fs-5 text-warning flex-shrink-0"></i>
+              <div>
+                <strong class="d-block">Pilih Minimal 1 Unit!</strong>
+                <span>Silakan centang unit alat yang ingin Anda perpanjang durasinya di daftar atas.</span>
+              </div>
+            </div>
+          `;
+          btnKirim.disabled = true;
+          btnKirim.classList.add("disabled");
+          return;
+        }
+
+        let totalBiayaTambahan = 0;
+        let maxNewEndTime = 0;
+        let anyBentrok = false;
+        let bentrokList = [];
+        let breakdownRows = [];
+        multiItemPerpanjangData = [];
+
+        activeBooking.items.forEach((it, idx) => {
+          const chk = document.getElementById(`chk_perp_${idx}`);
+          const sel = document.getElementById(`sel_durasi_perp_${idx}`);
+          const badge = document.getElementById(`badge_status_item_${idx}`);
+
+          if (!chk || !sel) return;
+
+          const jamTambahanItem = parseInt(sel.value, 10) || 3;
+          const optSelected = sel.options[sel.selectedIndex];
+          const tarifOpsiItem = optSelected ? parseInt(optSelected.getAttribute("data-tarif") || 0, 10) : 0;
+
+          const itemBaseEnd = it.waktuSelesaiRaw ? new Date(it.waktuSelesaiRaw) : (activeBooking.waktuSelesaiRaw ? new Date(activeBooking.waktuSelesaiRaw) : new Date());
+          const itemNewEnd = new Date(itemBaseEnd.getTime() + (jamTambahanItem * 3600 * 1000));
+
+          // Cek ketersediaan aset ini
+          let itemAman = true;
+          let detBentrokItem = null;
+          if (typeof cekBentrokJadwalAset === "function") {
+            const res = cekBentrokJadwalAset(it.asetId, itemBaseEnd.toISOString(), itemNewEnd.toISOString(), activeBooking.bookingId);
+            if (!res.available) {
+              itemAman = false;
+              detBentrokItem = res.jadwalBentrok && res.jadwalBentrok[0] ? res.jadwalBentrok[0] : null;
+            }
+          }
+
+          if (badge) {
+            if (!itemAman) {
+              badge.className = "badge bg-danger-subtle text-danger small";
+              badge.innerHTML = `<i class="bi bi-x-circle me-1"></i>Bentrok`;
+              badge.title = "Aset telah dibooking santri lain";
+            } else {
+              badge.className = "badge bg-success-subtle text-success small";
+              badge.innerHTML = `<i class="bi bi-check-circle me-1"></i>Aman`;
+              badge.title = "Jadwal kosong & aman";
+            }
+          }
+
+          // Jika barang ini dicentang santri
+          if (chk.checked) {
+            if (!itemAman) {
+              anyBentrok = true;
+              bentrokList.push({
+                namaBarang: it.namaBarang,
+                det: detBentrokItem ? (detBentrokItem.waktuAmbil || '-') : ''
+              });
+            }
+
+            if (itemNewEnd.getTime() > maxNewEndTime) {
+              maxNewEndTime = itemNewEnd.getTime();
+            }
+
+            // Hitung tarif unit ini
+            let biayaItem = 0;
+            if (activeBooking.isDinas || parseInt(activeBooking.biayaSewa || 0) === 0) {
+              biayaItem = 0;
+            } else if (tarifOpsiItem > 0) {
+              biayaItem = tarifOpsiItem;
+            } else {
+              biayaItem = jamTambahanItem * 10000;
+            }
+
+            totalBiayaTambahan += biayaItem;
+
+            const batasItemTeks = typeof formatWaktuIndo === "function" ? formatWaktuIndo(itemNewEnd) : itemNewEnd.toLocaleString('id-ID');
+            const biayaItemTeks = (activeBooking.isDinas || biayaItem === 0) ? "Gratis" : formatRupiah(biayaItem);
+
+            breakdownRows.push(`
+              <div class="d-flex justify-content-between">
+                <span>• <strong>${escapeHtml(it.namaBarang)}</strong> (+${jamTambahanItem}j s.d ${batasItemTeks})</span>
+                <span class="fw-bold">${biayaItemTeks}</span>
+              </div>
+            `);
+
+            multiItemPerpanjangData.push({
+              asetId: it.asetId,
+              namaBarang: it.namaBarang,
+              jamTambahan: jamTambahanItem,
+              waktuSelesaiBaru: batasItemTeks,
+              waktuSelesaiBaruRaw: itemNewEnd.toISOString(),
+              biayaTambahan: biayaItem,
+              biayaTambahanTeks: biayaItemTeks
+            });
+          }
+        });
+
+        // Update UI Pratinjau
+        biayaTambahanCalculated = totalBiayaTambahan;
+        if (maxNewEndTime > 0) {
+          waktuSelesaiBaruCalculated = new Date(maxNewEndTime);
+          document.getElementById("mpBatasBaru").innerText = typeof formatWaktuIndo === "function" ? formatWaktuIndo(waktuSelesaiBaruCalculated) : waktuSelesaiBaruCalculated.toLocaleString('id-ID');
+        }
+
+        if (activeBooking.isDinas || parseInt(activeBooking.biayaSewa || 0) === 0) {
+          document.getElementById("mpBiayaTambahan").innerHTML = '<span class="badge bg-primary text-white">Gratis (Dinas Resmi Pondok)</span>';
+        } else {
+          document.getElementById("mpBiayaTambahan").innerText = formatRupiah(totalBiayaTambahan);
+        }
+
+        if (breakdownWrap && breakdownList) {
+          breakdownWrap.classList.remove("d-none");
+          breakdownList.innerHTML = breakdownRows.join("");
+        }
+
+        if (anyBentrok) {
+          statusKetersediaanPerpanjang = false;
+          const listTxt = bentrokList.map(b => `<li><strong>${escapeHtml(b.namaBarang)}</strong> bentrok ${b.det ? '(mulai ' + b.det + ')' : ''}</li>`).join("");
+          alertWrap.innerHTML = `
+            <div class="alert alert-danger d-flex align-items-start gap-2 p-2 rounded-3 small mb-0">
+              <i class="bi bi-exclamation-triangle-fill fs-5 text-danger flex-shrink-0"></i>
+              <div>
+                <strong class="d-block">Terdapat Unit yang Bentrok Jadwal!</strong>
+                <ul class="mb-1 ps-3">${listTxt}</ul>
+                <span class="d-block fst-italic text-secondary">Silakan batalkan centang pada unit tersebut atau pilih durasi yang lebih singkat.</span>
+              </div>
+            </div>
+          `;
+          btnKirim.disabled = true;
+          btnKirim.classList.add("disabled");
+        } else {
+          statusKetersediaanPerpanjang = true;
+          alertWrap.innerHTML = `
+            <div class="alert alert-success d-flex align-items-center gap-2 p-2 rounded-3 small mb-0">
+              <i class="bi bi-check-circle-fill fs-5 text-success flex-shrink-0"></i>
+              <div>
+                <strong class="d-block">Semua Unit Terpilih Tersedia!</strong>
+                <span>Jadwal perpanjangan untuk ${multiItemPerpanjangData.length} unit alat aman dari bentrok.</span>
+              </div>
+            </div>
+          `;
+          btnKirim.disabled = false;
+          btnKirim.classList.remove("disabled");
+        }
       }
     }
 
-    function kirimPesanPerpanjangWhatsApp() {
+    async function kirimPesanPerpanjangWhatsApp() {
       if (!activeBooking || !statusKetersediaanPerpanjang) return;
 
-      const selectedRadio = document.querySelector('input[name="durasiTambahan"]:checked');
-      const jamTambahan = selectedRadio ? selectedRadio.value : "6";
+      const isMulti = !!(activeBooking.isMultiItem && activeBooking.items && activeBooking.items.length > 1);
       const bId = activeBooking.bookingId || "INV-0000";
       const batasLama = document.getElementById("mpBatasSaatIni").innerText;
       const batasBaru = document.getElementById("mpBatasBaru").innerText;
       const catatan = (document.getElementById("mpCatatanPerpanjang").value || "").trim();
 
-      const noAdmin = (typeof dapatkanNomorWaAdmin === "function") ? dapatkanNomorWaAdmin(activeBooking) : "6282328325983";
+      let jamTambahanPayload = 0;
+      let itemsTerpilihPayload = null;
+
+      if (!isMulti) {
+        const selectedRadio = document.querySelector('input[name="durasiTambahan"]:checked');
+        jamTambahanPayload = selectedRadio ? parseInt(selectedRadio.value, 10) : 6;
+      } else {
+        itemsTerpilihPayload = [...multiItemPerpanjangData];
+        if (itemsTerpilihPayload.length === 0) {
+          alert("Pilih minimal satu unit alat yang ingin diperpanjang!");
+          return;
+        }
+        jamTambahanPayload = Math.max(...itemsTerpilihPayload.map(i => i.jamTambahan));
+      }
+
+      const btnKirim = document.getElementById("mpBtnKirimWa");
+      const originalBtnHtml = btnKirim ? btnKirim.innerHTML : "";
+      if (btnKirim) {
+        btnKirim.disabled = true;
+        btnKirim.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Mengirim permohonan via Bot WA...`;
+      }
 
       let biayaTeks = formatRupiah(biayaTambahanCalculated);
       if (activeBooking.isDinas || parseInt(activeBooking.biayaSewa || 0) === 0) {
-        biayaTeks = "Rp 0 (Khusus tugas resmi kelembagaan Pondok Pesantren Darul Falah Amtsilati)";
+        biayaTeks = "Rp 0 (Khusus Tugas Resmi Pondok)";
       }
 
-      let pesan = `Assalamu'alaikum Pengurus Ma'had Aly Amtsilati,\n\nSaya hendak mengajukan *PERPANJANGAN WAKTU SEWA / PEMINJAMAN ASET*:\n\n` +
-        `*ID Transaksi:* ${bId}\n` +
-        `*Nama Peminjam:* ${activeBooking.nama}\n` +
-        `*Aset Dipinjam:* ${activeBooking.namaBarang}\n` +
-        `*Batas Waktu Semula:* ${batasLama}\n` +
-        `*Tambahan Durasi:* +${jamTambahan} Jam\n` +
-        `*Batas Waktu Baru Yang Diajukan:* ${batasBaru}\n` +
-        `*Estimasi Biaya Tambahan:* ${biayaTeks}\n`;
-
-      if (catatan) {
-        pesan += `*Keperluan / Alasan:* ${catatan}\n`;
+      // Kirim via WhatsApp Bot Otomatis (Dual-Mode Client & Server)
+      let hasilKirim = null;
+      if (typeof kirimNotifikasiPerpanjanganOtomatis === "function") {
+        try {
+          hasilKirim = await kirimNotifikasiPerpanjanganOtomatis(activeBooking, {
+            jamTambahan: jamTambahanPayload,
+            batasBaruTeks: batasBaru,
+            biayaTambahanTeks: biayaTeks,
+            itemsTerpilih: itemsTerpilihPayload,
+            catatan: catatan
+          });
+        } catch (err) {
+          console.warn("[Perpanjangan] Notifikasi otomatis bot client:", err);
+        }
       }
 
-      pesan += `\nMohon konfirmasi dan persetujuan dari Pengurus. Terima kasih.\n\nWassalamu'alaikum wr. wb.`;
+      // Simpan status pengajuan perpanjangan ke data booking lokal
+      activeBooking.pengajuanPerpanjangan = {
+        jamTambahan: jamTambahanPayload,
+        waktuSelesaiSemula: batasLama,
+        waktuSelesaiBaru: batasBaru,
+        waktuSelesaiBaruRaw: waktuSelesaiBaruCalculated ? waktuSelesaiBaruCalculated.toISOString() : null,
+        biayaTambahan: biayaTambahanCalculated,
+        biayaTambahanTeks: biayaTeks,
+        catatan: catatan,
+        status: "menunggu_persetujuan",
+        itemsTerpilih: itemsTerpilihPayload,
+        waktuPengajuan: new Date().toISOString()
+      };
 
-      window.open(`https://wa.me/${noAdmin}?text=${encodeURIComponent(pesan)}`, "_blank");
+      if (typeof catatRiwayatBooking === "function") {
+        catatRiwayatBooking(activeBooking);
+      }
+
+      try {
+        await fetch((typeof dapatkanApiEndpoint === 'function' ? dapatkanApiEndpoint('action=ajukan_perpanjangan') : 'api-service.php?action=ajukan_perpanjangan'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            bookingId: bId,
+            jamTambahan: jamTambahanPayload,
+            waktuSelesaiBaru: batasBaru,
+            waktuSelesaiBaruRaw: waktuSelesaiBaruCalculated ? waktuSelesaiBaruCalculated.toISOString() : null,
+            biayaTambahan: biayaTambahanCalculated,
+            biayaTambahanTeks: biayaTeks,
+            catatan: catatan,
+            itemsTerpilih: itemsTerpilihPayload
+          })
+        });
+      } catch (errSync) {
+        console.warn("[Perpanjangan] Gagal sinkronisasi ke server:", errSync);
+      }
 
       if (modalPerpanjangInstance) modalPerpanjangInstance.hide();
+
+      if (btnKirim) {
+        btnKirim.disabled = false;
+        btnKirim.innerHTML = originalBtnHtml;
+      }
+
+      tampilkanBannerPerpanjanganPending();
+
+      // Tampilkan popup SweetAlert2
+      let unitSummaryHtml = "";
+      if (itemsTerpilihPayload && itemsTerpilihPayload.length > 0) {
+        unitSummaryHtml = `<div class="p-2 rounded bg-light border small text-dark mb-2"><strong>Unit yang Diperpanjang:</strong><br>${itemsTerpilihPayload.map(i => `• ${i.namaBarang} (+${i.jamTambahan}j)`).join('<br>')}</div>`;
+      }
+
+      if (hasilKirim && hasilKirim.success) {
+        modalNotif({
+          title: "Permohonan Terkirim Otomatis!",
+          icon: "success",
+          html: `
+            <div class="text-start">
+              <p class="mb-2 text-dark">Permohonan perpanjangan durasi sewa berhasil diajukan!</p>
+              ${unitSummaryHtml}
+              <div class="p-3 rounded-3 bg-light border border-success-subtle small text-dark mb-2">
+                <i class="bi bi-robot text-success me-1"></i> <strong>WhatsApp Bot Otomatis Aktif:</strong><br>
+                Pemberitahuan resmi telah diteruskan otomatis via Bot Gateway ke WhatsApp Pengurus Ma'had Aly Amtsilati. Pengurus akan segera memverifikasi pengajuan Anda.
+              </div>
+              <small class="text-muted d-block mt-2">Batas Pengembalian Baru: <strong>${batasBaru}</strong></small>
+            </div>
+          `,
+          confirmText: "Oke, Mengerti"
+        });
+      } else {
+        modalNotif({
+          title: "Permohonan Tersimpan di Sistem",
+          icon: "info",
+          html: `
+            <div class="text-start">
+              <p class="mb-2 text-dark">Permohonan perpanjangan waktu berhasil dicatat di sistem.</p>
+              ${unitSummaryHtml}
+              <p class="small text-muted mb-3">Status saat ini: <strong>Menunggu Persetujuan Pengurus</strong>. Batas baru yang diajukan: <strong>${batasBaru}</strong>.</p>
+            </div>
+          `,
+          confirmText: "Tutup"
+        });
+      }
     }
+
+    function tampilkanBannerPerpanjanganPending() {
+      if (!activeBooking || !activeBooking.pengajuanPerpanjangan) return;
+      const p = activeBooking.pengajuanPerpanjangan;
+      if (p.status !== "menunggu_persetujuan") return;
+
+      let banner = document.getElementById("bannerPerpanjanganPending");
+      if (!banner) {
+        banner = document.createElement("div");
+        banner.id = "bannerPerpanjanganPending";
+        banner.className = "alert alert-warning border border-warning-subtle shadow-sm rounded-4 mb-4";
+        banner.style.background = "rgba(254, 243, 199, 0.95)";
+        const container = document.querySelector("main.container");
+        if (container) {
+          container.insertBefore(banner, container.firstChild);
+        }
+      }
+
+      banner.innerHTML = `
+        <div class="d-flex align-items-start gap-3">
+          <i class="bi bi-clock-history fs-3 text-warning flex-shrink-0 mt-1"></i>
+          <div>
+            <strong class="d-block text-dark fs-6 mb-1">Pengajuan Perpanjangan (+${p.jamTambahan} Jam) Sedang Ditinjau:</strong>
+            <span class="small text-secondary">
+              Anda telah mengajukan penambahan waktu hingga <strong>${p.waktuSelesaiBaru}</strong>. Notifikasi otomatis telah dikirim ke Pengurus. Mohon menunggu persetujuan resmi (ACC) sebelum batas waktu habis.
+            </span>
+          </div>
+        </div>
+      `;
+    }
+
+    // Panggil banner saat halaman dimuat
+    document.addEventListener("DOMContentLoaded", () => {
+      setTimeout(() => {
+        tampilkanBannerPerpanjanganPending();
+      }, 500);
+    });
   </script>
 </body>
 </html>

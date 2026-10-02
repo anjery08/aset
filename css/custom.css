@@ -38,7 +38,11 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
 }
 
-p, span, label, td, th, li, small {
+p, label, td, th, li, small {
+  color: #0f172a;
+}
+
+span:not(.btn, .btn *, .badge, .badge *) {
   color: #0f172a;
 }
 
@@ -289,24 +293,25 @@ p, span, label, td, th, li, small {
    TOMBOL & INTERAKSI
    =================================================== */
 .btn-metahati {
-  background: linear-gradient(135deg, #0066ff 0%, #7928ca 50%, #d60099 100%) !important;
+  background: #0066ff !important;
   border: none !important;
   color: #ffffff !important;
   font-weight: 700 !important;
   border-radius: 0.9rem;
   padding: 0.75rem 1.25rem;
-  box-shadow: 0 6px 20px rgba(121, 40, 202, 0.28), 0 2px 6px rgba(0, 85, 255, 0.2);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.28) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-metahati:hover {
-  background: linear-gradient(135deg, #0055ff 0%, #7928ca 50%, #d60099 100%) !important;
+  background: #0052cc !important;
   transform: translateY(-2px) scale(1.015);
-  box-shadow: 0 10px 26px rgba(121, 40, 202, 0.4), 0 4px 12px rgba(0, 85, 255, 0.3);
+  box-shadow: 0 8px 22px rgba(0, 102, 255, 0.38) !important;
   color: #ffffff !important;
 }
 
 .btn-metahati:active {
+  background: #0044b3 !important;
   transform: scale(0.97);
 }
 
@@ -948,32 +953,78 @@ body.ios-glass-theme {
   padding: 0.85rem 1rem !important;
 }
 
-/* iOS Button with Spring Feedback (Gradasi Diagonal 2 Warna 135deg: Royal Blue ke Deep Violet) */
+/* iOS Button with Spring Feedback (Solid Royal Blue Elegan) */
 .btn-ios-primary {
-  background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%) !important;
+  background: #0066ff !important;
   border: none !important;
   color: #ffffff !important;
   font-weight: 700 !important;
   border-radius: 0.9rem !important;
   padding: 0.75rem 1.25rem !important;
-  box-shadow: 0 6px 20px rgba(121, 40, 202, 0.28), 0 2px 6px rgba(0, 85, 255, 0.2) !important;
+  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.28) !important;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
+.btn-ios-primary,
+.btn-ios-primary *,
+.btn-ios-primary span,
+.btn-ios-primary i {
+  color: #ffffff !important;
+}
+
 .btn-ios-primary:hover {
-  background: linear-gradient(135deg, #0066ff 0%, #8b2be2 100%) !important;
+  background: #0052cc !important;
   transform: translateY(-2px) scale(1.015);
-  box-shadow: 0 10px 26px rgba(121, 40, 202, 0.4), 0 4px 12px rgba(0, 85, 255, 0.3) !important;
+  box-shadow: 0 8px 22px rgba(0, 102, 255, 0.38) !important;
   color: #ffffff !important;
 }
 
 .btn-ios-primary:active {
+  background: #0044b3 !important;
   transform: scale(0.97);
 }
 
-/* iOS Header Admin Button (Gradasi Diagonal 2 Warna 135deg, Bebas Border Hitam) */
+/* iOS Button Checkout / Lanjut Booking (Solid Merah Magenta - Warna Resmi Logo METAHATI) */
+.btn-ios-checkout {
+  background: #d60099 !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-radius: 50rem !important;
+  padding: 0.55rem 1.25rem !important;
+  box-shadow: 0 4px 14px rgba(214, 0, 153, 0.32) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-ios-checkout,
+.btn-ios-checkout *,
+.btn-ios-checkout span,
+.btn-ios-checkout i {
+  color: #ffffff !important;
+}
+
+.btn-ios-checkout:hover {
+  background: #be0087 !important;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 22px rgba(214, 0, 153, 0.42) !important;
+  color: #ffffff !important;
+}
+
+.btn-ios-checkout:hover *,
+.btn-ios-checkout:hover span,
+.btn-ios-checkout:hover i {
+  color: #ffffff !important;
+}
+
+.btn-ios-checkout:active {
+  background: #a80077 !important;
+  transform: scale(0.97);
+  color: #ffffff !important;
+}
+
+/* iOS Header Admin Button (Solid Royal Blue, Bebas Border Hitam) */
 .btn-admin-header {
-  background: linear-gradient(135deg, #0055ff 0%, #7928ca 100%) !important;
+  background: #0066ff !important;
   color: #ffffff !important;
   font-weight: 700 !important;
   font-size: 0.85rem !important;
@@ -989,13 +1040,14 @@ body.ios-glass-theme {
 }
 
 .btn-admin-header:hover {
-  background: linear-gradient(135deg, #0066ff 0%, #8b2be2 100%) !important;
+  background: #0052cc !important;
   color: #ffffff !important;
   transform: translateY(-1px) scale(1.03);
-  box-shadow: 0 6px 20px rgba(121, 40, 202, 0.38) !important;
+  box-shadow: 0 6px 18px rgba(0, 102, 255, 0.35) !important;
 }
 
 .btn-admin-header:active, .btn-admin-header:focus {
+  background: #0044b3 !important;
   transform: scale(0.97);
   color: #ffffff !important;
 }
@@ -1156,5 +1208,161 @@ body.ios-glass-theme {
   margin-bottom: 0 !important;
   line-height: 1.5 !important;
 }
+
+/* ===================================================
+   MULTI-ASET KERANJANG & QUICK-ADD (GAYA A)
+   =================================================== */
+.btn-ios-quickadd {
+  background: rgba(0, 102, 255, 0.08) !important;
+  color: #0066ff !important;
+  border: 1.5px solid rgba(0, 102, 255, 0.25) !important;
+  border-radius: 0.85rem !important;
+  padding: 0.5rem 0.85rem !important;
+  font-size: 1.1rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-ios-quickadd:hover {
+  background: #0066ff !important;
+  color: #ffffff !important;
+  border-color: #0066ff !important;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 18px rgba(0, 102, 255, 0.3) !important;
+}
+
+/* Floating Bottom Glass Bar for Cart */
+.floating-cart-bar {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  width: calc(100% - 2rem);
+  max-width: 680px;
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1.5px solid rgba(0, 102, 255, 0.25) !important;
+  border-radius: 1.25rem !important;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.8) inset !important;
+  z-index: 1040;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.floating-cart-bar.active {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Cart Item Card in Offcanvas/Modal */
+.cart-item-card {
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(0, 102, 255, 0.15);
+  border-radius: 1rem;
+  transition: all 0.2s ease;
+}
+
+.cart-item-card:hover {
+  background: #ffffff;
+  border-color: rgba(0, 102, 255, 0.35);
+  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.08);
+}
+
+/* ===================================================
+   SWEETALERT2 CUSTOM iOS GLASS & METAHATI THEME
+   =================================================== */
+.swal2-container {
+  z-index: 10600 !important;
+}
+
+.swal2-popup.swal2-metahati {
+  font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  background: rgba(255, 255, 255, 0.97) !important;
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+  border: 1.5px solid rgba(0, 102, 255, 0.18) !important;
+  border-radius: 24px !important;
+  padding: 2rem 1.75rem !important;
+  box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.9) inset !important;
+  color: #0f172a !important;
+}
+
+.swal2-metahati .swal2-title {
+  color: #0f172a !important;
+  font-size: 1.35rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.swal2-metahati .swal2-html-container {
+  color: #334155 !important;
+  font-size: 0.98rem !important;
+  line-height: 1.6 !important;
+  margin-top: 0.35rem !important;
+}
+
+.swal2-metahati .swal2-actions {
+  gap: 0.75rem !important;
+  margin-top: 1.5rem !important;
+  width: 100% !important;
+  justify-content: center !important;
+}
+
+.swal2-metahati .swal2-confirm {
+  background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 14px !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  padding: 0.75rem 1.75rem !important;
+  box-shadow: 0 8px 20px -6px rgba(0, 102, 255, 0.5) !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+.swal2-metahati .swal2-confirm:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 24px -6px rgba(0, 102, 255, 0.65) !important;
+}
+
+.swal2-metahati .swal2-cancel {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 14px !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  padding: 0.75rem 1.5rem !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+.swal2-metahati .swal2-cancel:hover {
+  background: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+.swal2-metahati .swal2-icon {
+  margin: 0.5rem auto 1.25rem !important;
+}
+
+/* Toast Styling */
+.swal2-toast.swal2-metahati-toast {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(0, 102, 255, 0.2) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.15) !important;
+  padding: 0.75rem 1rem !important;
+  color: #0f172a !important;
+}
+
 
 

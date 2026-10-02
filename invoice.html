@@ -270,7 +270,7 @@
               <th class="text-end" style="width: 150px;">Biaya Pokok</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="invoiceTableBody">
             <tr>
               <td class="text-center fw-bold">1</td>
               <td>
@@ -348,7 +348,17 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="./js/rental-logic.js?v=3.0"></script>
+  <script src="./dist/js/sweetalert2.all.min.js"></script>
+  <script>
+    if (typeof window !== 'undefined') {
+      window.Swal = window.Swal || window.Sweetalert2;
+      window.SweetAlert = window.SweetAlert || window.Sweetalert2;
+    }
+    if (typeof Swal === 'undefined' && typeof Sweetalert2 === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"><\/script>');
+    }
+  </script>
+  <script src="./js/rental-logic.js?v=4.0"></script>
   <script>
     async function unduhPdfLangsung() {
       const el = document.querySelector(".invoice-card");
@@ -466,15 +476,58 @@
       document.getElementById("invWaktuAmbil").innerText = waktuAmbilTeks || "-";
 
       let waktuKembaliTeks = booking.waktuSelesai;
+      const isMulti = !!(booking.isMultiItem && booking.items && booking.items.length > 1);
+      if (isMulti) {
+        const semuaSelesaiSama = booking.items.every(it => (it.waktuSelesai || it.waktuSelesaiRaw) === (booking.items[0].waktuSelesai || booking.items[0].waktuSelesaiRaw));
+        if (!semuaSelesaiSama) {
+          waktuKembaliTeks = `Bervariasi (Maksimal: ${booking.waktuSelesai || '-'})`;
+        }
+      }
       if (!waktuKembaliTeks && booking.waktuSelesaiRaw && typeof formatWaktuIndo === "function") {
         waktuKembaliTeks = formatWaktuIndo(booking.waktuSelesaiRaw) + " WIB";
       }
       document.getElementById("invWaktuKembali").innerText = waktuKembaliTeks || "-";
 
-      document.getElementById("invNamaBarang").innerText = booking.namaBarang;
-      const paketLabel = booking.paketLabel || (booking.paketJam + " Jam");
-      document.getElementById("invPaket").innerText = paketLabel;
       const biayaPokok = parseInt(booking.biayaSewa || 0);
+      const isDinasResmi = booking.isDinas === true || (biayaPokok === 0 && !!booking.biayaSewaAsli);
+      const tbody = document.getElementById("invoiceTableBody");
+
+      if (isMulti && tbody) {
+        tbody.innerHTML = "";
+        booking.items.forEach((it, idx) => {
+          const itemBiaya = parseInt(it.biaya || 0);
+          const tr = document.createElement("tr");
+          const biayaTeks = isDinasResmi ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle">Gratis</span>` : formatRupiah(itemBiaya);
+          const selesaiInfo = it.waktuSelesai ? `<span class="d-block text-muted" style="font-size: 0.78rem;">Target Selesai: <strong class="text-danger">${it.waktuSelesai}</strong></span>` : '';
+          tr.innerHTML = `
+            <td class="text-center fw-bold">${idx + 1}</td>
+            <td>
+              <strong class="fs-6 text-dark d-block">${escapeHtml(it.namaBarang)}</strong>
+              <small class="text-secondary">${escapeHtml(it.kategori || 'Inventaris Resmi Ma\'had Aly Amtsilati')}</small>
+              ${selesaiInfo}
+            </td>
+            <td class="text-center">
+              <span class="badge text-white px-2 py-1 fw-bold" style="background-color: #0066ff;">${escapeHtml(it.paketLabel || (it.paketJam + ' Jam'))}</span>
+            </td>
+            <td class="text-end fw-bold fs-6 text-dark">
+              ${biayaTeks}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } else {
+        const itemFirst = (booking.items && booking.items[0]) ? booking.items[0] : null;
+        const elNama = document.getElementById("invNamaBarang");
+        if (elNama) elNama.innerText = booking.namaBarang || (itemFirst ? itemFirst.namaBarang : "-");
+        const paketLabel = booking.paketLabel || (booking.paketJam ? (booking.paketJam + " Jam") : (itemFirst ? (itemFirst.paketJam + " Jam") : "-"));
+        const elPaket = document.getElementById("invPaket");
+        if (elPaket) elPaket.innerText = paketLabel;
+        const elBiaya = document.getElementById("invBiayaPokok");
+        if (elBiaya) {
+          elBiaya.innerHTML = isDinasResmi ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-6">Gratis (Dinas Resmi)</span>` : formatRupiah(biayaPokok);
+        }
+      }
+
       let denda = 0;
       
       // Jika transaksi sudah selesai (completed) atau denda sudah ditetapkan secara eksplisit oleh admin:
@@ -488,12 +541,9 @@
         if (kalkulasi && kalkulasi.totalDenda > 0) denda = kalkulasi.totalDenda;
       }
 
-      const isDinasResmi = booking.isDinas === true || (biayaPokok === 0 && !!booking.biayaSewaAsli);
       if (isDinasResmi) {
-        document.getElementById("invBiayaPokok").innerHTML = `<span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-6">Gratis (Dinas Resmi)</span>`;
         document.getElementById("invBiayaPokokFooter").innerHTML = `<span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-6">Gratis (Dinas Resmi)</span>`;
       } else {
-        document.getElementById("invBiayaPokok").innerText = formatRupiah(biayaPokok);
         document.getElementById("invBiayaPokokFooter").innerText = formatRupiah(biayaPokok);
       }
 
