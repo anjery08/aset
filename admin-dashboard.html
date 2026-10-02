@@ -817,49 +817,6 @@
             </div>
           </div>
 
-          <!-- Box Pengaturan Opsi Durasi Perpanjangan Sewa -->
-          <div class="col-12">
-            <div class="card shadow-sm border-0 p-4 bg-white" style="border-radius: 1rem; border: 1.5px solid #0066ff !important;">
-              <h5 class="fw-bolder text-dark mb-1">
-                <i class="bi bi-clock-history me-2" style="color: #0066ff;"></i>Pengaturan Opsi Durasi Perpanjangan Sewa
-              </h5>
-              <p class="text-secondary small mb-3">
-                Tentukan bagaimana pilihan tambahan jam sewa ditampilkan kepada santri di halaman status pemantauan sewa.
-              </p>
-              <form id="formOpsiPerpanjangan" onsubmit="simpanPengaturanPerpanjangan(event)">
-                <div class="row g-3">
-                  <div class="col-md-7">
-                    <label class="form-label fw-bold text-dark small mb-2">Mode Pilihan Durasi Perpanjangan:</label>
-                    <div class="form-check mb-2">
-                      <input class="form-check-input" type="radio" name="modePerpanjangan" id="modePerpanjanganKatalog" value="katalog" checked onchange="toggleFormPerpanjanganKustom()">
-                      <label class="form-check-label fw-bold small text-dark" for="modePerpanjanganKatalog">
-                        Otomatis Ikuti Paket Katalog Aset (Default Direkomendasikan)
-                      </label>
-                      <small class="text-muted d-block ms-1">Pilihan jam perpanjangan santri akan otomatis mengikuti paket durasi yang terdaftar pada masing-masing aset di katalog.</small>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="modePerpanjangan" id="modePerpanjanganKustom" value="kustom" onchange="toggleFormPerpanjanganKustom()">
-                      <label class="form-check-label fw-bold small text-dark" for="modePerpanjanganKustom">
-                        Kustom Pilihan Jam Sendiri oleh Admin
-                      </label>
-                      <small class="text-muted d-block ms-1">Admin menentukan sendiri opsi jam tambahan perpanjangan secara seragam.</small>
-                    </div>
-                  </div>
-                  <div class="col-md-5" id="boxInputJamKustom" style="display: none;">
-                    <label class="form-label fw-bold text-dark small mb-1">Daftar Jam Tambahan (Pisahkan Koma):</label>
-                    <input type="text" id="inputJamKustomPerpanjang" class="form-control font-monospace" placeholder="Contoh: 3, 6, 12, 24" value="3, 6, 12, 24">
-                    <small class="text-muted d-block mt-1">Masukkan angka durasi jam yang diizinkan, contoh: <code>2, 4, 8, 12, 24</code></small>
-                  </div>
-                </div>
-                <div class="mt-3">
-                  <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm" style="background: #0066ff;">
-                    <i class="bi bi-check2-circle me-1"></i> Simpan Pengaturan Perpanjangan
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-
           <!-- Box Backup & Restore Data Lengkap (Proteksi Data Hosting) -->
           <div class="col-12">
             <div class="card shadow-sm border-0 p-4 bg-white" style="border-radius: 1rem; border: 1.5px solid #22c55e !important;">
@@ -3901,67 +3858,7 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
       if (elNotifAdmin) elNotifAdmin.checked = (gw.notifyAdminNewBooking !== false);
       const elNotifSantri = document.getElementById("gwNotifySantri");
       if (elNotifSantri) elNotifSantri.checked = (gw.notifySantriBooking !== false);
-
-      // Muat pengaturan Opsi Durasi Perpanjangan Sewa
-      const opsiPerp = config.opsiPerpanjangan || { mode: "katalog", jamKustom: [3, 6, 12, 24] };
-      const radKatalog = document.getElementById("modePerpanjanganKatalog");
-      const radKustom = document.getElementById("modePerpanjanganKustom");
-      const inpKustom = document.getElementById("inputJamKustomPerpanjang");
-      if (radKatalog && radKustom) {
-        if (opsiPerp.mode === "kustom") {
-          radKustom.checked = true;
-        } else {
-          radKatalog.checked = true;
-        }
-      }
-      if (inpKustom) {
-        const listJam = Array.isArray(opsiPerp.jamKustom) ? opsiPerp.jamKustom.join(", ") : "3, 6, 12, 24";
-        inpKustom.value = listJam;
-      }
-      toggleFormPerpanjanganKustom();
-
       muatFotoProfilAdminSaatIni();
-    }
-
-    function toggleFormPerpanjanganKustom() {
-      const isKustom = document.getElementById("modePerpanjanganKustom") && document.getElementById("modePerpanjanganKustom").checked;
-      const box = document.getElementById("boxInputJamKustom");
-      if (box) {
-        box.style.display = isKustom ? "block" : "none";
-      }
-    }
-
-    function simpanPengaturanPerpanjangan(e) {
-      if (e && e.preventDefault) e.preventDefault();
-      const isKustom = document.getElementById("modePerpanjanganKustom") && document.getElementById("modePerpanjanganKustom").checked;
-      const inpKustom = document.getElementById("inputJamKustomPerpanjang");
-      let jamList = [3, 6, 12, 24];
-      if (inpKustom && inpKustom.value.trim()) {
-        jamList = inpKustom.value
-          .split(/[,;\s]+/)
-          .map(v => parseInt(v.trim()))
-          .filter(n => !isNaN(n) && n > 0);
-        if (jamList.length === 0) jamList = [3, 6, 12, 24];
-      }
-
-      const cfg = ambilPengaturanAdmin();
-      cfg.opsiPerpanjangan = {
-        mode: isKustom ? "kustom" : "katalog",
-        jamKustom: jamList
-      };
-      simpanPengaturanAdmin(cfg);
-
-      if (typeof modalNotif === "function") {
-        modalNotif({
-          title: "Pengaturan Disimpan!",
-          text: isKustom 
-            ? `Mode Kustom aktif (${jamList.join(', ')} Jam) untuk perpanjangan sewa santri.`
-            : "Mode Katalog aktif (Pilihan jam otomatis mengikuti paket katalog masing-masing aset).",
-          icon: "success"
-        });
-      } else {
-        alert("Pengaturan opsi perpanjangan berhasil disimpan!");
-      }
     }
 
     function toggleLihatApiKey() {

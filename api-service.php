@@ -378,7 +378,7 @@ function kirimNotifBookingBaru($booking) {
         kirimWaGateway($noWa, $pesanSantri);
     }
 
-    // Jeda 3 detik agar pesan santri dan admin berselang beberapa detik
+    // Jeda 3 detik agar pesan santri dan admin berselang beberapa detik demi keamanan gateway
     sleep(3);
 
     // B. Kirim notifikasi ke Admin Pengurus (Mas Ganteng untuk Admin 1 & Mbak Cantik untuk Admin 2) DENGAN LINK KE DASHBOARD ADMIN UNTUK ACC / TOLAK
@@ -860,17 +860,37 @@ switch ($action) {
 
         $saved = tulisJson($fileBookings, $bookings);
 
-        // Kirim Notifikasi WhatsApp Otomatis ke Santri & Admin untuk Booking Baru
-        if ($saved && !empty($isNewBooking)) {
-            kirimNotifBookingBaru($input);
-        }
-
-        echo json_encode([
+        // Susun payload balasan JSON
+        $resPayload = json_encode([
             'success'   => $saved,
             'bookingId' => $input['bookingId'] ?? '',
             'message'   => $saved ? 'Booking berhasil dicatat ke server' : 'Gagal menyimpan ke file server',
             'data'      => $input
         ]);
+
+        // OPTIMASI NON-BLOCKING:
+        // Kembalikan respon ke browser secepat mungkin agar UI tidak loading lama.
+        // Pengiriman notifikasi WhatsApp dilakukan setelah respon sampai ke browser.
+        if (function_exists('fastcgi_finish_request')) {
+            echo $resPayload;
+            fastcgi_finish_request();
+            if ($saved && !empty($isNewBooking)) {
+                kirimNotifBookingBaru($input);
+            }
+        } else {
+            // Non-blocking fallback jika bukan FastCGI (LiteSpeed / Apache)
+            @ignore_user_abort(true);
+            @header('Connection: close');
+            @header('Content-Length: ' . strlen($resPayload));
+            echo $resPayload;
+            while (@ob_get_level() > 0) {
+                @ob_end_flush();
+            }
+            @flush();
+            if ($saved && !empty($isNewBooking)) {
+                kirimNotifBookingBaru($input);
+            }
+        }
         break;
 
     // -------------------------------------------------------------

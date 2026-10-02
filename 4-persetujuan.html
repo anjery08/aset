@@ -196,7 +196,7 @@
 
             <!-- Teks Kesepakatan Resmi (iOS Clause Box) -->
             <div class="clause-box-ios mb-3 small">
-              "Dengan mengirimkan format ini, saya menyatakan bertanggung jawab penuh atas keamanan alat, sanggup mengoperasikan alat dengan benar, dan bersedia membayar denda sesuai ketentuan jika terjadi keterlambatan atau kerusakan."
+              "Saya bersedia menjaga keutuhan alat, mengoperasikannya secara bertanggung jawab, serta mematuhi ketentuan denda keterlambatan dan penggantian jika terjadi kerusakan."
             </div>
 
             <!-- Checkbox Persetujuan (iOS Glass Checkbox) -->
@@ -552,9 +552,47 @@
         btnSubmit.innerHTML = `<i class="bi bi-check-circle-fill fs-4 me-2"></i> Permohonan Berhasil Terkirim`;
       }
 
-      // 5. Tampilkan Modal Konfirmasi Berhasil
+      // 5. Tampilkan Modal Konfirmasi Berhasil & Mainkan Efek Suara
+      mainkanSuaraSukses();
       const modal = new bootstrap.Modal(document.getElementById("successModal"));
       modal.show();
+    }
+
+    // Generator Efek Suara Notifikasi Sukses Ceria (Web Audio API - Nada Arpeggio F Major)
+    function mainkanSuaraSukses() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const now = ctx.currentTime;
+
+        // Rangkaian 3 nada ceria bertingkat (F5 -> A5 -> C6) khas notifikasi sukses modern
+        const nadaList = [
+          { freq: 698.46, start: 0.00, dur: 0.25 }, // F5
+          { freq: 880.00, start: 0.08, dur: 0.28 }, // A5
+          { freq: 1046.50, start: 0.16, dur: 0.45 } // C6 (berdenting cerah)
+        ];
+
+        nadaList.forEach(item => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(item.freq, now + item.start);
+
+          gain.gain.setValueAtTime(0.001, now + item.start);
+          gain.gain.exponentialRampToValueAtTime(0.22, now + item.start + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + item.start + item.dur);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.start(now + item.start);
+          osc.stop(now + item.start + item.dur);
+        });
+      } catch (e) {
+        // Fallback jika browser membatasi audio
+      }
     }
 
     // Fungsi otomatis redirect ke katalog saat modal selesai / ditutup (X)

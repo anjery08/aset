@@ -352,8 +352,18 @@
       }
 
       if (!currentBooking || !currentBooking.namaBarang) {
-        alert("Silakan pilih unit alat yang ingin disewa terlebih dahulu dari katalog.");
-        window.location.href = "1-katalog.html";
+        if (typeof modalNotif === "function") {
+          modalNotif({
+            title: "Pilih Unit Alat",
+            text: "Silakan pilih unit alat yang ingin disewa terlebih dahulu dari katalog.",
+            icon: "info",
+            confirmText: "Buka Katalog",
+            onConfirm: () => { window.location.href = "1-katalog.html"; }
+          });
+        } else {
+          alert("Silakan pilih unit alat yang ingin disewa terlebih dahulu dari katalog.");
+          window.location.href = "1-katalog.html";
+        }
         return;
       }
 
@@ -616,7 +626,16 @@
       const tglPilih = new Date(waktuAmbilVal).getTime();
       const tglSekarang = new Date().getTime() - (3 * 60 * 1000);
       if (tglPilih < tglSekarang) {
-        alert("Peringatan: Waktu ambil tidak boleh di masa lalu! Waktu otomatis disesuaikan ke waktu saat ini.");
+        if (typeof modalNotif === "function") {
+          modalNotif({
+            title: "Waktu Tidak Valid",
+            text: "Waktu ambil tidak boleh di masa lalu. Jam otomatis disesuaikan ke waktu saat ini.",
+            icon: "warning",
+            confirmText: "Oke, Paham"
+          });
+        } else {
+          alert("Peringatan: Waktu ambil tidak boleh di masa lalu! Waktu otomatis disesuaikan ke waktu saat ini.");
+        }
         const sekarang = new Date();
         inputWaktuAmbil.value = toDatetimeLocalString(sekarang);
         return updateWaktuSelesai();
@@ -684,7 +703,16 @@
       const waktuAmbilRaw = document.getElementById("inputWaktuAmbil").value;
 
       if (!nama || !komunitas || !departemen || !alamat || !noWa || !waktuAmbilRaw) {
-        alert("Harap lengkapi semua kolom yang bertanda bintang (*).");
+        if (typeof modalNotif === "function") {
+          modalNotif({
+            title: "Data Belum Lengkap",
+            text: "Harap lengkapi semua kolom formulir yang bertanda bintang (*).",
+            icon: "warning",
+            confirmText: "Lengkapi Data"
+          });
+        } else {
+          alert("Harap lengkapi semua kolom yang bertanda bintang (*).");
+        }
         return;
       }
 
@@ -692,24 +720,60 @@
       const tglPilih = new Date(waktuAmbilRaw).getTime();
       const tglSekarang = new Date().getTime() - (3 * 60 * 1000);
       if (tglPilih < tglSekarang) {
-        alert("Waktu ambil tidak boleh di masa lalu! Silakan periksa kembali waktu ambil barang.");
+        if (typeof modalNotif === "function") {
+          modalNotif({
+            title: "Jadwal Tidak Valid",
+            text: "Waktu ambil tidak boleh di masa lalu. Silakan periksa kembali tanggal dan jam ambil barang.",
+            icon: "warning",
+            confirmText: "Perbaiki Jam"
+          });
+        } else {
+          alert("Waktu ambil tidak boleh di masa lalu! Silakan periksa kembali waktu ambil barang.");
+        }
         return;
       }
 
       if (!waktuSelesaiCalculated) {
-        alert("Waktu selesai sewa belum terhitung secara valid.");
+        if (typeof modalNotif === "function") {
+          modalNotif({
+            title: "Periksa Waktu Sewa",
+            text: "Waktu selesai sewa belum terhitung secara valid. Pastikan waktu ambil sudah diisi dengan benar.",
+            icon: "warning",
+            confirmText: "Oke, Paham"
+          });
+        } else {
+          alert("Waktu selesai sewa belum terhitung secara valid.");
+        }
         return;
       }
 
       if (!isJadwalTersedia) {
-        alert("Jadwal yang Anda pilih bentrok dengan penyewa lain. Silakan ubah jam sewa terlebih dahulu.");
+        if (typeof modalNotif === "function") {
+          modalNotif({
+            title: "Jadwal Bentrok",
+            text: "Jadwal yang Anda pilih bentrok dengan peminjaman lain yang sudah disetujui. Silakan pilih waktu sewa yang lain.",
+            icon: "error",
+            confirmText: "Pilih Waktu Lain"
+          });
+        } else {
+          alert("Jadwal yang Anda pilih bentrok dengan penyewa lain. Silakan ubah jam sewa terlebih dahulu.");
+        }
         return;
       }
 
       const rawDigits = noWa.replace(/[^0-9]/g, '');
       const localWa = typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(noWa) : (rawDigits.startsWith("62") ? "0" + rawDigits.substring(2) : rawDigits);
       if (localWa.length < 10) {
-        alert("Nomor WhatsApp tidak valid. Masukkan nomor HP aktif yang diawali 08 (contoh: 08812762520).");
+        if (typeof modalNotif === "function") {
+          modalNotif({
+            title: "Nomor WhatsApp Tidak Valid",
+            text: "Nomor WhatsApp yang Anda masukkan kurang lengkap. Masukkan nomor HP aktif yang diawali 08 (contoh: 08812762520).",
+            icon: "warning",
+            confirmText: "Perbaiki Nomor"
+          });
+        } else {
+          alert("Nomor WhatsApp tidak valid. Masukkan nomor HP aktif yang diawali 08 (contoh: 08812762520).");
+        }
         return;
       }
 

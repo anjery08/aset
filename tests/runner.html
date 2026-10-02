@@ -290,12 +290,12 @@
       let kAwal = hitungTotalKeranjang();
       assertTest(g1, 'Keranjang awal kosong (0 item, Rp 0)', kAwal.totalItem === 0 && kAwal.totalBiaya === 0);
 
-      tambahKeKeranjang({ id: 'cam-01', nama: 'Sony A6400', tarif: 60000 }, { id: '12', jam: 12, tarif: 60000, label: '12 Jam' });
+      tambahKeKeranjang({ id: 'cam-01', nama: 'Sony A6400', tarif: 60000, stokTotal: 2 }, { id: '12', jam: 12, tarif: 60000, label: '12 Jam' });
       let k1 = hitungTotalKeranjang();
       assertTest(g1, 'Tambah 1 unit: 1 item & total Rp 60.000', k1.totalItem === 1 && k1.totalBiaya === 60000);
 
-      tambahKeKeranjang({ id: 'lens-01', nama: 'Lensa 50mm', tarif: 25000 }, { id: '6', jam: 6, tarif: 25000, label: '6 Jam' });
-      tambahKeKeranjang({ id: 'tripod-01', nama: 'Tripod Takara', tarif: 15000 }, { id: '24', jam: 24, tarif: 30000, label: '24 Jam' });
+      tambahKeKeranjang({ id: 'lens-01', nama: 'Lensa 50mm', tarif: 25000, stokTotal: 3 }, { id: '6', jam: 6, tarif: 25000, label: '6 Jam' });
+      tambahKeKeranjang({ id: 'tripod-01', nama: 'Tripod Takara', tarif: 15000, stokTotal: 5 }, { id: '24', jam: 24, tarif: 30000, label: '24 Jam' });
       let k3 = hitungTotalKeranjang();
       assertTest(g1, 'Tambah 3 unit berbeda: akumulasi total Rp 115.000', k3.totalItem === 3 && k3.totalBiaya === 115000);
 
@@ -311,11 +311,19 @@
       let kEmpty = hitungTotalKeranjang();
       assertTest(g1, 'Kosongkan keranjang: kembali ke 0 item dan Rp 0', kEmpty.totalItem === 0 && kEmpty.totalBiaya === 0);
 
-      // Kelompok 2: Deteksi Bentrok Jadwal & Buffer
-      const g2 = createGroup('2. Deteksi Bentrok Jadwal & Buffer 30 Menit');
+      // Kelompok 2: Deteksi Bentrok Jadwal, Kapasitas Stok & Buffer
+      const g2 = createGroup('2. Deteksi Bentrok Jadwal, Kapasitas Stok & Jeda 30 Menit');
+      localStorage.setItem('rental_aset_custom_items', JSON.stringify([
+        { id: 'tripod-pro-3', nama: 'Tripod Profesional', stokTotal: 3, status: 'available' }
+      ]));
+
       const dummyHistory = [
         { bookingId: 'INV-T1', status: 'approved', asetId: 'cam-sony', namaBarang: 'Sony A6400', waktuAmbilRaw: '2026-10-01T08:00:00.000Z', waktuSelesaiRaw: '2026-10-01T10:00:00.000Z' },
-        { bookingId: 'INV-T2', status: 'completed', asetId: 'cam-sony', waktuAmbilRaw: '2026-10-01T14:00:00.000Z', waktuSelesaiRaw: '2026-10-01T16:00:00.000Z' }
+        { bookingId: 'INV-T2', status: 'completed', asetId: 'cam-sony', waktuAmbilRaw: '2026-10-01T14:00:00.000Z', waktuSelesaiRaw: '2026-10-01T16:00:00.000Z' },
+        { bookingId: 'INV-TR-A', status: 'approved', asetId: 'tripod-pro-3', waktuAmbilRaw: '2026-10-01T08:00:00.000Z', waktuSelesaiRaw: '2026-10-01T11:00:00.000Z' },
+        { bookingId: 'INV-TR-B', status: 'approved', asetId: 'tripod-pro-3', waktuAmbilRaw: '2026-10-01T08:00:00.000Z', waktuSelesaiRaw: '2026-10-01T11:00:00.000Z' },
+        { bookingId: 'INV-BATAL', status: 'cancelled', asetId: 'cam-sony', waktuAmbilRaw: '2026-10-01T18:00:00.000Z', waktuSelesaiRaw: '2026-10-01T20:00:00.000Z' },
+        { bookingId: 'INV-TOLAK', status: 'rejected', asetId: 'cam-sony', waktuAmbilRaw: '2026-10-01T21:00:00.000Z', waktuSelesaiRaw: '2026-10-01T23:00:00.000Z' }
       ];
       localStorage.setItem('rental_aset_booking_history', JSON.stringify(dummyHistory));
 
@@ -341,7 +349,30 @@
       const resMulti = cekBentrokMultiAset(multiItems, '2026-10-01T09:00:00.000Z');
       assertTest(g2, 'Multi-aset: deteksi akurat alat spesifik yang bentrok', resMulti.available === false && resMulti.bentrokItems.length === 1);
 
-      // Kelompok 3: Perhitungan Waktu
+      const cekTripodSisa = cekBentrokJadwalAset('tripod-pro-3', '2026-10-01T09:00:00.000Z', '2026-10-01T10:00:00.000Z');
+      assertTest(g2, 'Multi-Stok: Kapasitas 3 unit (terpakai 2) tetap meloloskan peminjam ke-3', cekTripodSisa.available === true && cekTripodSisa.sisaStok === 1);
+
+      const dummyHistoryFull = [
+        ...dummyHistory,
+        { bookingId: 'INV-TR-C', status: 'approved', asetId: 'tripod-pro-3', waktuAmbilRaw: '2026-10-01T08:00:00.000Z', waktuSelesaiRaw: '2026-10-01T11:00:00.000Z' }
+      ];
+      localStorage.setItem('rental_aset_booking_history', JSON.stringify(dummyHistoryFull));
+      const cekTripodPenuh = cekBentrokJadwalAset('tripod-pro-3', '2026-10-01T09:00:00.000Z', '2026-10-01T10:00:00.000Z');
+      assertTest(g2, 'Batas Kuota: Sewa ke-4 pada unit kapasitas 3 wajib ditolak (stok habis)', cekTripodPenuh.available === false && cekTripodPenuh.sisaStok === 0);
+
+      const cekBatal = cekBentrokJadwalAset('cam-sony', '2026-10-01T18:30:00.000Z', '2026-10-01T19:30:00.000Z');
+      const cekTolak = cekBentrokJadwalAset('cam-sony', '2026-10-01T21:30:00.000Z', '2026-10-01T22:30:00.000Z');
+      assertTest(g2, 'Status cancelled & rejected: Jadwal otomatis bebas untuk disewa santri lain', cekBatal.available === true && cekTolak.available === true);
+
+      const historyWithQueue = [
+        ...dummyHistoryFull,
+        { bookingId: 'INV-ANTRE-B', status: 'approved', asetId: 'cam-sony', waktuAmbilRaw: '2026-10-01T11:00:00.000Z', waktuSelesaiRaw: '2026-10-01T13:00:00.000Z' }
+      ];
+      localStorage.setItem('rental_aset_booking_history', JSON.stringify(historyWithQueue));
+      const bExtClash = cekBentrokJadwalAset('cam-sony', '2026-10-01T10:00:00.000Z', '2026-10-01T11:30:00.000Z', 'INV-T1');
+      assertTest(g2, 'Konflik Perpanjangan (Extension Clash): Menolak perpanjangan jika menabrak antrean peminjam lain', bExtClash.available === false);
+
+      // Kelompok 3: Perhitungan Waktu Selesai
       const g3 = createGroup('3. Perhitungan Waktu Selesai Sewa');
       const w1 = hitungWaktuSelesai('2026-10-01T08:00:00', 3);
       assertTest(g3, 'Mulai 08:00 + 3 Jam: selesai tepat jam 11:00', w1 && w1.getHours() === 11);
@@ -352,8 +383,13 @@
       const w3 = hitungWaktuSelesai('', 6);
       assertTest(g3, 'Input waktu kosong: menghasilkan null secara aman', w3 === null);
 
-      // Kelompok 4: Denda Keterlambatan
-      const g4 = createGroup('4. Perhitungan Denda Keterlambatan');
+      const tMulaiMulti = '2026-10-01T08:00:00';
+      const tEnd6 = hitungWaktuSelesai(tMulaiMulti, 6);
+      const tEnd24 = hitungWaktuSelesai(tMulaiMulti, 24);
+      assertTest(g3, 'Multi-Durasi Independen: Paket 6 jam & 24 jam terhitung akurat masing-masing', tEnd6.getHours() === 14 && tEnd24.getDate() === 2 && tEnd24.getHours() === 8);
+
+      // Kelompok 4: Denda Keterlambatan & Ganti Rugi
+      const g4 = createGroup('4. Perhitungan Denda Keterlambatan & Ganti Rugi');
       const limit = '2026-10-01T12:00:00';
       const d1 = hitungDenda(limit, '2026-10-01T11:45:00');
       assertTest(g4, 'Kembali tepat waktu: denda Rp 0', d1.totalDenda === 0 && !d1.terlambat);
@@ -370,7 +406,12 @@
       const d5 = hitungDenda(limit, '2026-10-01T15:00:00', true);
       assertTest(g4, 'Terlambat 3 jam peminjaman dinas resmi: denda Rp 0 (Bebas Biaya)', d5.totalDenda === 0);
 
-      // Kelompok 5: Ketahanan Data & Sanitasi
+      const sewaPokok = 50000;
+      const gantiRugiFisik = 25000;
+      const totalKompensasi = sewaPokok + d3.totalDenda + gantiRugiFisik;
+      assertTest(g4, 'Denda + Ganti Rugi Fisik: Total akumulasi tagihan sewa + denda + perbaikan tepat (Rp 85.000)', totalKompensasi === 85000);
+
+      // Kelompok 5: Ketahanan Data, Format WA & Keamanan
       const g5 = createGroup('5. Ketahanan Data & Sanitasi Sistem');
       const invDate = cekBentrokJadwalAset('cam-sony', '2026-10-01T12:00:00.000Z', '2026-10-01T08:00:00.000Z');
       assertTest(g5, 'Rentang waktu terbalik: sistem menolak validasi secara aman', invDate.available === false && !!invDate.error);
@@ -380,6 +421,63 @@
 
       const xssTest = escapeHtml('<script>alert("hack")</script>');
       assertTest(g5, 'Sanitasi XSS: tag berbahaya berhasil dinetralkan', !xssTest.includes('<script>') && xssTest.includes('&lt;script&gt;'));
+
+      const waInt = formatNomorWa('08123456789');
+      assertTest(g5, 'Standarisasi Format WA Internasional (628...) untuk API wa.me', waInt === '628123456789');
+
+      const unknownStock = hitungSisaStokAset('unknown-fake-id');
+      assertTest(g5, 'Penanganan ID Aset Palsu: menghasilkan stok 0 secara aman tanpa crash', unknownStock === 0);
+
+      localStorage.setItem('rental_aset_custom_items', JSON.stringify([
+        { id: 'cam-rusak-1', nama: 'Sony Rusak', stokTotal: 1, status: 'maintenance' }
+      ]));
+      const maintStock = hitungSisaStokAset('cam-rusak-1');
+      assertTest(g5, 'Aset Maintenance/Servis: otomatis terkunci stok 0 dan tidak bisa disewa', maintStock === 0);
+
+      // Kelompok 6: Opsi Durasi Perpanjangan Sewa
+      const g6 = createGroup('6. Opsi Durasi Perpanjangan Sewa');
+      const dummyBookingRP = { bookingId: 'INV-01', asetId: 'ast-canon-rp', biayaSewa: 50000 };
+      const opsiKatalog = ambilOpsiDurasiPerpanjangan(dummyBookingRP);
+      assertTest(g6, 'Mode Katalog: Opsi perpanjangan otomatis mengikuti paket durasi asli aset', Array.isArray(opsiKatalog) && opsiKatalog.length > 0);
+
+      const cfgAdmin = ambilPengaturanAdmin();
+      cfgAdmin.opsiPerpanjangan = { mode: 'kustom', jamKustom: [2, 4, 8] };
+      simpanPengaturanAdmin(cfgAdmin);
+      const opsiKustom = ambilOpsiDurasiPerpanjangan(dummyBookingRP);
+      assertTest(g6, 'Mode Kustom Admin: Opsi durasi mematuhi daftar jam konfigurasi admin [2, 4, 8]', Array.isArray(opsiKustom) && opsiKustom.length === 3);
+
+      cfgAdmin.opsiPerpanjangan = { mode: 'katalog', jamKustom: [3, 6, 12, 24] };
+      simpanPengaturanAdmin(cfgAdmin);
+
+      const opsiFallback = ambilOpsiDurasiPerpanjangan({ bookingId: 'INV-FB', asetId: 'unknown-fb' });
+      assertTest(g6, 'Fallback Aman: Aset tanpa paket katalog tetap memiliki opsi perpanjangan terstandar', Array.isArray(opsiFallback) && opsiFallback.length > 0);
+
+      const dummyPaketKhusus = {
+        id: 'ast-khusus',
+        paketOpsi: [{ jam: 6, tarif: 60000 }],
+        paketPerpanjangan: [{ jam: 2, label: '+2 Jam Diskon', tarif: 15000 }]
+      };
+      const opsiKhusus = ambilOpsiDurasiPerpanjangan(dummyPaketKhusus);
+      assertTest(g6, 'Paket Khusus Per-Barang: Prioritaskan paketPerpanjangan khusus dibanding paket reguler', Array.isArray(opsiKhusus) && opsiKhusus[0].tarif === 15000);
+
+      const opsiViaId = ambilOpsiDurasiPerpanjangan('ast-canon-rp');
+      assertTest(g6, 'Fleksibilitas Parameter: Menerima string asetId langsung dan menghasilkan paket opsi', Array.isArray(opsiViaId) && opsiViaId.length > 0);
+
+      // Kelompok 7: Transaksi Massal & Isolasi Keranjang
+      const g7 = createGroup('7. Transaksi Massal & Isolasi Keranjang');
+      kosongkanKeranjang();
+      tambahKeKeranjang({ id: 'b1', tarif: 60000 }, { id: 'p1', jam: 6, tarif: 60000 });
+      tambahKeKeranjang({ id: 'b2', tarif: 25000 }, { id: 'p2', jam: 6, tarif: 25000 });
+      tambahKeKeranjang({ id: 'b3', tarif: 15000 }, { id: 'p3', jam: 6, tarif: 15000 });
+      tambahKeKeranjang({ id: 'b4', tarif: 20000 }, { id: 'p4', jam: 6, tarif: 20000 });
+      tambahKeKeranjang({ id: 'b5', tarif: 30000 }, { id: 'p5', jam: 6, tarif: 30000 });
+      const kMassal = hitungTotalKeranjang();
+      assertTest(g7, 'Sewa Massal 5 Barang: Akumulasi biaya tepat (Rp 150.000) tanpa selisih desimal', kMassal.totalItem === 5 && kMassal.totalBiaya === 150000);
+
+      tambahKeKeranjang({ id: 'b1', tarif: 60000 }, { id: 'p1-up', jam: 24, tarif: 100000 });
+      const kMassalUp = hitungTotalKeranjang();
+      assertTest(g7, 'Isolasi Perubahan Item: Memperpanjang 1 barang tidak mengganggu harga barang lain (Rp 190.000)', kMassalUp.totalItem === 5 && kMassalUp.totalBiaya === 190000);
+      kosongkanKeranjang();
 
       const t1 = performance.now();
       const durasi = Math.round(t1 - t0);

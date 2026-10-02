@@ -282,6 +282,29 @@
     </div>
   </div>
 
+  <!-- Modal Konfirmasi Kosongkan Keranjang Modern (Bersuara) -->
+  <div class="modal fade" id="modalKonfirmasiKosongkan" tabindex="-1" aria-labelledby="modalKonfirmasiKosongkanLabel" aria-hidden="true" style="backdrop-filter: blur(8px); background: rgba(15, 23, 42, 0.45);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+      <div class="modal-content border-0 shadow-lg text-center p-4" style="border-radius: 1.5rem; background: #ffffff;">
+        <div class="mb-3 mx-auto d-flex align-items-center justify-content-center rounded-circle shadow-sm" style="width: 64px; height: 64px; background: rgba(239, 68, 68, 0.12); color: #ef4444;">
+          <i class="bi bi-trash3-fill fs-2"></i>
+        </div>
+        <h5 class="fw-bolder text-dark mb-2" id="modalKonfirmasiKosongkanLabel">Kosongkan Keranjang?</h5>
+        <p class="text-secondary small mb-4 px-2" style="line-height: 1.5;">
+          Semua daftar peralatan yang telah Anda pilih akan dihapus dari keranjang permohonan sewa.
+        </p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button type="button" class="btn btn-light rounded-pill px-4 py-2 fw-bold text-secondary flex-grow-1" data-bs-dismiss="modal">
+            Batal
+          </button>
+          <button type="button" class="btn btn-danger rounded-pill px-4 py-2 fw-bold shadow-sm flex-grow-1" id="btnKonfirmasiKosongkanYakin" onclick="konfirmasiHapusSemuaKeranjang()" style="background: #ef4444; border: none;">
+            <i class="bi bi-trash me-1"></i> Ya, Kosongkan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating Glass Cart Bar (Gaya A) -->
   <div class="floating-cart-bar px-3 py-2 px-sm-4 py-sm-3 d-flex align-items-center justify-content-between shadow-lg" id="floatingCartBar">
     <div class="d-flex align-items-center gap-2 gap-sm-3" style="cursor: pointer;" onclick="bukaModalKeranjang()">
@@ -876,8 +899,22 @@
       updateTampilanKeranjangBar();
     }
 
+    let modalKonfirmasiKosongkanInstance = null;
+
     function eksekusiKosongkanKeranjang() {
-      if (!confirm("Kosongkan semua daftar peralatan di keranjang sewa?")) return;
+      const modalEl = document.getElementById("modalKonfirmasiKosongkan");
+      if (modalEl) {
+        modalKonfirmasiKosongkanInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modalKonfirmasiKosongkanInstance.show();
+      } else if (typeof kosongkanKeranjang === "function") {
+        konfirmasiHapusSemuaKeranjang();
+      }
+    }
+
+    function konfirmasiHapusSemuaKeranjang() {
+      if (modalKonfirmasiKosongkanInstance) {
+        modalKonfirmasiKosongkanInstance.hide();
+      }
       if (typeof kosongkanKeranjang === "function") {
         kosongkanKeranjang();
       }
@@ -888,7 +925,16 @@
     function lanjutBookingDariKeranjang() {
       const summary = (typeof hitungTotalKeranjang === "function") ? hitungTotalKeranjang() : { totalItem: 0, items: [] };
       if (summary.totalItem === 0) {
-        alert("Keranjang sewa Anda masih kosong. Silakan pilih alat terlebih dahulu.");
+        if (typeof modalNotif === "function") {
+          modalNotif({
+            title: "Keranjang Masih Kosong",
+            text: "Silakan pilih unit alat terlebih dahulu sebelum melanjutkan permohonan sewa.",
+            icon: "info",
+            confirmText: "Pilih Alat"
+          });
+        } else {
+          alert("Keranjang sewa Anda masih kosong. Silakan pilih alat terlebih dahulu.");
+        }
         return;
       }
 

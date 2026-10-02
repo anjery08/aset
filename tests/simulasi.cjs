@@ -84,7 +84,9 @@ const {
     ambilKeranjang,
     simpanKeranjang,
     ambilSemuaKatalog,
+    hitungSisaStokAset,
     formatNomorWaLokal,
+    formatNomorWa,
     formatRupiah,
     formatWaktuIndo,
     escapeHtml,
@@ -160,12 +162,17 @@ uji("Kosongkan keranjang: kembali ke 0 item dan Rp 0", kKosong.totalItem === 0 &
 console.log("");
 
 // -------------------------------------------------------------
-// KELOMPOK 2: DETEKSI BENTROK JADWAL & BUFFER 30 MENIT
+// KELOMPOK 2: DETEKSI BENTROK JADWAL, KAPASITAS STOK & BUFFER 30 MENIT
 // -------------------------------------------------------------
-console.log("\x1b[1m\x1b[34m[KELOMPOK 2: DETEKSI BENTROK JADWAL & JEDA PERSIAPAN 30 MENIT]\x1b[0m");
+console.log("\x1b[1m\x1b[34m[KELOMPOK 2: DETEKSI BENTROK JADWAL, KAPASITAS STOK & JEDA 30 MENIT]\x1b[0m");
 mockLocalStorage.clear();
 
-// Setup dummy riwayat booking: Kamera A (stok 1) disewa hari ini jam 08:00 - 10:00
+// Daftarkan aset custom dengan multi-stok (Tripod Pro kapasitas 3 unit)
+mockLocalStorage.setItem("rental_aset_custom_items", JSON.stringify([
+    { id: "tripod-pro-3", nama: "Tripod Profesional", stokTotal: 3, status: "available" }
+]));
+
+// Setup riwayat booking dummy
 const bookingDummy = [
     {
         bookingId: "INV-TEST-01",
@@ -177,10 +184,42 @@ const bookingDummy = [
     },
     {
         bookingId: "INV-TEST-02",
-        status: "completed", // Selesai -> tidak boleh menghalangi booking lain
+        status: "completed", // Selesai -> tidak boleh menghalangi booking baru
         asetId: "cam-sony",
         waktuAmbilRaw: "2026-10-01T14:00:00.000Z",
         waktuSelesaiRaw: "2026-10-01T16:00:00.000Z"
+    },
+    // 2 booking aktif untuk Tripod Pro (stok 3) pada jam 08:00 - 11:00
+    {
+        bookingId: "INV-TRIPOD-A",
+        status: "approved",
+        asetId: "tripod-pro-3",
+        namaBarang: "Tripod Profesional",
+        waktuAmbilRaw: "2026-10-01T08:00:00.000Z",
+        waktuSelesaiRaw: "2026-10-01T11:00:00.000Z"
+    },
+    {
+        bookingId: "INV-TRIPOD-B",
+        status: "approved",
+        asetId: "tripod-pro-3",
+        namaBarang: "Tripod Profesional",
+        waktuAmbilRaw: "2026-10-01T08:00:00.000Z",
+        waktuSelesaiRaw: "2026-10-01T11:00:00.000Z"
+    },
+    // Booking yang dibatalkan & ditolak -> tidak boleh mengunci jadwal
+    {
+        bookingId: "INV-TEST-BATAL",
+        status: "cancelled",
+        asetId: "cam-sony",
+        waktuAmbilRaw: "2026-10-01T18:00:00.000Z",
+        waktuSelesaiRaw: "2026-10-01T20:00:00.000Z"
+    },
+    {
+        bookingId: "INV-TEST-TOLAK",
+        status: "rejected",
+        asetId: "cam-sony",
+        waktuAmbilRaw: "2026-10-01T21:00:00.000Z",
+        waktuSelesaiRaw: "2026-10-01T23:00:00.000Z"
     }
 ];
 mockLocalStorage.setItem("rental_aset_booking_history", JSON.stringify(bookingDummy));
@@ -215,6 +254,51 @@ const resMulti = cekBentrokMultiAset(itemsMulti, "2026-10-01T09:00:00.000Z");
 uji("Multi-aset: jika 1 dari 3 alat bentrok, sistem mendeteksi alat spesifik yang bermasalah", 
     resMulti.available === false && resMulti.bentrokItems.length === 1 && resMulti.bentrokItems[0].asetId === "cam-sony");
 
+// Skenario 2.7 (BARU): Multi-Stok Bertingkat: Aset berkapasitas 3 unit (baru 2 dipinjam) masih bisa disewa
+const cekTripodSisa = cekBentrokJadwalAset("tripod-pro-3", "2026-10-01T09:00:00.000Z", "2026-10-01T10:00:00.000Z");
+uji("Multi-Stok Bertingkat: Aset kapasitas 3 unit (terpakai 2) tetap meloloskan sewa ke-3", 
+    cekTripodSisa.available === true && cekTripodSisa.sisaStok === 1 && cekTripodSisa.bentrokCount === 2);
+
+// Skenario 2.8 (BARU): Batas Maksimal Kuota Terpenuhi: Sewa ke-4 pada kapasitas 3 unit wajib ditolak
+const bookingDummyFull = [
+    ...bookingDummy,
+    {
+        bookingId: "INV-TRIPOD-C",
+        status: "approved",
+        asetId: "tripod-pro-3",
+        namaBarang: "Tripod Profesional",
+        waktuAmbilRaw: "2026-10-01T08:00:00.000Z",
+        waktuSelesaiRaw: "2026-10-01T11:00:00.000Z"
+    }
+];
+mockLocalStorage.setItem("rental_aset_booking_history", JSON.stringify(bookingDummyFull));
+const cekTripodPenuh = cekBentrokJadwalAset("tripod-pro-3", "2026-10-01T09:00:00.000Z", "2026-10-01T10:00:00.000Z");
+uji("Batas Maksimal Kuota: Sewa ke-4 pada aset kapasitas 3 unit WAJIB ditolak (stok habis)", 
+    cekTripodPenuh.available === false && cekTripodPenuh.sisaStok === 0 && cekTripodPenuh.bentrokCount === 3);
+
+// Skenario 2.9 (BARU): Pembebasan Jadwal: Status 'cancelled' & 'rejected' langsung membebaskan unit
+const cekBatal = cekBentrokJadwalAset("cam-sony", "2026-10-01T18:30:00.000Z", "2026-10-01T19:30:00.000Z");
+const cekTolak = cekBentrokJadwalAset("cam-sony", "2026-10-01T21:30:00.000Z", "2026-10-01T22:30:00.000Z");
+uji("Pembebasan Jadwal: Status 'cancelled' & 'rejected' langsung membebaskan unit untuk disewa", 
+    cekBatal.available === true && cekTolak.available === true);
+
+// Skenario 2.10 (BARU): Konflik Perpanjangan Sewa (Extension Clash): Menolak perpanjangan jika menabrak jadwal orang lain
+// Santri A (INV-TEST-01: 08:00 - 10:00) ingin perpanjang hingga 11:30, padahal Santri B sudah antre di INV-ANTRE-B (11:00)
+const bookingWithQueue = [
+    ...bookingDummyFull,
+    {
+        bookingId: "INV-ANTRE-B",
+        status: "approved",
+        asetId: "cam-sony",
+        waktuAmbilRaw: "2026-10-01T11:00:00.000Z",
+        waktuSelesaiRaw: "2026-10-01T13:00:00.000Z"
+    }
+];
+mockLocalStorage.setItem("rental_aset_booking_history", JSON.stringify(bookingWithQueue));
+const bentrokPerpanjang = cekBentrokJadwalAset("cam-sony", "2026-10-01T10:00:00.000Z", "2026-10-01T11:30:00.000Z", "INV-TEST-01");
+uji("Konflik Perpanjangan (Extension Clash): Sistem WAJIB menolak perpanjangan jika menabrak antrean santri berikutnya", 
+    bentrokPerpanjang.available === false);
+
 console.log("");
 
 // -------------------------------------------------------------
@@ -237,12 +321,19 @@ uji("Hitung sewa lintas hari (22:00 + 6 jam): tepat menghasilkan jam 04:00 hari 
 const waktuInvalid = hitungWaktuSelesai("", 6);
 uji("Input waktu kosong / tidak valid: mengembalikan null secara aman tanpa error", waktuInvalid === null);
 
+// Skenario 3.4 (BARU): Multi-Durasi Independen: Perhitungan waktu selesai paket sewa berbeda (6 jam vs 24 jam)
+const tMulaiBersama = "2026-10-01T08:00:00";
+const tSelesaiPaket6 = hitungWaktuSelesai(tMulaiBersama, 6);
+const tSelesaiPaket24 = hitungWaktuSelesai(tMulaiBersama, 24);
+uji("Multi-Durasi Independen: Paket sewa berbeda (6 jam vs 24 jam) terhitung presisi masing-masing", 
+    tSelesaiPaket6.getHours() === 14 && tSelesaiPaket24.getDate() === 2 && tSelesaiPaket24.getHours() === 8);
+
 console.log("");
 
 // -------------------------------------------------------------
-// KELOMPOK 4: PERHITUNGAN DENDA KETERLAMBATAN
+// KELOMPOK 4: PERHITUNGAN DENDA KETERLAMBATAN & GANTI RUGI
 // -------------------------------------------------------------
-console.log("\x1b[1m\x1b[34m[KELOMPOK 4: PERHITUNGAN DENDA KETERLAMBATAN]\x1b[0m");
+console.log("\x1b[1m\x1b[34m[KELOMPOK 4: PERHITUNGAN DENDA KETERLAMBATAN & GANTI RUGI]\x1b[0m");
 
 const batasSelesai = "2026-10-01T12:00:00";
 
@@ -266,6 +357,13 @@ uji("Terlambat 75 menit: pembulatan ke atas 2 jam = denda Rp 20.000", denda2Jam.
 const dendaDinas = hitungDenda(batasSelesai, "2026-10-01T15:00:00", true);
 uji("Terlambat 3 jam keperluan Dinas Resmi Pondok: denda Rp 0 (Bebas Biaya)", dendaDinas.totalDenda === 0 && dendaDinas.jamDihitung === 0);
 
+// Skenario 4.6 (BARU): Denda + Biaya Kompensasi Kerusakan: Akumulasi total tagihan terhitung tepat
+const tarifSewaPokok = 50000;
+const biayaKerusakanFisik = 25000; // Contoh ganti tutup lensa/kabel
+const totalTagihanPelunasan = tarifSewaPokok + denda1Jam.totalDenda + biayaKerusakanFisik;
+uji("Denda + Kompensasi Kerusakan: Kalkulasi akumulatif tagihan sewa + denda waktu + ganti rugi (Rp 85.000)", 
+    totalTagihanPelunasan === 85000);
+
 console.log("");
 
 // -------------------------------------------------------------
@@ -287,6 +385,26 @@ uji("Normalisasi nomor WhatsApp ke standar 08... bekerja konsisten", wa1 === "08
 const inputBahaya = '<script>alert("hack")</script>';
 const amanXSS = escapeHtml(inputBahaya);
 uji("Sanitasi tag berbahaya (<script>): berhasil diamankan menjadi HTML Entity", !amanXSS.includes("<script>") && amanXSS.includes("&lt;script&gt;"));
+
+// Skenario 5.4 (BARU): Standarisasi Format WA Internasional (628...) untuk tautan wa.me
+const waInt1 = formatNomorWa("08123456789");
+const waInt2 = formatNomorWa("+62 812-3456-789");
+const waInt3 = formatNomorWa("8123456789");
+uji("Format WhatsApp Internasional (628...): Berhasil distandarisasi untuk API WhatsApp", 
+    waInt1 === "628123456789" && waInt2 === "628123456789" && waInt3 === "628123456789");
+
+// Skenario 5.5 (BARU): Penanganan Aset Tidak Dikenal: ID aset palsu mengembalikan stok 0 tanpa crash
+const stokAsetUnknown = hitungSisaStokAset("id-aset-fiktif-999");
+uji("Penanganan Aset Tidak Dikenal: ID aset palsu/kosong menghasilkan sisa stok 0 secara aman", 
+    stokAsetUnknown === 0);
+
+// Skenario 5.6 (BARU): Aset Maintenance / Rusak: Unit berstatus 'maintenance' otomatis stok 0
+mockLocalStorage.setItem("rental_aset_custom_items", JSON.stringify([
+    { id: "cam-rusak-servis", nama: "Sony Service", stokTotal: 2, status: "maintenance" }
+]));
+const stokMaintenance = hitungSisaStokAset("cam-rusak-servis");
+uji("Aset Maintenance / Servis: Unit dalam perbaikan otomatis terkunci (stok 0) dan tidak bisa disewa", 
+    stokMaintenance === 0);
 
 console.log("");
 
@@ -329,7 +447,7 @@ const opsiFallback = ambilOpsiDurasiPerpanjangan(dummyBookingPolos);
 uji("Fallback Aman: Aset tanpa paket katalog tetap memiliki opsi perpanjangan terstandar",
     Array.isArray(opsiFallback) && opsiFallback.length > 0);
 
-// Skenario 6.4: Aset dengan Paket Khusus Perpanjangan (Per-Barang)
+// Skenario 6.4: Paket Khusus Per-Barang: Prioritaskan paketPerpanjangan khusus dibanding paket sewa reguler
 const dummyAsetDenganPaketKhusus = {
     id: "ast-custom-lens",
     nama: "Lensa 85mm F/1.4",
@@ -351,6 +469,34 @@ const opsiAsetIdString = ambilOpsiDurasiPerpanjangan("ast-canon-rp");
 uji("Fleksibilitas Parameter: Mampu menerima string asetId langsung dan menghasilkan paket opsi aset tersebut",
     Array.isArray(opsiAsetIdString) && opsiAsetIdString.length > 0);
 
+console.log("");
+
+// -------------------------------------------------------------
+// KELOMPOK 7: TRANSAKSI MASSAL / BULK RENTAL (BARU!)
+// -------------------------------------------------------------
+console.log("\x1b[1m\x1b[34m[KELOMPOK 7: TRANSAKSI MASSAL & ISOLASI KERANJANG]\x1b[0m");
+kosongkanKeranjang();
+
+// Skenario 7.1: Transaksi massal 5 item sekaligus terakumulasi tanpa selisih desimal
+tambahKeKeranjang({ id: "bulk-1", nama: "Kamera Canon", tarif: 60000 }, { id: "p1", jam: 6, tarif: 60000, label: "6 Jam" });
+tambahKeKeranjang({ id: "bulk-2", nama: "Lensa 50mm", tarif: 25000 }, { id: "p2", jam: 6, tarif: 25000, label: "6 Jam" });
+tambahKeKeranjang({ id: "bulk-3", nama: "Tripod Takara", tarif: 15000 }, { id: "p3", jam: 6, tarif: 15000, label: "6 Jam" });
+tambahKeKeranjang({ id: "bulk-4", nama: "Flash Godox", tarif: 20000 }, { id: "p4", jam: 6, tarif: 20000, label: "6 Jam" });
+tambahKeKeranjang({ id: "bulk-5", nama: "Mic Wireless", tarif: 30000 }, { id: "p5", jam: 6, tarif: 30000, label: "6 Jam" });
+
+const kBulk = hitungTotalKeranjang();
+// 60k + 25k + 15k + 20k + 30k = 150.000
+uji("Sewa Massal 5 Barang Sekaligus: Total item (5) dan akumulasi biaya tepat (Rp 150.000)", 
+    kBulk.totalItem === 5 && kBulk.totalBiaya === 150000, `Total terhitung: Rp ${kBulk.totalBiaya}`);
+
+// Skenario 7.2: Isolasi update paket pada satu item tidak mengacaukan harga item lain
+tambahKeKeranjang({ id: "bulk-1", nama: "Kamera Canon", tarif: 60000 }, { id: "p1-up", jam: 24, tarif: 100000, label: "24 Jam" });
+const kBulkUpdated = hitungTotalKeranjang();
+// Kamera naik dari 60k ke 100k (+40k), total jadi 190.000
+uji("Isolasi Perubahan Item: Memperpanjang paket 1 unit tidak mengganggu perhitungan unit lainnya (Rp 190.000)", 
+    kBulkUpdated.totalItem === 5 && kBulkUpdated.totalBiaya === 190000, `Total terhitung: Rp ${kBulkUpdated.totalBiaya}`);
+
+kosongkanKeranjang();
 console.log("");
 
 // -------------------------------------------------------------

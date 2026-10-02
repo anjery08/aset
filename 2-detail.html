@@ -202,8 +202,17 @@
         } catch (e) {}
       }
       if (!currentAsset) {
-        alert("Aset tidak ditemukan. Kembali ke katalog.");
-        window.location.href = "1-katalog.html";
+        if (typeof modalNotif === "function") {
+          modalNotif({
+            title: "Aset Tidak Ditemukan",
+            text: "Alat yang Anda cari tidak tersedia di katalog.",
+            icon: "warning",
+            onConfirm: () => { window.location.href = "1-katalog.html"; }
+          });
+        } else {
+          alert("Aset tidak ditemukan. Kembali ke katalog.");
+          window.location.href = "1-katalog.html";
+        }
         return;
       }
 
@@ -341,7 +350,16 @@
 
       document.getElementById("btnAjukanSewa").addEventListener("click", () => {
         if (!selectedPaket) {
-          alert("Silakan pilih paket sewa terlebih dahulu.");
+          if (typeof modalNotif === "function") {
+            modalNotif({
+              title: "Pilih Durasi Sewa",
+              text: "Silakan pilih salah satu paket durasi sewa terlebih dahulu.",
+              icon: "info",
+              confirmText: "Oke, Paham"
+            });
+          } else {
+            alert("Silakan pilih paket sewa terlebih dahulu.");
+          }
           return;
         }
 
@@ -364,13 +382,33 @@
       if (btnTambahKeranjang) {
         btnTambahKeranjang.addEventListener("click", () => {
           if (!selectedPaket) {
-            alert("Silakan pilih paket durasi sewa terlebih dahulu.");
+            if (typeof modalNotif === "function") {
+              modalNotif({
+                title: "Pilih Durasi Sewa",
+                text: "Silakan pilih paket durasi sewa sebelum memasukkan ke keranjang.",
+                icon: "info",
+                confirmText: "Oke, Paham"
+              });
+            } else {
+              alert("Silakan pilih paket durasi sewa terlebih dahulu.");
+            }
             return;
           }
           if (typeof tambahKeKeranjang === "function") {
             tambahKeKeranjang(currentAsset, selectedPaket);
-            alert(`✅ ${currentAsset.nama} (${selectedPaket.label}) berhasil dimasukkan ke keranjang sewa!`);
-            window.location.href = "1-katalog.html";
+            if (typeof modalNotif === "function") {
+              modalNotif({
+                title: "Masuk Keranjang!",
+                text: `${currentAsset.nama} (${selectedPaket.label}) berhasil ditambahkan ke keranjang sewa.`,
+                icon: "success",
+                timer: 1600,
+                onConfirm: () => { window.location.href = "1-katalog.html"; }
+              });
+              setTimeout(() => { window.location.href = "1-katalog.html"; }, 1600);
+            } else {
+              alert(`✅ ${currentAsset.nama} (${selectedPaket.label}) berhasil dimasukkan ke keranjang sewa!`);
+              window.location.href = "1-katalog.html";
+            }
           }
         });
       }

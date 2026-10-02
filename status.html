@@ -585,7 +585,16 @@
 
             // Pop-up Notifikasi langsung saat pengajuan baru saja di-ACC oleh admin
             if (oldStatus === 'pending' && (latest.status === 'active' || latest.status === 'booked')) {
-              alert("🎉 ALHAMDULILLAH! Pengajuan sewa Anda telah DISETUJUI (ACC) oleh pengurus!\n\nSilakan datang ke kantor Ma'had Aly Amtsilati untuk serah terima alat pada jam pengambilan. Harap membawa jaminan KTS / KTP Asli.");
+              if (typeof modalNotif === "function") {
+                modalNotif({
+                  title: "Alhamdulillah, Disetujui!",
+                  text: "Pengajuan sewa Anda telah DISETUJUI (ACC) oleh pengurus!\n\nSilakan datang ke kantor Ma'had Aly Amtsilati untuk serah terima alat pada jam pengambilan dengan membawa jaminan KTS / KTP Asli.",
+                  icon: "success",
+                  confirmText: "Alhamdulillah, Siap!"
+                });
+              } else {
+                alert("🎉 ALHAMDULILLAH! Pengajuan sewa Anda telah DISETUJUI (ACC) oleh pengurus!\n\nSilakan datang ke kantor Ma'had Aly Amtsilati untuk serah terima alat pada jam pengambilan. Harap membawa jaminan KTS / KTP Asli.");
+              }
             }
           }
         } catch (e) {}
@@ -1267,7 +1276,16 @@
       } else {
         itemsTerpilihPayload = [...multiItemPerpanjangData];
         if (itemsTerpilihPayload.length === 0) {
-          alert("Pilih minimal satu unit alat yang ingin diperpanjang!");
+          if (typeof modalNotif === "function") {
+            modalNotif({
+              title: "Pilih Unit Alat",
+              text: "Pilih minimal satu unit alat yang ingin diperpanjang durasinya.",
+              icon: "warning",
+              confirmText: "Pilih Alat"
+            });
+          } else {
+            alert("Pilih minimal satu unit alat yang ingin diperpanjang!");
+          }
           return;
         }
         jamTambahanPayload = Math.max(...itemsTerpilihPayload.map(i => i.jamTambahan));
