@@ -141,6 +141,41 @@
     <div class="card shadow-sm border-0 mb-4 card-ios-detail" id="cardCountdownAktif">
       <div class="card-body text-center p-3 p-sm-4">
         
+        <!-- Header Info Unit & Booking -->
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom flex-wrap gap-2 text-start" style="border-color: rgba(0, 102, 255, 0.12) !important;">
+          <div>
+            <span class="badge font-monospace text-white px-3 py-1 fw-bold mb-1" style="background: #0066ff;" id="viewBookingId">INV-0000</span>
+            <h5 class="fw-bolder text-dark mb-0" id="viewNamaBarang">-</h5>
+          </div>
+          <div class="text-end">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold" id="viewPaket">-</span>
+          </div>
+        </div>
+
+        <!-- Rincian Multi-Item Booking jika > 1 Aset -->
+        <div id="viewBoxMultiItem" class="mb-3 d-none text-start">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge text-white px-3 py-1 fw-bold" style="background: #0066ff;">
+              <i class="bi bi-basket3-fill me-1"></i> Rincian Aset Disewa (<span id="viewBadgeMultiCount">0</span>)
+            </span>
+            <span class="small text-muted fw-semibold">Multi-Booking</span>
+          </div>
+          <div class="table-responsive rounded-3 border bg-white shadow-sm mb-3">
+            <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.85rem;">
+              <thead class="table-light small">
+                <tr>
+                  <th class="ps-2">#</th>
+                  <th>Alat</th>
+                  <th>Paket</th>
+                  <th>Target Selesai</th>
+                  <th class="text-end pe-2">Biaya</th>
+                </tr>
+              </thead>
+              <tbody id="viewMultiItemBody"></tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- Banner Jika Status Masih Pending (Menunggu Konfirmasi) -->
         <div id="bannerMenungguPending" class="alert alert-warning border border-warning-subtle text-dark small text-start p-3 mb-3 rounded-3 d-none" style="background: rgba(254, 243, 199, 0.95);">
           <div class="d-flex align-items-center gap-2">
@@ -209,6 +244,9 @@
           <button type="button" class="btn btn-primary py-2 px-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-1" id="btnBukaModalPerpanjang" onclick="bukaModalPerpanjang()">
             <i class="bi bi-clock-history"></i> Ajukan Perpanjangan Waktu
           </button>
+          <a href="#" id="btnKeInvoice" class="btn btn-outline-primary py-2 px-3 fw-bold justify-content-center shadow-sm">
+            <i class="bi bi-receipt me-1"></i> Buka Invoice
+          </a>
           <a href="1-katalog.html" class="btn btn-back-ios py-2 px-3 fw-bold justify-content-center shadow-sm">
             <i class="bi bi-house-door me-1"></i> Kembali ke Katalog
           </a>
@@ -218,78 +256,6 @@
             <i class="bi bi-info-circle me-1" style="color: #0066ff;"></i> Bukti pelunasan & invoice resmi diterbitkan otomatis setelah unit dikembalikan ke pengurus.
           </small>
         </div>
-      </div>
-    </div>
-
-    <!-- Rincian Data Booking (iOS Glass Card) -->
-    <div class="card shadow-sm border-0 mb-4 card-ios-detail">
-      <div class="card-header py-3 d-flex justify-content-between align-items-center">
-        <h5 class="fw-bolder mb-0 text-dark">
-          <i class="bi bi-receipt me-2" style="color: #0066ff;"></i>Informasi Sewa Unit
-        </h5>
-        <span class="badge text-white px-3 py-2 rounded-pill fw-bold" style="background: #0066ff;" id="viewBookingId">INV-0000</span>
-      </div>
-      <div class="card-body p-3 p-sm-4">
-        <!-- Rincian Multi-Item Booking jika > 1 Aset -->
-        <div id="viewBoxMultiItem" class="mb-3 d-none">
-          <div class="d-flex align-items-center justify-content-between mb-2">
-            <span class="badge text-white px-3 py-1 fw-bold" style="background: #0066ff;">
-              <i class="bi bi-basket3-fill me-1"></i> Rincian Aset Disewa (<span id="viewBadgeMultiCount">0</span>)
-            </span>
-            <span class="small text-muted fw-semibold">Multi-Booking</span>
-          </div>
-          <div class="table-responsive rounded-3 border bg-white shadow-sm mb-3">
-            <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.85rem;">
-              <thead class="table-light small">
-                <tr>
-                  <th class="ps-2">#</th>
-                  <th>Alat</th>
-                  <th>Paket</th>
-                  <th>Target Selesai</th>
-                  <th class="text-end pe-2">Biaya</th>
-                </tr>
-              </thead>
-              <tbody id="viewMultiItemBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <table class="table table-borderless align-middle mb-0" style="table-layout: fixed; width: 100%; word-break: break-word;">
-          <tbody>
-            <tr style="background-color: rgba(255, 255, 255, 0.7);">
-              <td class="text-secondary small fw-bold" style="width: 38%;">Barang yang Disewa</td>
-              <td class="fw-bolder text-dark fs-6" id="viewNamaBarang">-</td>
-            </tr>
-            <tr style="background-color: rgba(248, 250, 252, 0.85);">
-              <td class="text-secondary small fw-bold">Durasi / Paket</td>
-              <td><span class="badge text-white px-3 py-1 fw-bold" style="background: #0066ff;" id="viewPaket">-</span></td>
-            </tr>
-            <tr style="background-color: rgba(255, 255, 255, 0.7);">
-              <td class="text-secondary small fw-bold">Biaya Sewa Pokok</td>
-              <td class="fw-bold fs-6" style="color: #0066ff;" id="viewBiayaSewa">-</td>
-            </tr>
-            <tr style="background-color: rgba(248, 250, 252, 0.85); border-top: 1px solid rgba(0, 102, 255, 0.1);">
-              <td class="text-secondary small fw-bold">Penyewa</td>
-              <td class="fw-bold text-dark" id="viewNama">-</td>
-            </tr>
-            <tr style="background-color: rgba(255, 255, 255, 0.7);">
-              <td class="text-secondary small fw-bold">No HP / WhatsApp</td>
-              <td class="text-dark fw-medium" id="viewNoWa">-</td>
-            </tr>
-            <tr style="background-color: rgba(248, 250, 252, 0.85);">
-              <td class="text-secondary small fw-bold">Media / Komunitas</td>
-              <td class="text-dark fw-medium" id="viewKomunitas">-</td>
-            </tr>
-            <tr style="background-color: rgba(255, 255, 255, 0.7);">
-              <td class="text-secondary small fw-bold">Asrama / Departemen</td>
-              <td class="text-dark fw-medium" id="viewDepartemen">-</td>
-            </tr>
-            <tr style="background-color: rgba(248, 250, 252, 0.85);">
-              <td class="text-secondary small fw-bold">Alamat Lengkap</td>
-              <td class="small text-dark fw-medium" id="viewAlamat">-</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
 
@@ -490,7 +456,10 @@
         document.getElementById("viewPaket").innerText = activeBooking.paketLabel || (activeBooking.paketJam ? (activeBooking.paketJam + " Jam") : (itemFirst ? (itemFirst.paketJam + " Jam") : "-"));
       }
 
-      document.getElementById("viewBiayaSewa").innerText = (activeBooking.isDinas || parseInt(activeBooking.biayaSewa || 0) === 0) ? "Gratis (Tugas Resmi Pondok)" : formatRupiah(activeBooking.biayaSewa || 0);
+      const elBiayaSewa = document.getElementById("viewBiayaSewa");
+      if (elBiayaSewa) {
+        elBiayaSewa.innerText = (activeBooking.isDinas || parseInt(activeBooking.biayaSewa || 0) === 0) ? "Gratis (Tugas Resmi Pondok)" : formatRupiah(activeBooking.biayaSewa || 0);
+      }
       let namaTampil = activeBooking.nama || "-";
       if (namaTampil.includes('***')) {
         const cur = typeof ambilDataBooking === "function" ? ambilDataBooking() : null;
@@ -503,18 +472,24 @@
       }
       namaTampil = namaTampil.replace(/\*+/g, '').trim();
       if (!namaTampil) namaTampil = "-";
-      document.getElementById("viewNama").innerText = namaTampil;
+      const elNama = document.getElementById("viewNama");
+      if (elNama) elNama.innerText = namaTampil;
       
       // Masking Privasi Nomor WhatsApp
       const rawWa = typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(activeBooking.noWa) : (activeBooking.noWa || "-");
       const maskedWa = (rawWa.length > 7) ? (rawWa.slice(0, 4) + '****' + rawWa.slice(-3)) : rawWa;
-      document.getElementById("viewNoWa").innerText = maskedWa;
+      const elNoWa = document.getElementById("viewNoWa");
+      if (elNoWa) elNoWa.innerText = maskedWa;
 
-      document.getElementById("viewKomunitas").innerText = activeBooking.komunitas || "-";
-      document.getElementById("viewDepartemen").innerText = activeBooking.departemen || "-";
+      const elKomunitas = document.getElementById("viewKomunitas");
+      if (elKomunitas) elKomunitas.innerText = activeBooking.komunitas || "-";
+      const elDepartemen = document.getElementById("viewDepartemen");
+      if (elDepartemen) elDepartemen.innerText = activeBooking.departemen || "-";
       let viewAmbilTeks = activeBooking.waktuAmbil;
       if (!viewAmbilTeks && activeBooking.waktuAmbilRaw && typeof formatWaktuIndo === "function") {
-        viewAmbilTeks = formatWaktuIndo(activeBooking.waktuAmbilRaw) + " WIB";
+        viewAmbilTeks = formatWaktuIndo(activeBooking.waktuAmbilRaw);
+      } else if (viewAmbilTeks && typeof formatWaktuIndo === "function") {
+        viewAmbilTeks = formatWaktuIndo(viewAmbilTeks);
       }
       document.getElementById("viewWaktuAmbil").innerText = viewAmbilTeks || "-";
 
@@ -522,11 +497,13 @@
       if (isMulti) {
         const semuaSelesaiSama = activeBooking.items.every(it => (it.waktuSelesai || it.waktuSelesaiRaw) === (activeBooking.items[0].waktuSelesai || activeBooking.items[0].waktuSelesaiRaw));
         if (!semuaSelesaiSama) {
-          viewKembaliTeks = `Bervariasi (Maksimal: ${activeBooking.waktuSelesai || '-'})`;
+          viewKembaliTeks = `Bervariasi (Maksimal: ${typeof formatWaktuIndo === "function" ? formatWaktuIndo(activeBooking.waktuSelesai) : (activeBooking.waktuSelesai || '-')})`;
         }
       }
       if (!viewKembaliTeks && activeBooking.waktuSelesaiRaw && typeof formatWaktuIndo === "function") {
-        viewKembaliTeks = formatWaktuIndo(activeBooking.waktuSelesaiRaw) + " WIB";
+        viewKembaliTeks = formatWaktuIndo(activeBooking.waktuSelesaiRaw);
+      } else if (viewKembaliTeks && typeof formatWaktuIndo === "function" && !viewKembaliTeks.includes("Bervariasi")) {
+        viewKembaliTeks = formatWaktuIndo(viewKembaliTeks);
       }
       document.getElementById("viewWaktuKembali").innerText = viewKembaliTeks || "-";
 
@@ -901,7 +878,9 @@
       document.getElementById("mpBookingId").innerText = activeBooking.bookingId || "INV-0000";
 
       let batasSaatIniTeks = activeBooking.waktuSelesai || "-";
-      if ((!batasSaatIniTeks || batasSaatIniTeks === "-") && activeBooking.waktuSelesaiRaw && typeof formatWaktuIndo === "function") {
+      if (typeof formatWaktuIndo === "function" && batasSaatIniTeks !== "-") {
+        batasSaatIniTeks = formatWaktuIndo(batasSaatIniTeks);
+      } else if ((!batasSaatIniTeks || batasSaatIniTeks === "-") && activeBooking.waktuSelesaiRaw && typeof formatWaktuIndo === "function") {
         batasSaatIniTeks = formatWaktuIndo(activeBooking.waktuSelesaiRaw);
       }
       document.getElementById("mpBatasSaatIni").innerText = batasSaatIniTeks || "-";
@@ -1026,7 +1005,7 @@
         const newEnd = new Date(baseEnd.getTime() + (jamTambahan * 3600 * 1000));
         waktuSelesaiBaruCalculated = newEnd;
 
-        const batasBaruTeks = typeof formatWaktuIndo === "function" ? formatWaktuIndo(newEnd) : newEnd.toLocaleString('id-ID');
+        const batasBaruTeks = typeof formatWaktuIndo === "function" ? formatWaktuIndo(newEnd) : (newEnd.toLocaleString('id-ID') + ' WIB');
         document.getElementById("mpBatasBaru").innerText = batasBaruTeks;
 
         // Biaya Tambahan
@@ -1212,7 +1191,7 @@
         biayaTambahanCalculated = totalBiayaTambahan;
         if (maxNewEndTime > 0) {
           waktuSelesaiBaruCalculated = new Date(maxNewEndTime);
-          document.getElementById("mpBatasBaru").innerText = typeof formatWaktuIndo === "function" ? formatWaktuIndo(waktuSelesaiBaruCalculated) : waktuSelesaiBaruCalculated.toLocaleString('id-ID');
+          document.getElementById("mpBatasBaru").innerText = typeof formatWaktuIndo === "function" ? formatWaktuIndo(waktuSelesaiBaruCalculated) : (waktuSelesaiBaruCalculated.toLocaleString('id-ID') + ' WIB');
         }
 
         if (activeBooking.isDinas || parseInt(activeBooking.biayaSewa || 0) === 0) {

@@ -1056,8 +1056,8 @@ async function accBookingAdminAsync(bookingId, opsi = {}) {
                 const tSelesai = new Date(now.getTime() + durasiMs);
                 item.waktuAmbilRaw = now.toISOString();
                 item.waktuSelesaiRaw = tSelesai.toISOString();
-                item.waktuAmbil = (typeof formatWaktuIndo === 'function' ? formatWaktuIndo(now) : now.toLocaleString('id-ID')) + ' WIB';
-                item.waktuSelesai = (typeof formatWaktuIndo === 'function' ? formatWaktuIndo(tSelesai) : tSelesai.toLocaleString('id-ID')) + ' WIB';
+                item.waktuAmbil = typeof formatWaktuIndo === 'function' ? formatWaktuIndo(now) : (now.toLocaleString('id-ID') + ' WIB');
+                item.waktuSelesai = typeof formatWaktuIndo === 'function' ? formatWaktuIndo(tSelesai) : (tSelesai.toLocaleString('id-ID') + ' WIB');
                 item.handoverRiil = true;
             }
 
@@ -2012,6 +2012,27 @@ function cariAset(id) {
 
 function formatWaktuIndo(dateInput) {
     if (!dateInput) return "-";
+    if (typeof dateInput === "string") {
+        const trimmed = dateInput.trim();
+        if (/\bWIB\b/i.test(trimmed)) {
+            return trimmed.replace(/\s*WIB(\s*WIB)+/gi, " WIB");
+        }
+        const parsed = new Date(trimmed);
+        if (!isNaN(parsed.getTime())) {
+            const pad = n => String(n).padStart(2, "0");
+            const tgl = pad(parsed.getDate());
+            const bln = pad(parsed.getMonth() + 1);
+            const thn = parsed.getFullYear();
+            const jam = pad(parsed.getHours());
+            const mnt = pad(parsed.getMinutes());
+            return `${tgl}/${bln}/${thn} ${jam}:${mnt} WIB`;
+        }
+        if (/^\d{1,2}:\d{2}$/.test(trimmed)) {
+            return `${trimmed} WIB`;
+        }
+        return `${trimmed} WIB`;
+    }
+
     const date = new Date(dateInput);
     if (isNaN(date.getTime())) return String(dateInput);
 

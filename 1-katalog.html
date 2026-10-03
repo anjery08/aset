@@ -82,23 +82,9 @@
 
     <!-- Header Banner iOS Frosted Glass -->
     <div class="hero-banner-ios mb-4">
-      <div class="row align-items-center">
-        <div class="col-lg-8">
-          <h2 class="fw-bolder mb-0 text-dark" style="letter-spacing: -0.4px;">
-            Peminjaman dan Penyewaan Aset Ma'had Aly Amtsilati
-          </h2>
-        </div>
-        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-          <div class="d-inline-flex flex-column align-items-lg-end gap-2">
-            <span class="badge badge-magenta badge-ios-glass px-3 py-2 rounded-3 shadow-sm fs-6">
-              <i class="bi bi-card-checklist me-1"></i> Jaminan KTP / KTS / KTM Asli
-            </span>
-            <span class="badge badge-cyan badge-ios-glass px-3 py-1 rounded-pill fw-bold small">
-              <i class="bi bi-clock-history me-1"></i> Toleransi 15 Menit • Denda Rp 10.000 / Jam
-            </span>
-          </div>
-        </div>
-      </div>
+      <h2 class="fw-bolder mb-0 text-dark" style="letter-spacing: -0.4px;">
+        Peminjaman dan Penyewaan Aset Ma'had Aly Amtsilati
+      </h2>
     </div>
 
     <!-- Filter Kategori & Search Toolbar (iOS Glass Segmented Control) -->
@@ -305,29 +291,32 @@
     </div>
   </div>
 
-  <!-- Floating Glass Cart Bar (Gaya A) -->
-  <div class="floating-cart-bar px-3 py-2 px-sm-4 py-sm-3 d-flex align-items-center justify-content-between shadow-lg" id="floatingCartBar">
-    <div class="d-flex align-items-center gap-2 gap-sm-3" style="cursor: pointer;" onclick="bukaModalKeranjang()">
-      <div class="position-relative">
-        <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 44px; height: 44px; background: #d60099 !important;">
-          <i class="bi bi-cart3 fs-5 text-white" style="color: #ffffff !important;"></i>
+  <!-- Floating Glass Cart Bar (Sleek & Mobile Friendly) -->
+  <div class="floating-cart-bar px-3 py-2 px-sm-4 py-sm-2 d-flex align-items-center justify-content-between shadow-lg" id="floatingCartBar">
+    <div class="d-flex align-items-center gap-2 gap-sm-3" style="cursor: pointer;" onclick="bukaModalKeranjang()" title="Lihat Rincian Keranjang">
+      <div class="position-relative flex-shrink-0">
+        <div class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm" style="width: 38px; height: 38px; background: #d60099 !important;">
+          <i class="bi bi-cart3 fs-6 text-white" style="color: #ffffff !important;"></i>
         </div>
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" id="floatingCartBadge">
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" id="floatingCartBadge" style="font-size: 0.68rem; padding: 0.22em 0.45em;">
           0
         </span>
       </div>
-      <div>
-        <div class="small text-muted fw-bold lh-1 mb-1">
-          <span id="floatingCartCount">0</span> Alat Dipilih
+      <div class="text-nowrap" style="line-height: 1.15;">
+        <div class="small text-muted fw-bold mb-0" style="font-size: 0.75rem;">
+          <span id="floatingCartCount">0</span> Alat
         </div>
         <strong class="text-dark fs-6" id="floatingCartTotal">Rp 0</strong>
       </div>
     </div>
-    <div class="d-flex gap-2">
-      <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-bold d-none d-sm-inline-flex align-items-center" onclick="bukaModalKeranjang()">
-        Rincian
+    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+      <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-bold d-none d-sm-inline-flex align-items-center gap-1 shadow-sm bg-white" onclick="bukaModalKeranjang()">
+        <i class="bi bi-cart3"></i> <span>Lihat Keranjang</span>
       </button>
-      <button type="button" class="btn btn-ios-checkout btn-sm rounded-pill px-3 px-sm-4 py-2 fw-bold d-inline-flex align-items-center gap-1 shadow-sm text-white" onclick="lanjutBookingDariKeranjang()" style="background: #d60099 !important; border: none !important; color: #ffffff !important;">
+      <button type="button" class="btn btn-outline-secondary btn-sm rounded-circle d-inline-flex d-sm-none align-items-center justify-content-center bg-white shadow-sm" onclick="bukaModalKeranjang()" title="Lihat Keranjang" style="width: 36px; height: 36px; min-width: 36px;">
+        <i class="bi bi-cart3 text-dark"></i>
+      </button>
+      <button type="button" class="btn btn-ios-checkout btn-sm rounded-pill px-3 px-sm-4 py-2 fw-bold d-inline-flex align-items-center gap-1 shadow-sm text-white" onclick="lanjutBookingDariKeranjang()" style="background: #d60099 !important; border: none !important; color: #ffffff !important; white-space: nowrap;">
         <span class="text-white" style="color: #ffffff !important;">Lanjut Booking</span>
         <i class="bi bi-arrow-right text-white" style="color: #ffffff !important;"></i>
       </button>
@@ -371,6 +360,7 @@
 
       renderFilterKategoriButtons();
       renderKatalog();
+      updateTampilanKeranjangBar();
 
       // Sinkronisasi data aset & kategori dari server database hosting
       if (typeof sinkronisasiDataServerLatarBelakang === "function") {
@@ -513,12 +503,12 @@
                 <span class="asset-price-value">${hargaTeks}</span>
               </div>
 
-              <div class="d-flex gap-2">
-                <a href="2-detail.html?id=${item.id}" class="btn btn-ios-primary flex-grow-1 btn-asset-detail fw-bold py-2" onclick="pilihItem('${item.id}')">
-                  Lihat Detail
+              <div class="d-flex gap-2 align-items-center">
+                <a href="2-detail.html?id=${item.id}" class="btn btn-ios-primary flex-grow-1 btn-asset-detail fw-bold py-2 d-inline-flex align-items-center justify-content-center gap-1 shadow-sm" onclick="pilihItem('${item.id}')" title="Lihat paket & spesifikasi lengkap">
+                  <i class="bi bi-eye"></i> <span>Detail</span>
                 </a>
-                <button type="button" class="btn btn-ios-quickadd" onclick="bukaQuickAddModal('${item.id}')" title="Pilih Durasi & Masukkan ke Keranjang">
-                  <i class="bi bi-plus-lg"></i>
+                <button type="button" class="btn btn-ios-quickadd shadow-sm d-inline-flex align-items-center justify-content-center" onclick="bukaQuickAddModal('${item.id}')" title="Masukkan ke Keranjang (Sewa > 1 unit)">
+                  <i class="bi bi-cart-plus-fill fs-6"></i>
                 </button>
               </div>
             </div>
@@ -962,10 +952,6 @@
 
     // Dengarkan event sinkronisasi keranjang
     window.addEventListener("keranjang-diperbarui", () => {
-      updateTampilanKeranjangBar();
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
       updateTampilanKeranjangBar();
     });
   </script>

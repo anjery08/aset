@@ -312,6 +312,43 @@ function kirimWaGateway($nomorTujuan, $pesan, $customSessionId = null) {
     ];
 }
 
+// Helper format waktu & jam standar Indonesia (contoh: 03/10/2026 14:58 WIB atau 14:58 WIB)
+function formatWaktuWibPhp($val) {
+    if (empty($val) || $val === '-') return '-';
+    if (!is_string($val)) return (string)$val;
+    $val = trim($val);
+
+    // Jika sudah ada WIB di dalamnya:
+    if (preg_match('/\bWIB\b/i', $val)) {
+        return preg_replace('/\s*WIB(\s*WIB)+/i', ' WIB', $val);
+    }
+
+    // Jika format ISO (misal 2026-10-03T07:58:56.709Z atau 2026-10-03 14:58:00)
+    if (preg_match('/^\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}/', $val)) {
+        $ts = strtotime($val);
+        if ($ts !== false && $ts > 0) {
+            return date('d/m/Y H:i', $ts) . ' WIB';
+        }
+    }
+
+    // Jika format d/m/Y H:i (misal 03/10/2026 14:58)
+    if (preg_match('/^\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}$/', $val)) {
+        return $val . ' WIB';
+    }
+
+    // Jika hanya jam:menit (misal 14:58)
+    if (preg_match('/^\d{1,2}:\d{2}$/', $val)) {
+        return $val . ' WIB';
+    }
+
+    $ts = strtotime($val);
+    if ($ts !== false && $ts > 0) {
+        return date('d/m/Y H:i', $ts) . ' WIB';
+    }
+
+    return $val . ' WIB';
+}
+
 // Helper format rincian daftar aset untuk pesan WhatsApp
 function formatRincianAsetWa($booking) {
     if (!empty($booking['items']) && is_array($booking['items']) && count($booking['items']) > 1) {
@@ -320,7 +357,8 @@ function formatRincianAsetWa($booking) {
             $n = $it['namaBarang'] ?? ($it['nama'] ?? 'Aset');
             $p = !empty($it['paketJam']) ? " ({$it['paketJam']} Jam)" : "";
             $b = isset($it['biaya']) ? (" - Rp " . number_format(intval($it['biaya']), 0, ',', '.')) : "";
-            $lines[] = "  " . ($idx + 1) . ". *{$n}*{$p}{$b}";
+            $w = !empty($it['waktuSelesai']) ? (" [s.d " . formatWaktuWibPhp($it['waktuSelesai']) . "]") : "";
+            $lines[] = "  " . ($idx + 1) . ". *{$n}*{$p}{$b}{$w}";
         }
         return implode("\n", $lines);
     }
@@ -338,8 +376,8 @@ function kirimNotifBookingBaru($booking) {
     $nama = $booking['nama'] ?? 'Santri';
     $noWa = $booking['noWa'] ?? '';
     $namaBarang = $booking['namaBarang'] ?? 'Aset';
-    $waktuAmbil = $booking['waktuAmbil'] ?? '-';
-    $waktuKembali = $booking['waktuSelesai'] ?? '-';
+    $waktuAmbil = formatWaktuWibPhp($booking['waktuAmbil'] ?? $booking['waktuAmbilRaw'] ?? '-');
+    $waktuKembali = formatWaktuWibPhp($booking['waktuSelesai'] ?? $booking['waktuSelesaiRaw'] ?? '-');
     $komunitas = $booking['komunitas'] ?? ($booking['departemen'] ?? '-');
 
     $isMulti = (!empty($booking['items']) && is_array($booking['items']) && count($booking['items']) > 1);
@@ -461,8 +499,8 @@ function kirimNotifBookingAcc($booking) {
     $bId = $booking['bookingId'] ?? 'INV-0000';
     $nama = $booking['nama'] ?? 'Santri';
     $namaBarang = $booking['namaBarang'] ?? 'Aset';
-    $waktuAmbil = $booking['waktuAmbil'] ?? '-';
-    $waktuKembali = $booking['waktuSelesai'] ?? '-';
+    $waktuAmbil = formatWaktuWibPhp($booking['waktuAmbil'] ?? $booking['waktuAmbilRaw'] ?? '-');
+    $waktuKembali = formatWaktuWibPhp($booking['waktuSelesai'] ?? $booking['waktuSelesaiRaw'] ?? '-');
 
     $isMulti = (!empty($booking['items']) && is_array($booking['items']) && count($booking['items']) > 1);
     $daftarAsetTeks = formatRincianAsetWa($booking);
@@ -563,7 +601,8 @@ function kirimNotifBookingKembali($booking) {
     $totalTeks = ($total === 0) ? "LUNAS (Bebas Biaya / Rp 0)" : "LUNAS (Rp " . number_format($total, 0, ',', '.') . ")";
 
     $linkInvoice = $baseUrl . '/invoice.html?id=' . urlencode($bId);
-    $waktuKembali = $booking['waktuDikembalikan'] ?? date('d/m/Y H:i');
+    $rawKembali = $booking['waktuDikembalikan'] ?? '';
+    $waktuKembali = formatWaktuWibPhp(!empty($rawKembali) ? $rawKembali : date('Y-m-d H:i:s'));
 
     if ($isMulti) {
         $pesan = "Assalamu'alaikum wr. wb. Saudara/i *{$nama}*,\n\n" .
@@ -609,8 +648,8 @@ function kirimNotifPengajuanPerpanjangan($booking, $pengajuan) {
     $noWa = $booking['noWa'] ?? '-';
     $namaBarang = $booking['namaBarang'] ?? 'Aset';
     $jamTambahan = $pengajuan['jamTambahan'] ?? 0;
-    $batasLama = $pengajuan['waktuSelesaiSemula'] ?? ($booking['waktuSelesai'] ?? '-');
-    $batasBaru = $pengajuan['waktuSelesaiBaru'] ?? '-';
+    $batasLama = formatWaktuWibPhp($pengajuan['waktuSelesaiSemula'] ?? ($booking['waktuSelesai'] ?? '-'));
+    $batasBaru = formatWaktuWibPhp($pengajuan['waktuSelesaiBaru'] ?? '-');
     $biayaTambahanTeks = $pengajuan['biayaTambahanTeks'] ?? 'Rp 0';
     $catatan = !empty($pengajuan['catatan']) ? "\n- Alasan/Catatan: _{$pengajuan['catatan']}_" : "";
     $baseUrl = ambilBaseUrlWebsite();
@@ -621,7 +660,7 @@ function kirimNotifPengajuanPerpanjangan($booking, $pengajuan) {
         foreach ($pengajuan['itemsTerpilih'] as $it) {
             $nBarang = $it['namaBarang'] ?? 'Aset';
             $jTambahan = $it['jamTambahan'] ?? 0;
-            $wBaru = $it['waktuSelesaiBaru'] ?? '-';
+            $wBaru = formatWaktuWibPhp($it['waktuSelesaiBaru'] ?? '-');
             $bTambahan = $it['biayaTambahanTeks'] ?? '';
             $lines[] = "  • *{$nBarang}* : +{$jTambahan} Jam (s.d {$wBaru}) [{$bTambahan}]";
         }
@@ -746,6 +785,25 @@ switch ($action) {
         if (!empty($input['asetId'])) $input['asetId'] = sanitasiString($input['asetId']);
         if (!empty($input['namaBarang'])) $input['namaBarang'] = sanitasiString($input['namaBarang']);
         
+        // Pastikan format waktu selalu standar Indonesia dengan WIB (contoh: 03/10/2026 14:58 WIB)
+        if (!empty($input['waktuAmbil'])) {
+            $input['waktuAmbil'] = formatWaktuWibPhp($input['waktuAmbil']);
+        }
+        if (!empty($input['waktuSelesai'])) {
+            $input['waktuSelesai'] = formatWaktuWibPhp($input['waktuSelesai']);
+        }
+        if (!empty($input['waktuDikembalikan'])) {
+            $input['waktuDikembalikan'] = formatWaktuWibPhp($input['waktuDikembalikan']);
+        }
+        if (!empty($input['items']) && is_array($input['items'])) {
+            foreach ($input['items'] as &$itSync) {
+                if (!empty($itSync['waktuSelesai'])) {
+                    $itSync['waktuSelesai'] = formatWaktuWibPhp($itSync['waktuSelesai']);
+                }
+            }
+            unset($itSync);
+        }
+
         $bookings = bacaJson($fileBookings, []);
 
         // Pastikan memiliki ID Unik dan Timestamp
@@ -981,7 +1039,7 @@ switch ($action) {
         }
         $bookings = bacaJson($fileBookings, []);
         $newList = array_values(array_filter($bookings, function($b) use ($bookingId) {
-            return ($b['bookingId'] ?? '') !== $bookingId;
+            return (strcasecmp($b['bookingId'] ?? '', $bookingId) !== 0 && strcasecmp($b['id'] ?? '', $bookingId) !== 0);
         }));
         tulisJson($fileBookings, $newList);
         echo json_encode(['success' => true, 'message' => 'Booking berhasil dihapus dari server']);
@@ -1163,7 +1221,7 @@ switch ($action) {
         $found = false;
         $targetBookingTolak = null;
         foreach ($bookings as &$b) {
-            if (($b['bookingId'] ?? '') === $bId) {
+            if (strcasecmp($b['bookingId'] ?? '', $bId) === 0 || strcasecmp($b['id'] ?? '', $bId) === 0) {
                 $b['status'] = 'rejected';
                 $b['alasanTolak'] = $alasan;
                 $b['waktuDitolak'] = date('Y-m-d H:i:s');
@@ -1212,7 +1270,7 @@ switch ($action) {
         $found = false;
         $targetBookingAcc = null;
         foreach ($bookings as &$b) {
-            if (($b['bookingId'] ?? '') === $bId) {
+            if (strcasecmp($b['bookingId'] ?? '', $bId) === 0 || strcasecmp($b['id'] ?? '', $bId) === 0) {
                 $b['status'] = 'active';
                 $b['waktuDiAcc'] = date('Y-m-d H:i:s');
                 if ($isDinas) {
@@ -1361,9 +1419,9 @@ switch ($action) {
         $asetIdTerkait = '';
         $targetBookingKembali = null;
         foreach ($bookings as &$b) {
-            if (($b['bookingId'] ?? '') === $bId) {
+            if (strcasecmp($b['bookingId'] ?? '', $bId) === 0 || strcasecmp($b['id'] ?? '', $bId) === 0) {
                 $b['status'] = 'completed';
-                $b['waktuDikembalikan'] = $input['waktuDikembalikan'] ?? date('Y-m-d H:i:s');
+                $b['waktuDikembalikan'] = formatWaktuWibPhp($input['waktuDikembalikan'] ?? date('Y-m-d H:i:s'));
                 $b['dendaKeterlambatan'] = intval($input['dendaKeterlambatan'] ?? 0);
                 $b['dendaKerusakan'] = intval($input['dendaKerusakan'] ?? 0);
                 $b['denda'] = $b['dendaKeterlambatan'] + $b['dendaKerusakan'];
@@ -1454,7 +1512,7 @@ switch ($action) {
         $cfg = bacaJson($fileSettings, []);
         $gw = $cfg['waGateway'] ?? [];
         $target = trim($input['target'] ?? ($gw['phoneAdmin'] ?? '6287748921490'));
-        $pesan = trim($input['pesan'] ?? "✅ *Tes Notifikasi WhatsApp Otomatis*\n\nSistem Peminjaman Aset & Inventaris Ma'had Aly Amtsilati berhasil terhubung dengan sesi WhatsApp Multi!\n\n- Sesi: " . ($gw['sessionName'] ?? "Admin Ma'had Aly Amtsilati") . "\n- Waktu: " . date('d/m/Y H:i:s') . " WIB\n\nSemua notifikasi booking baru, persetujuan (ACC), penolakan, dan pengembalian siap berjalan otomatis. 🚀");
+        $pesan = trim($input['pesan'] ?? "✅ *Tes Notifikasi WhatsApp Otomatis*\n\nSistem Peminjaman Aset & Inventaris Ma'had Aly Amtsilati berhasil terhubung dengan sesi WhatsApp Multi!\n\n- Sesi: " . ($gw['sessionName'] ?? "Admin Ma'had Aly Amtsilati") . "\n- Waktu: " . date('d/m/Y H:i') . " WIB\n\nSemua notifikasi booking baru, persetujuan (ACC), penolakan, dan pengembalian siap berjalan otomatis. 🚀");
         
         $hasil = kirimWaGateway($target, $pesan);
         echo json_encode([

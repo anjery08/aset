@@ -310,12 +310,9 @@
         <strong class="text-dark d-block mb-1">
           <i class="bi bi-shield-check me-1" style="color: #0066ff;"></i> Kesepakatan & Tanggung Jawab Penyewa:
         </strong>
-        <p class="mb-1 text-dark fst-italic" style="font-size: 0.82rem;">
-          "Penyewa bertanggung jawab penuh atas keutuhan alat, penggunaan secara wajar, serta bersedia menanggung denda keterlambatan dan biaya perbaikan apabila terjadi kerusakan atau kehilangan."
+        <p class="mb-0 text-dark fst-italic" style="font-size: 0.82rem;">
+          "Penyewa bertanggung jawab penuh atas keutuhan dan kebersihan alat inventaris, menggunakan secara wajar, serta menyelesaikan pembayaran dan serah terima unit tepat waktu kepada pengurus."
         </p>
-        <div class="text-secondary" style="font-size: 0.76rem;">
-          &bull; Biaya sewa pokok diselesaikan saat pengembalian unit &bull; Toleransi kembali 15 menit, keterlambatan dikenakan denda Rp 10.000 / Jam (kelipatan) &bull; Jaminan KTP / KTS / KTM Asli.
-        </div>
       </div>
 
       <!-- Kolom Tanda Tangan -->
@@ -500,7 +497,9 @@
 
       let waktuAmbilTeks = booking.waktuAmbil;
       if (!waktuAmbilTeks && booking.waktuAmbilRaw && typeof formatWaktuIndo === "function") {
-        waktuAmbilTeks = formatWaktuIndo(booking.waktuAmbilRaw) + " WIB";
+        waktuAmbilTeks = formatWaktuIndo(booking.waktuAmbilRaw);
+      } else if (waktuAmbilTeks && typeof formatWaktuIndo === "function") {
+        waktuAmbilTeks = formatWaktuIndo(waktuAmbilTeks);
       }
       document.getElementById("invWaktuAmbil").innerText = waktuAmbilTeks || "-";
 
@@ -509,11 +508,13 @@
       if (isMulti) {
         const semuaSelesaiSama = booking.items.every(it => (it.waktuSelesai || it.waktuSelesaiRaw) === (booking.items[0].waktuSelesai || booking.items[0].waktuSelesaiRaw));
         if (!semuaSelesaiSama) {
-          waktuKembaliTeks = `Bervariasi (Maksimal: ${booking.waktuSelesai || '-'})`;
+          waktuKembaliTeks = `Bervariasi (Maksimal: ${typeof formatWaktuIndo === "function" ? formatWaktuIndo(booking.waktuSelesai) : (booking.waktuSelesai || '-')})`;
         }
       }
       if (!waktuKembaliTeks && booking.waktuSelesaiRaw && typeof formatWaktuIndo === "function") {
-        waktuKembaliTeks = formatWaktuIndo(booking.waktuSelesaiRaw) + " WIB";
+        waktuKembaliTeks = formatWaktuIndo(booking.waktuSelesaiRaw);
+      } else if (waktuKembaliTeks && typeof formatWaktuIndo === "function" && !waktuKembaliTeks.includes("Bervariasi")) {
+        waktuKembaliTeks = formatWaktuIndo(waktuKembaliTeks);
       }
       document.getElementById("invWaktuKembali").innerText = waktuKembaliTeks || "-";
 

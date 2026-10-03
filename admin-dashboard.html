@@ -1600,7 +1600,7 @@
               <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2 me-1" onclick="bukaModalTolakBooking('${bId}')" title="Tolak Pengajuan">
                 <i class="bi bi-x-circle me-1"></i> Tolak
               </button>
-              <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-sm btn-outline-success py-1 px-2" title="Chat WhatsApp">
+              <a href="https://wa.me/${noTujuan}" target="_blank" class="btn btn-sm btn-outline-success py-1 px-2" title="Chat WhatsApp Penyewa">
                 <i class="bi bi-whatsapp"></i>
               </a>
             </td>
@@ -1620,7 +1620,7 @@
             </div>
             <div class="mb-2">
               <strong class="text-dark fs-6 d-block">${safeNama}</strong>
-              <small class="text-secondary">${typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(b.noWa) : safeNoWa} &bull; ${safeKomunitas}</small>
+              <small class="text-secondary">${typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(b.noWa) : safeNoWa} &bull; ${safeKomunitas} <a href="https://wa.me/${noTujuan}" target="_blank" class="text-success ms-1" title="Chat WA"><i class="bi bi-whatsapp"></i></a></small>
             </div>
             <div class="p-2 rounded bg-light border mb-3 small">
               <div class="d-flex justify-content-between py-1 border-bottom">
@@ -1645,18 +1645,13 @@
               </div>
             </div>
             <!-- Tombol Aksi Simetris Rapi -->
-            <div class="d-flex gap-2 mb-2">
+            <div class="d-flex gap-2">
               <button type="button" class="btn btn-primary flex-grow-1 fw-bold shadow-sm py-2" onclick="bukaModalAccBooking('${bId}')">
                 <i class="bi bi-patch-check-fill me-1"></i> ACC Sewa
               </button>
               <button type="button" class="btn btn-outline-danger fw-bold px-3 py-2" onclick="bukaModalTolakBooking('${bId}')">
                 <i class="bi bi-x-circle me-1"></i> Tolak
               </button>
-            </div>
-            <div>
-              <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-outline-success w-100 btn-sm fw-bold py-2 text-center">
-                <i class="bi bi-whatsapp me-1"></i> Hubungi Pemohon via WhatsApp
-              </a>
             </div>
           `;
           mobileContainer.appendChild(card);
@@ -2501,7 +2496,7 @@
               </div>
               ${barangMonitoringHtml}
               <div class="small text-secondary mb-2">
-                Penyewa: <strong class="text-dark">${safeNama}</strong> (${safeNoWa}) ${badgeJaminan}
+                Penyewa: <strong class="text-dark">${safeNama}</strong> (${safeNoWa} <a href="https://wa.me/${noTujuan}" target="_blank" class="text-success ms-1" title="Chat WhatsApp"><i class="bi bi-whatsapp"></i></a>) ${badgeJaminan}
               </div>
               <div class="p-2 rounded bg-light border small mb-3">
                 <div class="d-flex justify-content-between py-1 border-bottom">
@@ -2520,24 +2515,21 @@
 
               ${perpanjanganAlertHtml}
 
-              <!-- Baris 1: Tombol Aksi Utama (Terima Pengembalian Fisik) -->
+              <!-- Baris 1: Tombol Aksi Utama (Selesaikan Pengembalian) -->
               <button type="button" class="btn btn-success w-100 fw-bold py-2 mb-2 shadow-sm" onclick="selesaikanPenyewaan('${bId}')">
-                <i class="bi bi-box-arrow-in-down me-1"></i> Terima Pengembalian Fisik
+                <i class="bi bi-box-arrow-in-down me-1"></i> Selesaikan Pengembalian
               </button>
 
               <!-- Baris 2: Tombol Pendukung Sejajar Rapi & Simetris -->
               <div class="d-flex gap-2">
-                <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-sm btn-outline-success flex-fill fw-bold py-2 text-center" title="Chat WhatsApp">
-                  <i class="bi bi-whatsapp me-1"></i> Hubungi WA
-                </a>
                 <a href="status.html?id=${encodeURIComponent(bId)}" target="_blank" class="btn btn-sm btn-outline-primary flex-fill fw-bold py-2 text-center" title="Buka Countdown">
                   <i class="bi bi-clock-history me-1"></i> Countdown
                 </a>
                 <a href="invoice.html?id=${encodeURIComponent(bId)}" target="_blank" class="btn btn-sm btn-outline-dark flex-fill fw-bold py-2 text-center" title="Bukti Invoice">
                   <i class="bi bi-file-earmark-pdf me-1"></i> Invoice
                 </a>
-                <button type="button" class="btn btn-sm btn-outline-danger px-2 py-2" onclick="bukaModalTolakBooking('${bId}')" title="Batalkan Sewa">
-                  <i class="bi bi-x-lg"></i>
+                <button type="button" class="btn btn-sm btn-outline-danger px-3 py-2 fw-bold" onclick="bukaModalTolakBooking('${bId}')" title="Batalkan Sewa">
+                  <i class="bi bi-x-circle me-1"></i> Batalkan
                 </button>
               </div>
             </div>
@@ -2720,9 +2712,6 @@
             <td class="text-end text-nowrap">
               <div class="mb-1">${statusTag} ${buktiFotoBadge}</div>
               ${aksiSelesaiDesktop}
-              <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-sm btn-outline-success py-1 px-2 me-1" title="Hubungi Penyewa via WhatsApp">
-                <i class="bi bi-whatsapp"></i>
-              </a>
               <a href="status.html?id=${encodeURIComponent(bId)}" target="_blank" class="btn btn-sm btn-outline-primary py-1 px-2 me-1" title="Buka Countdown">
                 <i class="bi bi-clock-history"></i>
               </a>
@@ -2730,6 +2719,9 @@
               <a href="invoice.html?id=${encodeURIComponent(bId)}" target="_blank" class="btn btn-sm btn-metahati py-1 px-2 me-1" title="Cetak Invoice PDF">
                 <i class="bi bi-file-earmark-pdf"></i>
               </a>` : ''}
+              <a href="https://wa.me/${noTujuan}" target="_blank" class="btn btn-sm btn-outline-success py-1 px-2 me-1" title="Chat WA Penyewa">
+                <i class="bi bi-whatsapp"></i>
+              </a>
               <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
                 <i class="bi bi-trash"></i>
               </button>
@@ -2751,27 +2743,21 @@
                 <a href="invoice.html?id=${encodeURIComponent(bId)}" target="_blank" class="btn btn-metahati flex-grow-1 fw-bold py-2 text-center shadow-sm">
                   <i class="bi bi-file-earmark-pdf me-1"></i> Cetak Invoice PDF
                 </a>
-                <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-outline-success fw-bold px-3 py-2 text-center" title="Chat WhatsApp">
-                  <i class="bi bi-whatsapp"></i>
-                </a>
+                <button type="button" class="btn btn-sm btn-outline-danger px-3 py-2" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
+                  <i class="bi bi-trash"></i>
+                </button>
               </div>
               <div class="d-flex gap-2">
                 <button type="button" class="btn btn-sm btn-outline-warning flex-fill py-2 fw-bold" onclick="batalkanSelesaiPenyewaan('${bId}')">
-                  <i class="bi bi-arrow-counterclockwise me-1"></i> Batal Status Selesai
-                </button>
-                <button type="button" class="btn btn-sm btn-outline-danger px-3 py-2" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
-                  <i class="bi bi-trash"></i>
+                  <i class="bi bi-arrow-counterclockwise me-1"></i> Batal Status Selesai (Undo)
                 </button>
               </div>
             `;
           } else if (isDitolak) {
             aksiMobile = `
-              <div class="d-flex gap-2">
-                <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-outline-success flex-fill fw-bold py-2 text-center">
-                  <i class="bi bi-whatsapp me-1"></i> Hubungi WA
-                </a>
-                <button type="button" class="btn btn-sm btn-outline-danger px-3 py-2" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
-                  <i class="bi bi-trash"></i> Hapus
+              <div>
+                <button type="button" class="btn btn-sm btn-outline-danger w-100 py-2 fw-bold" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
+                  <i class="bi bi-trash me-1"></i> Hapus Riwayat
                 </button>
               </div>
             `;
@@ -2786,11 +2772,8 @@
                 </button>
               </div>
               <div class="d-flex gap-2">
-                <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-sm btn-outline-success flex-fill py-2 fw-bold text-center">
-                  <i class="bi bi-whatsapp me-1"></i> Chat WA
-                </a>
-                <button type="button" class="btn btn-sm btn-outline-danger px-3 py-2" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
-                  <i class="bi bi-trash"></i>
+                <button type="button" class="btn btn-sm btn-outline-danger flex-fill py-2 fw-bold" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
+                  <i class="bi bi-trash me-1"></i> Hapus Riwayat
                 </button>
               </div>
             `;
@@ -2799,7 +2782,7 @@
             aksiMobile = `
               <div class="d-flex gap-2 mb-2">
                 <button type="button" class="btn btn-success flex-grow-1 fw-bold py-2 text-center shadow-sm" onclick="selesaikanPenyewaan('${bId}')">
-                  <i class="bi bi-box-arrow-in-down me-1"></i> Terima Pengembalian
+                  <i class="bi bi-box-arrow-in-down me-1"></i> Selesaikan Pengembalian
                 </button>
                 <button type="button" class="btn btn-outline-danger px-3 py-2 fw-bold" onclick="bukaModalTolakBooking('${bId}')" title="Batalkan / Tolak">
                   <i class="bi bi-x-circle"></i>
@@ -2808,9 +2791,6 @@
               <div class="d-flex gap-2">
                 <a href="status.html?id=${encodeURIComponent(bId)}" target="_blank" class="btn btn-sm btn-outline-primary flex-fill py-2 fw-bold text-center">
                   <i class="bi bi-clock-history me-1"></i> Countdown
-                </a>
-                <a href="https://wa.me/${noTujuan}?text=${pesanWa}" target="_blank" class="btn btn-sm btn-outline-success px-3 py-2" title="Chat WA">
-                  <i class="bi bi-whatsapp"></i>
                 </a>
                 <button type="button" class="btn btn-sm btn-outline-danger px-3 py-2" onclick="hapusRiwayatItem('${bId}')" title="Hapus Riwayat">
                   <i class="bi bi-trash"></i>
@@ -2826,7 +2806,7 @@
             </div>
             <div class="mb-2">
               <strong class="text-dark fs-6 d-block">${safeNama}</strong>
-              <small class="text-secondary">${typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(safeNoWa) : safeNoWa} &bull; ${safeKomunitas}</small>
+              <small class="text-secondary">${typeof formatNomorWaLokal === "function" ? formatNomorWaLokal(safeNoWa) : safeNoWa} &bull; ${safeKomunitas} <a href="https://wa.me/${noTujuan}" target="_blank" class="text-success ms-1" title="Chat WA"><i class="bi bi-whatsapp"></i></a></small>
               ${safeJaminan}
             </div>
             <div class="p-2 rounded bg-light border mb-3 small">
@@ -3003,8 +2983,9 @@
       const inputJaminan = document.getElementById("modalAccJaminanFisik");
       const jaminanIdentitas = inputJaminan ? inputJaminan.value.trim() : "";
 
+      let terkirimServer = false;
       if (typeof accBookingAdminAsync === "function") {
-        await accBookingAdminAsync(bId, {
+        terkirimServer = await accBookingAdminAsync(bId, {
           isDinas: isDinas,
           biayaFinal: biayaFinal,
           mulaiSekarang: mulaiSekarang,
@@ -3035,8 +3016,8 @@
           const tSelesai = new Date(now.getTime() + durasiMs);
           targetBookingAcc.waktuAmbilRaw = now.toISOString();
           targetBookingAcc.waktuSelesaiRaw = tSelesai.toISOString();
-          targetBookingAcc.waktuAmbil = (typeof formatWaktuIndo === 'function' ? formatWaktuIndo(now) : now.toLocaleString('id-ID')) + ' WIB';
-          targetBookingAcc.waktuSelesai = (typeof formatWaktuIndo === 'function' ? formatWaktuIndo(tSelesai) : tSelesai.toLocaleString('id-ID')) + ' WIB';
+          targetBookingAcc.waktuAmbil = typeof formatWaktuIndo === 'function' ? formatWaktuIndo(now) : (now.toLocaleString('id-ID') + ' WIB');
+          targetBookingAcc.waktuSelesai = typeof formatWaktuIndo === 'function' ? formatWaktuIndo(tSelesai) : (tSelesai.toLocaleString('id-ID') + ' WIB');
           targetBookingAcc.handoverRiil = true;
         }
         const targetIdx = daftarRiwayatAktif.findIndex(b => (b.bookingId && b.bookingId.toUpperCase() === bId.toUpperCase()) || (b.id && b.id.toUpperCase() === bId.toUpperCase()));
@@ -3051,24 +3032,34 @@
       if (modalAccInstance) modalAccInstance.hide();
       segarkanSemuaData();
 
-      // Kirim Notifikasi WhatsApp Persetujuan
+      // Kirim Notifikasi WhatsApp Persetujuan via Bot Gateway
       const noTujuan = typeof formatNomorWa === "function" ? formatNomorWa(targetBookingAcc.noWa) : (targetBookingAcc.noWa || '').replace(/[^0-9]/g, '');
       if (noTujuan) {
         const infoBiaya = isDinas ? "*GRATIS (Dinas Resmi Pondok)*" : `*${formatRupiah(biayaFinal)}*`;
         const infoJaminan = jaminanIdentitas ? `*${jaminanIdentitas}* (Tercatat sebagai jaminan titipan fisik)` : "Harap membawa KTS / KTP Asli saat serah terima";
         const catatanRiil = mulaiSekarang ? "\n_Catatan: Durasi sewa dihitung mulai saat serah terima alat fisik sekarang._\n" : "";
 
-        const baseUrl = (typeof dapatkanBaseUrl === "function" && dapatkanBaseUrl()) ? dapatkanBaseUrl() : "https://aset.mahadalyamtsilati.ac.id";
+        const baseUrl = (typeof dapatkanBaseUrl === "function" && dapatkanBaseUrl()) ? dapatkanBaseUrl() : window.location.origin;
         const linkCountdown = `${baseUrl}/status.html?id=${encodeURIComponent(bId)}`;
 
-        const pesanAcc = encodeURIComponent(`Assalamu'alaikum wr. wb. Saudara/i *${targetBookingAcc.nama}*,\n\nAlhamdulillah, permohonan sewa alat multimedia *${targetBookingAcc.namaBarang}* (${bId}) telah *DISETUJUI (ACC)* oleh pengurus inventaris.\n\n*Rincian Pengambilan:*
+        const pesanAcc = `Assalamu'alaikum wr. wb. Saudara/i *${targetBookingAcc.nama}*,\n\nAlhamdulillah, permohonan sewa alat multimedia *${targetBookingAcc.namaBarang}* (${bId}) telah *DISETUJUI (ACC)* oleh pengurus inventaris.\n\n*Rincian Pengambilan:*
 - Jadwal Ambil: *${targetBookingAcc.waktuAmbil || '-'}*
 - Batas Kembali: *${targetBookingAcc.waktuSelesai || '-'}*
 - Biaya Sewa: ${infoBiaya}
 - Jaminan Identitas: ${infoJaminan}
 ${catatanRiil}
 Silakan datang ke kantor Ma'had Aly Amtsilati saat jadwal pengambilan tiba.\n\n*Pantau Countdown & Durasi Pemakaian:*
-${linkCountdown}\n\nTerima kasih.`);
+${linkCountdown}\n\nTerima kasih.`;
+
+        // Kirim via client jika backend offline / tidak aktif
+        if (!terkirimServer && typeof kirimWaGatewayOtomatis === 'function') {
+          try {
+            await kirimWaGatewayOtomatis(noTujuan, pesanAcc);
+          } catch (errWa) {
+            console.warn("[ACC] Gagal kirim WA ke santri:", errWa);
+          }
+        }
+
         modalNotif({
           title: "Pengajuan Sewa Di-ACC!",
           text: `Pengajuan sewa ${targetBookingAcc.nama} (${bId}) berhasil DISETUJUI (ACC)!\n\nNotifikasi WhatsApp otomatis berisi rincian pengambilan dan link countdown telah dikirim ke santri via Bot Gateway.`,
@@ -3248,8 +3239,9 @@ ${linkCountdown}\n\nTerima kasih.`);
         returnPayload.buktiFoto = fotoBuktiBase64;
       }
 
+      let terkirimServer = false;
       if (typeof kembalikanBookingAdminAsync === "function") {
-        await kembalikanBookingAdminAsync(bId, returnPayload);
+        terkirimServer = await kembalikanBookingAdminAsync(bId, returnPayload);
       } else {
         targetBookingTerima.status = "completed";
         targetBookingTerima.waktuDikembalikan = returnPayload.waktuDikembalikan;
@@ -3278,15 +3270,24 @@ ${linkCountdown}\n\nTerima kasih.`);
       const statusPelunasan = (totalPelunasan === 0) ? "LUNAS (Bebas Biaya / Rp 0)" : `LUNAS (${formatRupiah(totalPelunasan)})`;
       const infoKondisi = isRusak ? `Ada Kerusakan (${formatRupiah(dendaRusak)})` : "Normal & Lengkap";
 
-      const baseUrl = (typeof dapatkanBaseUrl === "function" && dapatkanBaseUrl()) ? dapatkanBaseUrl() : "https://aset.mahadalyamtsilati.ac.id";
+      const baseUrl = (typeof dapatkanBaseUrl === "function" && dapatkanBaseUrl()) ? dapatkanBaseUrl() : window.location.origin;
       const linkInvoice = `${baseUrl}/invoice.html?id=${encodeURIComponent(bId)}&download=1`;
 
       const pesanKembali = `Assalamu'alaikum wr. wb. Saudara/i *${targetBookingTerima.nama}*,\n\nAlhamdulillah, serah terima pengembalian aset *${targetBookingTerima.namaBarang}* (${bId}) telah *SELESAI DITERIMA* oleh pengurus inventaris.\n\n*Rincian Pengembalian:*
-- Waktu Kembali: *${typeof formatWaktuIndo === 'function' ? formatWaktuIndo(new Date()) : new Date().toLocaleString('id-ID')}*
+- Waktu Pengembalian: *${typeof formatWaktuIndo === 'function' ? formatWaktuIndo(new Date()) : (new Date().toLocaleString('id-ID') + ' WIB')}*
 - Kondisi Fisik: *${infoKondisi}*
 - Denda Keterlambatan: *${formatRupiah(dendaTelat)}*
 - Total Pelunasan: *${statusPelunasan}*\n\n*Unduh Bukti Sewa & Tanda Terima Resmi (PDF/Invoice):*
 ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'had Aly Amtsilati dengan baik. Semoga berkah dan bermanfaat.\n\nWassalamu'alaikum wr. wb.\n*Pengurus Inventaris Ma'had Aly Amtsilati*`;
+
+      // Kirim via client jika backend offline / tidak aktif
+      if (!terkirimServer && noTujuan && typeof kirimWaGatewayOtomatis === 'function') {
+        try {
+          await kirimWaGatewayOtomatis(noTujuan, pesanKembali);
+        } catch (errWa) {
+          console.warn("[Pengembalian] Gagal kirim WA ke santri:", errWa);
+        }
+      }
 
       if (noTujuan) {
         modalNotif({
@@ -3358,8 +3359,9 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
         alasanFinal = document.getElementById("modalTolakKeteranganManual").value.trim() || "Unit tidak dapat disewakan pada jadwal tersebut";
       }
 
+      let terkirimServer = false;
       if (typeof tolakBookingAdminAsync === "function") {
-        await tolakBookingAdminAsync(bId, alasanFinal);
+        terkirimServer = await tolakBookingAdminAsync(bId, alasanFinal);
       } else {
         targetBookingTolak.status = "rejected";
         targetBookingTolak.alasanTolak = alasanFinal;
@@ -3375,9 +3377,19 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
       if (modalTolakInstance) modalTolakInstance.hide();
       segarkanSemuaData();
 
-      // Buka WhatsApp untuk notifikasi santri
+      // Kirim Notifikasi WhatsApp Penolakan ke Santri via Bot Gateway
       const noTujuan = typeof formatNomorWa === "function" ? formatNomorWa(targetBookingTolak.noWa) : (targetBookingTolak.noWa || '').replace(/[^0-9]/g, '');
       if (noTujuan) {
+        const namaBarang = (targetBookingTolak.isMultiItem && targetBookingTolak.items) ? (targetBookingTolak.items.length + " unit alat (" + targetBookingTolak.items.map(i => i.namaBarang).join(", ") + ")") : (targetBookingTolak.namaBarang || "alat");
+        const pesanTolak = `Assalamu'alaikum wr. wb. Saudara/i *${targetBookingTolak.nama || 'Penyewa'}*,\n\nMohon maaf, permohonan sewa aset *${namaBarang}* (*${bId}*) saat ini *TIDAK BISA DISETUJUI / DITOLAK* oleh Pengurus Ma'had Aly Amtsilati.\n\n*Alasan:*\n_${alasanFinal}_\n\nSilakan ajukan jadwal di hari lain melalui katalog atau hubungi Kantor Ma'had Aly Amtsilati.\n\nWassalamu'alaikum wr. wb.\n*Pengurus Inventaris Ma'had Aly Amtsilati*`;
+        // Kirim via client jika backend offline / tidak aktif
+        if (!terkirimServer && typeof kirimWaGatewayOtomatis === 'function') {
+          try {
+            await kirimWaGatewayOtomatis(noTujuan, pesanTolak);
+          } catch (errWa) {
+            console.warn("[Tolak] Gagal kirim WA tolak ke santri:", errWa);
+          }
+        }
         modalNotif({
           title: "Booking Ditolak",
           text: `Booking ${targetBookingTolak.nama} (${bId}) berhasil DITOLAK dan jadwal unit telah dibebaskan.\n\nNotifikasi WhatsApp penolakan telah dikirim ke santri via Bot Gateway.`,
@@ -3542,12 +3554,12 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
 
         let rincianDisetujuiWa = "";
         if (p.itemsTerpilih && Array.isArray(p.itemsTerpilih) && p.itemsTerpilih.length > 0) {
-          rincianDisetujuiWa = p.itemsTerpilih.map(it => `  • *${it.namaBarang}* : s.d *${it.waktuSelesaiBaru}* (+${it.jamTambahan}j)`).join("\n");
+          rincianDisetujuiWa = p.itemsTerpilih.map(it => `  • *${it.namaBarang}* : s.d *${typeof formatWaktuIndo === 'function' ? formatWaktuIndo(it.waktuSelesaiBaru) : it.waktuSelesaiBaru}* (+${it.jamTambahan}j)`).join("\n");
           if (targetBooking.items && targetBooking.items.length > p.itemsTerpilih.length) {
             rincianDisetujuiWa += `\n  _(Unit lain tidak diperpanjang, mohon kembalikan sesuai jadwal semula)_`;
           }
         } else {
-          rincianDisetujuiWa = `  • *${namaAset}* : s.d *${p.waktuSelesaiBaru}* (+${p.jamTambahan} Jam)`;
+          rincianDisetujuiWa = `  • *${namaAset}* : s.d *${typeof formatWaktuIndo === 'function' ? formatWaktuIndo(p.waktuSelesaiBaru) : p.waktuSelesaiBaru}* (+${p.jamTambahan} Jam)`;
         }
 
         const pesanSantri = `Assalamu'alaikum wr. wb. Saudara/i *${namaSantri}*,\n\n` +
@@ -3633,7 +3645,7 @@ ${linkInvoice}\n\nTerima kasih banyak telah menjaga amanah dan merawat aset Ma'h
           `⚠️ *INFORMASI PERPANJANGAN WAKTU SEWA*\n\n` +
           `Mohon maaf, permohonan perpanjangan waktu untuk aset *${namaAset}* (${bId}) *BELUM DAPAT DISETUJUI* oleh Pengurus Ma'had Aly Amtsilati.\n\n` +
           `*Alasan:* ${targetBooking.pengajuanPerpanjangan.alasanTolak}\n` +
-          `*Batas Pengembalian Tetap:* *${targetBooking.waktuSelesai || '-'}*\n\n` +
+          `*Batas Pengembalian Tetap:* *${typeof formatWaktuIndo === 'function' ? formatWaktuIndo(targetBooking.waktuSelesai) : (targetBooking.waktuSelesai || '-')}*\n\n` +
           `Mohon untuk mengembalikan aset tepat waktu ke sekretariat agar tidak terkena denda keterlambatan. Terima kasih.`;
         
         try {

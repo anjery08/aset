@@ -1259,6 +1259,16 @@ body.ios-glass-theme {
   pointer-events: auto;
 }
 
+@media (max-width: 576px) {
+  .floating-cart-bar {
+    bottom: 0.75rem !important;
+    width: calc(100% - 1.25rem) !important;
+    padding: 0.4rem 0.75rem !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.9) inset !important;
+  }
+}
+
 /* Cart Item Card in Offcanvas/Modal */
 .cart-item-card {
   background: rgba(248, 250, 252, 0.9);
